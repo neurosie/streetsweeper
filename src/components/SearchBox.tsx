@@ -1,9 +1,8 @@
 /* Based on https://github.com/sickdyd/react-search-autocomplete */
 
 import { Combobox } from "@headlessui/react";
-import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { api } from "~/utils/api";
 
 export default function SearchBox() {
