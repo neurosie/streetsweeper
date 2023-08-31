@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Link from "next/link";
-import { DynamicMap } from "~/components/DynamicMap";
 import MapboxMap from "~/components/MapboxMap";
 import SearchBox from "~/components/SearchBox";
 
@@ -24,7 +23,6 @@ export default function Home() {
           </p>
         </div> */}
 
-        {/* <DynamicMap /> */}
         <SearchBox />
         {/* <MapboxMap /> */}
       </main>

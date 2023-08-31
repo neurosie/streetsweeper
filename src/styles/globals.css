@@ -1,5 +1,4 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "leaflet/dist/leaflet.css";
 @import "mapbox-gl/dist/mapbox-gl.css";
