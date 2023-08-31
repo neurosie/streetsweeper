@@ -1,0 +1,56 @@
+{
+  "name": "streetsweeper",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "postinstall": "prisma generate",
+    "lint": "next lint",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@headlessui/tailwindcss": "^0.2.0",
+    "@prisma/client": "^5.1.1",
+    "@t3-oss/env-nextjs": "^0.6.0",
+    "@tanstack/react-query": "^4.29.25",
+    "@trpc/client": "^10.34.0",
+    "@trpc/next": "^10.34.0",
+    "@trpc/react-query": "^10.34.0",
+    "@trpc/server": "^10.34.0",
+    "@uidotdev/usehooks": "^2.2.0",
+    "leaflet": "^1.9.4",
+    "mapbox-gl": "^2.15.0",
+    "next": "^13.4.13",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-leaflet": "^4.2.1",
+    "react-query": "^3.39.3",
+    "superjson": "^1.13.1",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^4.34.1",
+    "@types/eslint": "^8.44.2",
+    "@types/leaflet": "^1.9.3",
+    "@types/mapbox-gl": "^2.7.13",
+    "@types/node": "^18.16.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.47.0",
+    "eslint-config-next": "^13.4.13",
+    "postcss": "^8.4.27",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.5.1",
+    "prisma": "^5.1.1",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.1.6"
+  },
+  "ct3aMetadata": {
+    "initVersion": "7.19.0"
+  }
+}
