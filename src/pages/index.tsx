@@ -1,14 +1,13 @@
-import dynamic from "next/dynamic";
 import Head from "next/head";
 import Link from "next/link";
-import MapboxMap from "~/components/MapboxMap";
-import SearchBox from "~/components/SearchBox";
-
+import { Combobox } from "@headlessui/react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useState } from "react";
+import { Place } from "~/server/api/routers/search";
 import { api } from "~/utils/api";
 
 export default function Home() {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
+  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   return (
     <>
       <Head>
@@ -17,15 +16,95 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        {/* <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          <p className="text-2xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-          </p>
-        </div> */}
-
-        <SearchBox />
-        {/* <MapboxMap /> */}
+        <SearchBox
+          selectedPlace={selectedPlace}
+          onSelectPlace={setSelectedPlace}
+        />
+        <button
+          className="rounded-lg bg-pink-800 px-24 py-8 text-3xl font-black text-white disabled:bg-gray-800 disabled:text-gray-300"
+          disabled={selectedPlace === null}
+        >
+          {selectedPlace === null ? (
+            "Play!"
+          ) : (
+            <Link href={`play/${selectedPlace.osm_id}`}>Play!</Link>
+          )}
+        </button>
       </main>
     </>
+  );
+}
+
+function SearchBox({
+  selectedPlace: selectedCity,
+  onSelectPlace: onSelectCity,
+}: {
+  selectedPlace: Place | null;
+  onSelectPlace: (city: Place | null) => void;
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
+
+  return (
+    <div className="fixed top-16 w-72 md:w-96">
+      <Combobox value={selectedCity} onChange={onSelectCity}>
+        <div className="relative mt-1">
+          <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+            <Combobox.Input
+              className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+              onChange={(event) => setSearchTerm(event.target.value)}
+              displayValue={(city: Place) => city?.display_name}
+            />
+          </div>
+          {debouncedSearchTerm.length > 0 && (
+            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <SearchSuggestions searchTerm={debouncedSearchTerm} />
+            </Combobox.Options>
+          )}
+        </div>
+      </Combobox>
+    </div>
+  );
+}
+
+function SearchSuggestions({ searchTerm }: { searchTerm: string }) {
+  const { status, data, error } = api.search.useQuery({
+    query: searchTerm,
+  });
+
+  if (status === "loading") {
+    return <span>loading...</span>;
+  }
+  if (status === "error") {
+    return <span>Error: {error.message}</span>;
+  }
+  return (
+    <div>
+      {data
+        .filter((entry) => entry.osm_type === "relation")
+        .map((entry) => (
+          <Combobox.Option
+            key={entry.osm_id}
+            className={({ active }) =>
+              `relative cursor-default select-none px-4 py-2 ${
+                active ? "bg-pink-600 text-white" : "text-gray-900"
+              }`
+            }
+            value={entry}
+          >
+            {({ selected, active: _ }) => (
+              <>
+                <span
+                  className={`block truncate ${
+                    selected ? "font-medium" : "font-normal"
+                  }`}
+                >
+                  {entry.display_name}
+                </span>
+              </>
+            )}
+          </Combobox.Option>
+        ))}
+    </div>
   );
 }
