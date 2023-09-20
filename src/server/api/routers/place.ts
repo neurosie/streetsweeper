@@ -1,113 +1,57 @@
+import bbox from "@turf/bbox";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import { lineString, point, polygon } from "@turf/helpers";
+import { BBox2d } from "@turf/helpers/dist/js/lib/geojson";
+import lineSplit from "@turf/line-split";
+import {
+  BBox,
+  Feature,
+  GeoJsonProperties,
+  Geometry,
+  LineString,
+  MultiPolygon,
+  Polygon,
+} from "geojson";
+import osmtogeojson from "osmtogeojson";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fetchWithUA } from "~/utils/fetch";
 
-const Bounds = z.object({
-  minlat: z.number(),
-  minlon: z.number(),
-  maxlat: z.number(),
-  maxlon: z.number(),
-});
-const Geometry = z.array(z.object({ lat: z.number(), lon: z.number() }));
+//     // const geoLine = lineString(geometry2);
 
-const CityResponse = z.object({
-  type: z.literal("relation"),
-  id: z.number(),
-  bounds: Bounds,
-  members: z.array(
-    z
-      .object({
-        type: z.literal("way"),
-        role: z.literal("outer"),
-        geometry: Geometry,
-      })
-      .or(z.object({ type: z.literal("node"), role: z.literal("label") })),
-  ),
-  tags: z.object({ name: z.string() }),
-});
+//     // const roadSegments = lineSplit(geoLine, geoBorder).features.filter((part) =>
+//     //   booleanPointInPolygon(point(part.geometry.coordinates[0]!), geoBorder),
+//     // );
+//     // console.log(roadSegments.length);
+//     // if (roadSegments.length === 0) {
+//     //   console.log(geometry2, border, lineSplit(geoLine, geoBorder));
+//     //   // throw "dang";
+//     // }
 
-const RoadResponse = z.object({
-  type: z.literal("way"),
-  id: z.number(),
-  bounds: Bounds,
-  geometry: Geometry,
-  tags: z.object({
-    name: z.string().optional(),
-    "name:left": z.string().optional(),
-    "name:right": z.string().optional(),
-    alt_name: z.string().optional(),
-    old_name: z.string().optional(),
-    short_name: z.string().optional(),
-    nickname: z.string().optional(),
-    "bridge:name": z.string().optional(),
-    "tiger:name_base": z.string().optional(),
-    "tiger:name_type": z.string().optional(),
-    "tiger:name_base_1": z.string().optional(),
-    "tiger:name_type_1": z.string().optional(),
-  }),
-});
+type PlaceProperties = {};
 
-const OSMResponse = z.object({
-  elements: z.tuple([CityResponse]).rest(RoadResponse),
-});
+interface Place extends Feature<Polygon> {
+  bbox: BBox2d;
+}
 
-const OSMResponseToPlace = OSMResponse.transform((val): Place => {
-  const place = val.elements[0];
-  const roads = val.elements.slice(1) as z.infer<typeof RoadResponse>[];
-
-  return {
-    id: place.id,
-    bounds: place.bounds,
-    border: place.members.flatMap((node) =>
-      node.role === "outer" ? node.geometry : [],
-    ),
-    roads: roads.flatMap(({ id, bounds, geometry, tags }): [Road] | [] => {
-      const alternateNames = [
-        tags.name,
-        tags.alt_name,
-        tags.short_name,
-        tags.nickname,
-        tags.old_name,
-        tags["name:left"],
-        tags["name:right"],
-        tags["bridge:name"],
-      ].filter((name): name is string => !!name && name.length > 0);
-
-      const displayName = alternateNames[0];
-
-      if (!displayName) {
-        return [];
-      }
-      return [
-        {
-          id,
-          displayName,
-          alternateNames: alternateNames.map((name) => name.toLowerCase()),
-          geometry,
-        },
-      ];
-    }),
-  };
-});
-
-export type Road = {
-  id: number;
-  displayName: string;
+type RoadProperties = {
+  name: string;
   alternateNames: string[];
-  // bounds: z.infer<typeof Bounds>;
-  geometry: z.infer<typeof Geometry>;
+  segmentCount: number | undefined;
 };
-export type Place = {
-  id: number;
-  bounds: z.infer<typeof Bounds>;
-  border: z.infer<typeof Geometry>;
+interface Road extends Feature<LineString, RoadProperties> {
+  id: string;
+}
+
+export type PlaceResponse = {
+  place: Place;
   roads: Road[];
 };
 
 export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input }): Promise<PlaceResponse> => {
       const response = await fetchWithUA(
         // "https://overpass-api.de/api/interpreter",
         "https://3889f2d4-f887-4d8b-8923-d206830ad410.mock.pstmn.io/api/interpreter",
@@ -119,9 +63,56 @@ export const placeRouter = createTRPCRouter({
       if (!response.ok) {
         throw new Error("Place data response was not ok");
       }
-      return OSMResponseToPlace.parse(await response.json());
+      const [place, ...roads] = osmtogeojson(await response.json()).features;
+      if (!place || !isFeature(place, "Polygon")) {
+        throw "First result was not a polygon";
+      }
+      return {
+        place: { ...place, bbox: (place.bbox ?? bbox(place)) as BBox2d },
+        roads: roads.flatMap((road): [Road] | [] => {
+          if (!isFeature(road, "LineString") || road.properties == null) {
+            console.log("skipping road " + road.id);
+            return [];
+          }
+          const alternateNames = [
+            road.properties.name,
+            road.properties.alt_name,
+            road.properties.short_name,
+            road.properties.nickname,
+            road.properties.old_name,
+            road.properties["name:left"],
+            road.properties["name:right"],
+            road.properties["bridge:name"],
+          ].filter((name): name is string => !!name && name.length > 0);
+
+          const displayName = alternateNames[0];
+          if (!displayName) {
+            return [];
+          }
+          return [
+            {
+              ...road,
+              id: road.properties.id!,
+              properties: {
+                name: displayName,
+                alternateNames: alternateNames.map((name) =>
+                  name.toLowerCase(),
+                ),
+                segmentCount: undefined,
+              },
+            },
+          ];
+        }),
+      };
     }),
 });
+
+function isFeature<T extends Feature["geometry"]["type"]>(
+  feature: Feature,
+  type: T,
+): feature is Feature<Extract<Geometry, { type: T }>> {
+  return feature.geometry.type === type;
+}
 
 function OSMQuery(relationId: string) {
   return `[out:json];

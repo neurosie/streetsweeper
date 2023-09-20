@@ -1,13 +1,13 @@
 import mapboxgl from "mapbox-gl";
 import { useEffect, useState } from "react";
-import { Place } from "~/server/api/routers/place";
+import { PlaceResponse } from "~/server/api/routers/place";
 
 export default function MapboxMap({
   place,
   guessedRoads,
 }: {
-  place: Place;
-  guessedRoads: Set<number>;
+  place: PlaceResponse;
+  guessedRoads: Set<string>;
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();
 
@@ -20,22 +20,13 @@ export default function MapboxMap({
     let map = new mapboxgl.Map({
       container: "my-map",
       style: "mapbox://styles/neurosie/cllwx185501bg01qi8q5l4ntt",
-      bounds: [
-        [place.bounds.minlon, place.bounds.minlat],
-        [place.bounds.maxlon, place.bounds.maxlat],
-      ],
+      bounds: place.place.bbox,
     });
-
-    const coordinates = [place.border.map(({ lat, lon }) => [lon, lat])];
 
     map.on("load", () => {
       map.addSource("boundary", {
         type: "geojson",
-        data: {
-          type: "Feature",
-          properties: {},
-          geometry: { type: "Polygon", coordinates },
-        },
+        data: place.place,
       });
 
       map.addLayer({
@@ -50,17 +41,10 @@ export default function MapboxMap({
       });
 
       place.roads.map((road) => {
-        const roadCoords = road.geometry.map(
-          ({ lat, lon }: { lat: number; lon: number }) => [lon, lat],
-        );
         const layerId = `road-${road.id}`;
         map.addSource(layerId, {
           type: "geojson",
-          data: {
-            type: "Feature",
-            properties: {},
-            geometry: { type: "LineString", coordinates: roadCoords },
-          },
+          data: road,
         });
 
         map.addLayer({
@@ -72,7 +56,7 @@ export default function MapboxMap({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#888",
+            "line-color": "#888", // ["#888", "#f33", "#33f", "#0e2"][road.segmentCount],
             "line-width": [
               "interpolate",
               ["exponential", 2],
