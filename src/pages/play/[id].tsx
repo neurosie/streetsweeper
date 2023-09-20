@@ -32,7 +32,7 @@ export default function Play() {
 
   let body;
   if (status === "loading") {
-    body = <div>Loading...</div>;
+    body = <div className="self-center">Loading...</div>;
   } else if (status === "error") {
     body = <div>Error: {error.toString()}</div>;
   } else {
@@ -50,7 +50,6 @@ export default function Play() {
 
         <MapboxMap place={data} guessedRoads={guessedRoads} />
 
-        {/* <div>red = 1, blue = 2, green = 3</div> */}
         <div className="mx-8 h-2 rounded-full bg-gray-200">
           <div
             className="h-2 rounded-full bg-cyan-500"

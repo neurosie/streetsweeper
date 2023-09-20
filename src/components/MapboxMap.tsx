@@ -56,7 +56,7 @@ export default function MapboxMap({
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#888", // ["#888", "#f33", "#33f", "#0e2"][road.segmentCount],
+            "line-color": "#888",
             "line-width": [
               "interpolate",
               ["exponential", 2],
@@ -87,7 +87,7 @@ export default function MapboxMap({
   return (
     <div
       id="my-map"
-      className="h-80 w-full"
+      className="h-[600px] w-full"
       // style={{ height: 500 /*, width: 800*/ }}
     />
   );

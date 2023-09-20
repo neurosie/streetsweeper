@@ -1,51 +1,29 @@
 import bbox from "@turf/bbox";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import { lineString, point, polygon } from "@turf/helpers";
 import { BBox2d } from "@turf/helpers/dist/js/lib/geojson";
 import lineSplit from "@turf/line-split";
-import {
-  BBox,
-  Feature,
-  GeoJsonProperties,
-  Geometry,
-  LineString,
-  MultiPolygon,
-  Polygon,
-} from "geojson";
+import { Feature, Geometry, LineString, Polygon } from "geojson";
 import osmtogeojson from "osmtogeojson";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fetchWithUA } from "~/utils/fetch";
 
-//     // const geoLine = lineString(geometry2);
-
-//     // const roadSegments = lineSplit(geoLine, geoBorder).features.filter((part) =>
-//     //   booleanPointInPolygon(point(part.geometry.coordinates[0]!), geoBorder),
-//     // );
-//     // console.log(roadSegments.length);
-//     // if (roadSegments.length === 0) {
-//     //   console.log(geometry2, border, lineSplit(geoLine, geoBorder));
-//     //   // throw "dang";
-//     // }
-
-type PlaceProperties = {};
-
-interface Place extends Feature<Polygon> {
-  bbox: BBox2d;
-}
-
-type RoadProperties = {
-  name: string;
-  alternateNames: string[];
-  segmentCount: number | undefined;
-};
-interface Road extends Feature<LineString, RoadProperties> {
-  id: string;
-}
-
 export type PlaceResponse = {
   place: Place;
   roads: Road[];
+};
+
+interface Place extends Feature<Polygon, PlaceProperties | null> {
+  bbox: BBox2d;
+}
+type PlaceProperties = {};
+
+interface Road extends Feature<LineString, RoadProperties> {
+  id: string;
+}
+type RoadProperties = {
+  name: string;
+  alternateNames: string[];
 };
 
 export const placeRouter = createTRPCRouter({
@@ -63,49 +41,88 @@ export const placeRouter = createTRPCRouter({
       if (!response.ok) {
         throw new Error("Place data response was not ok");
       }
-      const [place, ...roads] = osmtogeojson(await response.json()).features;
-      if (!place || !isFeature(place, "Polygon")) {
-        throw "First result was not a polygon";
-      }
-      return {
-        place: { ...place, bbox: (place.bbox ?? bbox(place)) as BBox2d },
-        roads: roads.flatMap((road): [Road] | [] => {
-          if (!isFeature(road, "LineString") || road.properties == null) {
-            console.log("skipping road " + road.id);
-            return [];
-          }
-          const alternateNames = [
-            road.properties.name,
-            road.properties.alt_name,
-            road.properties.short_name,
-            road.properties.nickname,
-            road.properties.old_name,
-            road.properties["name:left"],
-            road.properties["name:right"],
-            road.properties["bridge:name"],
-          ].filter((name): name is string => !!name && name.length > 0);
-
-          const displayName = alternateNames[0];
-          if (!displayName) {
-            return [];
-          }
-          return [
-            {
-              ...road,
-              id: road.properties.id!,
-              properties: {
-                name: displayName,
-                alternateNames: alternateNames.map((name) =>
-                  name.toLowerCase(),
-                ),
-                segmentCount: undefined,
-              },
-            },
-          ];
-        }),
-      };
+      const data = await response.json();
+      return transformGeodata(data);
     }),
 });
+
+function transformGeodata(response: any): PlaceResponse {
+  const [place, ...roads] = osmtogeojson(response).features;
+
+  if (!place || !isFeature(place, "Polygon")) {
+    throw "First result was not a polygon";
+  }
+
+  return {
+    place: { ...place, bbox: (place.bbox ?? bbox(place)) as BBox2d },
+
+    roads: roads.flatMap((road): [Road] | [] => {
+      if (!isFeature(road, "LineString") || road.properties == null) {
+        console.log("skipping road " + road.id);
+        return [];
+      }
+
+      // Take the first available name as canonical, and the rest as alternates.
+      const alternateNames = [
+        road.properties.name,
+        road.properties.alt_name,
+        road.properties.short_name,
+        road.properties.nickname,
+        road.properties.old_name,
+        road.properties["name:left"],
+        road.properties["name:right"],
+        road.properties["bridge:name"],
+      ].filter((name): name is string => !!name && name.length > 0);
+
+      const displayName = alternateNames[0];
+      if (!displayName) {
+        return [];
+      }
+
+      // Check if the road exits the place border, and if it does trim it down.
+      // Algorithm based on https://gis.stackexchange.com/a/459122,
+      // modified to check a point slightly inside each segment instead of the strict beginning,
+      // as I found that to be imprecise for bounds checking.
+      const roadSegments = lineSplit(road, place).features;
+      let geometry: LineString | undefined = undefined;
+      if (roadSegments.length > 0) {
+        const inBoundsSegments = roadSegments.filter((seg) => {
+          if (seg.geometry.coordinates.length < 2) {
+            return false;
+          }
+          let pointA = seg.geometry.coordinates[0]!;
+          let pointB = seg.geometry.coordinates[1]!;
+          let testPoint = [
+            (pointA[0]! + pointB[0]!) / 2,
+            (pointA[1]! + pointB[1]!) / 2,
+          ];
+          return booleanPointInPolygon(testPoint, place);
+        });
+
+        if (inBoundsSegments.length === 0) {
+          return [];
+        }
+        // A line may enter and leave multiple times, this probably needs special handling.
+        if (inBoundsSegments.length > 1) {
+          throw "Unimplemented: MultiLineString road support";
+        }
+        geometry = inBoundsSegments[0]!.geometry;
+      }
+
+      return [
+        {
+          ...road,
+          id: road.properties.id!,
+          geometry: geometry ?? road.geometry,
+          properties: {
+            name: displayName,
+            alternateNames: alternateNames.map((name) => name.toLowerCase()),
+          },
+        },
+      ];
+    }),
+  };
+}
 
 function isFeature<T extends Feature["geometry"]["type"]>(
   feature: Feature,
