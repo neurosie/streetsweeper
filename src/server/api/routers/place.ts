@@ -33,20 +33,44 @@ type RoadProperties = {
 export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }): Promise<PlaceResponse> => {
-      const response = await fetchWithUA(
-        // "https://overpass-api.de/api/interpreter",
-        "https://3889f2d4-f887-4d8b-8923-d206830ad410.mock.pstmn.io/api/interpreter",
-        {
-          method: "POST",
-          body: "data=" + encodeURIComponent(OSMQuery(input.id)),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Place data response was not ok");
+    .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
+      const place = await ctx.prisma.place.findUnique({
+        where: { id },
+      });
+      if (place) {
+        return JSON.parse(place.response) as PlaceResponse;
       }
-      const data = await response.json();
-      return transformGeodata(data);
+
+      let osmText = (
+        await ctx.prisma.osmResponse.findUnique({
+          where: { id },
+        })
+      )?.response;
+      if (!osmText) {
+        const osmResponse = await fetchWithUA(
+          "https://overpass-api.de/api/interpreter",
+          {
+            method: "POST",
+            body: "data=" + encodeURIComponent(OSMQuery(id)),
+          },
+        );
+        if (!osmResponse.ok) {
+          throw new Error("Place data response was not ok");
+        }
+
+        osmText = await osmResponse.text();
+        await ctx.prisma.osmResponse.create({
+          data: { id, response: osmText },
+        });
+      }
+
+      const finalPlace = transformGeodata(JSON.parse(osmText));
+
+      await ctx.prisma.place.create({
+        data: { id, response: JSON.stringify(finalPlace) },
+      });
+
+      return finalPlace;
     }),
 });
 
@@ -104,7 +128,8 @@ function transformGeodata(response: any): PlaceResponse {
       }
       // A line may enter and leave multiple times, this probably needs special handling.
       if (inBoundsSegments.length > 1) {
-        throw "Unimplemented: MultiLineString road support";
+        console.log(`Unimplemented: MultiLineString road support (${road.id})`);
+        return [];
       }
       road.geometry = inBoundsSegments[0]!.geometry;
     }
