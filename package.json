@@ -20,6 +20,7 @@
     "@trpc/server": "^10.34.0",
     "@turf/bbox": "^6.5.0",
     "@turf/boolean-point-in-polygon": "^6.5.0",
+    "@turf/length": "^6.5.0",
     "@turf/line-split": "^6.5.0",
     "@types/geojson": "^7946.0.10",
     "@uidotdev/usehooks": "^2.2.0",

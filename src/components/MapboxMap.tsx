@@ -87,8 +87,7 @@ export default function MapboxMap({
   return (
     <div
       id="my-map"
-      className="h-[600px] w-full"
-      // style={{ height: 500 /*, width: 800*/ }}
+      className="h-[600px] w-full md:max-w-[800px] md:self-center"
     />
   );
 }

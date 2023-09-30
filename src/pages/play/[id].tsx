@@ -36,6 +36,13 @@ export default function Play() {
   } else if (status === "error") {
     body = <div>Error: {error.toString()}</div>;
   } else {
+    const guessedLength = data.roads.reduce(
+      (sum, road) =>
+        sum + (guessedRoads.has(road.id) ? road.properties.lengthMi : 0),
+      0,
+    );
+    const totalLength = data.place.properties.totalLengthMi;
+
     body = (
       <>
         <form onSubmit={onGuess} className="mx-8 flex">
@@ -53,10 +60,12 @@ export default function Play() {
         <div className="mx-8 h-2 rounded-full bg-gray-200">
           <div
             className="h-2 rounded-full bg-cyan-500"
-            style={{ width: "50%" }}
+            style={{ width: `${(guessedLength / totalLength) * 100}%` }}
           ></div>
         </div>
-        {/* <label htmlFor="progress-bar">XXX/YYY miles</label> */}
+        <div className="mx-8">
+          {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
+        </div>
       </>
     );
   }
