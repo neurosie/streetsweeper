@@ -28,7 +28,6 @@ export default function MapboxMap({
         type: "geojson",
         data: place.place,
       });
-
       map.addLayer({
         id: "boundary",
         type: "line",
@@ -40,35 +39,37 @@ export default function MapboxMap({
         },
       });
 
-      place.roads.map((road) => {
-        const layerId = `road-${road.id}`;
-        map.addSource(layerId, {
-          type: "geojson",
-          data: road,
-        });
-
-        map.addLayer({
-          id: layerId,
-          type: "line",
-          source: layerId,
-          layout: {
-            "line-join": "round",
-            "line-cap": "round",
-          },
-          paint: {
-            "line-color": "#888",
-            "line-width": [
-              "interpolate",
-              ["exponential", 2],
-              ["zoom"],
-              10,
-              1,
-              15,
-              16,
-            ],
-            "line-color-transition": { duration: 500 },
-          },
-        });
+      map.addSource("roads", {
+        type: "geojson",
+        data: place.roads,
+        promoteId: "id",
+      });
+      map.addLayer({
+        id: "roads",
+        type: "line",
+        source: "roads",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": [
+            "case",
+            ["boolean", ["feature-state", "guessed"], false],
+            "#03e",
+            "#888",
+          ],
+          "line-width": [
+            "interpolate",
+            ["exponential", 2],
+            ["zoom"],
+            10,
+            1,
+            15,
+            16,
+          ],
+          "line-color-transition": { duration: 600 },
+        },
       });
     });
 
@@ -80,7 +81,7 @@ export default function MapboxMap({
       return;
     }
     for (const roadId of guessedRoads) {
-      map.setPaintProperty(`road-${roadId}`, "line-color", "#03e");
+      map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
     }
   }, [place, guessedRoads]);
 

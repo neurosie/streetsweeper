@@ -3,7 +3,13 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { BBox2d } from "@turf/helpers/dist/js/lib/geojson";
 import length from "@turf/length";
 import lineSplit from "@turf/line-split";
-import { Feature, Geometry, LineString, Polygon } from "geojson";
+import {
+  Feature,
+  FeatureCollection,
+  Geometry,
+  LineString,
+  Polygon,
+} from "geojson";
 import osmtogeojson from "osmtogeojson";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -11,7 +17,7 @@ import { fetchWithUA } from "~/utils/fetch";
 
 export type PlaceResponse = {
   place: Place;
-  roads: Road[];
+  roads: TypedCollection<Road>;
 };
 
 interface Place extends Feature<Polygon, PlaceProperties> {
@@ -21,11 +27,10 @@ type PlaceProperties = {
   totalLengthMi: number;
 };
 
-interface Road extends Feature<LineString, RoadProperties> {
-  id: string;
-}
+interface Road extends Feature<LineString, RoadProperties> {}
 type RoadProperties = {
   name: string;
+  id: string;
   alternateNames: string[];
   lengthMi: number;
 };
@@ -34,12 +39,13 @@ export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
-      const place = await ctx.prisma.place.findUnique({
-        where: { id },
-      });
-      if (place) {
-        return JSON.parse(place.response) as PlaceResponse;
-      }
+      // Turning off transformed data caching while I work on the transform
+      // const place = await ctx.prisma.place.findUnique({
+      //   where: { id },
+      // });
+      // if (place) {
+      //   return JSON.parse(place.response) as PlaceResponse;
+      // }
 
       let osmText = (
         await ctx.prisma.osmResponse.findUnique({
@@ -66,9 +72,9 @@ export const placeRouter = createTRPCRouter({
 
       const finalPlace = transformGeodata(JSON.parse(osmText));
 
-      await ctx.prisma.place.create({
-        data: { id, response: JSON.stringify(finalPlace) },
-      });
+      // await ctx.prisma.place.create({
+      //   data: { id, response: JSON.stringify(finalPlace) },
+      // });
 
       return finalPlace;
     }),
@@ -137,9 +143,9 @@ function transformGeodata(response: any): PlaceResponse {
     return [
       {
         ...road,
-        id: road.properties.id!,
         properties: {
           name: displayName,
+          id: road.properties.id!,
           alternateNames: alternateNames.map((name) => name.toLowerCase()),
           lengthMi: length(road, { units: "miles" }),
         },
@@ -158,8 +164,13 @@ function transformGeodata(response: any): PlaceResponse {
         ),
       },
     },
-    roads: transformedRoads,
+    roads: { type: "FeatureCollection", features: transformedRoads },
   };
+}
+
+interface TypedCollection<Ty extends Feature>
+  extends FeatureCollection<Ty["geometry"], Ty["properties"]> {
+  features: Array<Ty>;
 }
 
 function isFeature<T extends Feature["geometry"]["type"]>(

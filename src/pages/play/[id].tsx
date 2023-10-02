@@ -19,9 +19,9 @@ export default function Play() {
     if (guess.trim().length === 0) {
       return;
     }
-    const matchedRoads = data!.roads
+    const matchedRoads = data!.roads.features
       .filter((road) => road.properties.alternateNames.includes(guess))
-      .map((road) => road.id);
+      .map((road) => road.properties.id);
     if (matchedRoads.length > 0) {
       setGuessedRoads(
         (guessedRoads) => new Set([...guessedRoads, ...matchedRoads]),
@@ -36,9 +36,10 @@ export default function Play() {
   } else if (status === "error") {
     body = <div>Error: {error.toString()}</div>;
   } else {
-    const guessedLength = data.roads.reduce(
+    const guessedLength = data.roads.features.reduce(
       (sum, road) =>
-        sum + (guessedRoads.has(road.id) ? road.properties.lengthMi : 0),
+        sum +
+        (guessedRoads.has(road.properties.id) ? road.properties.lengthMi : 0),
       0,
     );
     const totalLength = data.place.properties.totalLengthMi;
