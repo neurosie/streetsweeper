@@ -191,6 +191,7 @@ function OSMQuery(relationId: string) {
         nwr["highway"="primary"](area.searchArea);
         nwr["highway"="secondary"](area.searchArea);
         nwr["highway"="tertiary"](area.searchArea);
+        nwr["highway"="trunk"](area.searchArea);
     );
     out geom;`;
 }
