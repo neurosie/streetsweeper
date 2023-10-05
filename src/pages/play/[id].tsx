@@ -82,7 +82,7 @@ export default function Play() {
           {lastGuess ? (
             <div
               className={
-                "mx-8 rounded bg-slate-300 px-2 py-1 transition-[background-color] duration-[50] " +
+                "mx-8 rounded px-2 py-1 transition-[background-color] duration-[50ms] " +
                 {
                   right: "bg-green-200",
                   wrong: "bg-red-100",
@@ -106,7 +106,7 @@ export default function Play() {
 
         <div className="mx-8 h-2 rounded-full bg-gray-200">
           <div
-            className="h-2 rounded-full bg-cyan-500"
+            className="h-2 rounded-full bg-cyan-500 transition-[width] duration-500"
             style={{ width: `${(guessedLength / totalLength) * 100}%` }}
           ></div>
         </div>
