@@ -3,6 +3,8 @@ import { FormEvent, useState } from "react";
 import MapboxMap from "~/components/MapboxMap";
 import { api } from "~/utils/api";
 
+type GuessState = "right" | "wrong" | "repeat";
+
 export default function Play() {
   const router = useRouter();
   const placeId = router.query.id as string | undefined;
@@ -11,23 +13,37 @@ export default function Play() {
     { enabled: !!placeId },
   );
   const [guessedRoads, setGuessedRoads] = useState(new Set<string>());
+  const [lastGuess, setLastGuess] = useState<
+    { guess: string; state: GuessState; newMatches: number } | undefined
+  >(undefined);
 
   function onGuess(event: FormEvent) {
     event.preventDefault();
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
     const guess = guessBox.value.toLowerCase();
+    guessBox.value = "";
     if (guess.trim().length === 0) {
       return;
     }
+    let guessState: GuessState = "wrong";
+    let newMatches = 0;
     const matchedRoads = data!.roads.features
       .filter((road) => road.properties.alternateNames.includes(guess))
       .map((road) => road.properties.id);
     if (matchedRoads.length > 0) {
+      newMatches = matchedRoads.filter(
+        (road) => !guessedRoads.has(road),
+      ).length;
+      if (newMatches === 0) {
+        guessState = "repeat";
+      } else {
+        guessState = "right";
+      }
       setGuessedRoads(
         (guessedRoads) => new Set([...guessedRoads, ...matchedRoads]),
       );
     }
-    guessBox.value = "";
+    setLastGuess({ guess, state: guessState, newMatches });
   }
 
   let body;
@@ -52,9 +68,39 @@ export default function Play() {
             className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
             type="submit"
           >
-            ✓
+            Guess
           </button>
         </form>
+
+        <div
+          className="overflow-hidden transition-[max-height] duration-300"
+          style={{
+            /* 300 is an arbitrary value to force animation */
+            maxHeight: lastGuess ? 300 : 0,
+          }}
+        >
+          {lastGuess ? (
+            <div
+              className={
+                "mx-8 rounded bg-slate-300 px-2 py-1 transition-[background-color] duration-[50] " +
+                {
+                  right: "bg-green-200",
+                  wrong: "bg-red-100",
+                  repeat: "bg-amber-100",
+                }[lastGuess.state]
+              }
+            >
+              <span className="italic">"{lastGuess.guess}"</span>:{" "}
+              {{
+                right: (x: number) => `+${x} roads!`,
+                wrong: () => "0 roads",
+                repeat: () => "already guessed",
+              }[lastGuess.state](lastGuess.newMatches)}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
 
         <MapboxMap place={data} guessedRoads={guessedRoads} />
 
@@ -73,7 +119,7 @@ export default function Play() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-stretch justify-center gap-4 bg-gradient-to-b from-pink-500 to-stone-400">
+      <main className="md: flex min-h-screen flex-col items-stretch justify-center gap-4 bg-gradient-to-b from-pink-500 to-stone-400 py-4 md:px-12">
         {body}
       </main>
     </>
