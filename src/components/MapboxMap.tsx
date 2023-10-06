@@ -48,7 +48,6 @@ export default function MapboxMap({
         id: "roads",
         type: "line",
         source: "roads",
-        // textField: "name",
         layout: {
           "line-join": "round",
           "line-cap": "round",

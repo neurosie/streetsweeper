@@ -168,9 +168,9 @@ function transformGeodata(response: any): PlaceResponse {
   };
 }
 
-interface TypedCollection<Ty extends Feature>
-  extends FeatureCollection<Ty["geometry"], Ty["properties"]> {
-  features: Array<Ty>;
+interface TypedCollection<T extends Feature>
+  extends FeatureCollection<T["geometry"], T["properties"]> {
+  features: Array<T>;
 }
 
 function isFeature<T extends Feature["geometry"]["type"]>(

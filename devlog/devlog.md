@@ -59,3 +59,23 @@ This was my first time using the "Performance" tab in the Chrome developer conso
 After switching all roads to a single source and layer, the total time for the map to render the same city is just 700ms, a **96% improvement**. I tried a big city, Los Angeles, and it took just a second to render. Success!
 
 <img src="20231002133140.png" alt="Map of the city of Los Angeles, with a border and all roads drawn on top" width="400"/>
+
+# 2023-10-05
+
+Got two game UI tasks done today: guess feedback and road labels.
+
+<img src="20231005.png" alt="An empty text box with a Guess button, a green box below it saying 'state street: +4 roads!', a map with a few streets labeled and highlighted blue." width="600"/>
+
+I learned about how to do CSS transitions with Tailwind, to animate the guess feedback box to stretch open when it first appears, and to change between colors based on if the guess was right (green), wrong (red), or a repeat (yellow). I also had the idea to shake the guess button a bit if a guess was wrong but I feel that might come across too mean to the player. I could still do it, we'll see. Once I got that done it was easy to animate the mileage progress bar as well.
+
+Text labels were pretty simple with the MapBox API. I did find one shortcoming: animating properties isn't possible with data-driven styling, the method I switched to on 10/1. There's been an [open issue](https://github.com/mapbox/mapbox-gl-js/issues/7121) for this since 2018. I had the line color animating before but I hadn't noticed it had stopped working. This is more noticable with the text labels popping in suddenly. If the lack of animation really bothers me I could try adding the text labels one by one like my old road drawing method, but that may hurt performance.
+
+I have been putting a some thought into the UI design as I go, following my initial sketches, but mainly I've focused on functionality. Once I have a good sense of all the elements I want on the page I'll need to do new sketches and give the whole thing a coherent design for all screen sizes. And definitely pick a color palette, that blue road color is getting to me. #programmerart
+
+You may notice the screenshot says "+4 roads!", but I know for certain there's only one State Street in this city. Most roads in OpenStreetMap are made up of many segments with different IDs, divided up where properties of the road like the number of lanes change. In addition to the miscounting, this also creates little unsightly blobs where the segments join at high zoom levels. To fix these, I want to join segments together where they have the same name and meet at a point.
+
+Next up:
+
+- Loose street suffix matching. I'm mulling over doing this on the client or server side. I'll also want to handle things like "N" for "North".
+- Difficulty levels. Labels was one blocker for this, suffix matching is the remaining one.
+- Street joining.
