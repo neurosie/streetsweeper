@@ -21,13 +21,15 @@ export default function Home() {
           onSelectPlace={setSelectedPlace}
         />
         <button
-          className="rounded-lg bg-pink-800 px-24 py-8 text-3xl font-black text-white disabled:bg-gray-800 disabled:text-gray-300"
+          className="relative rounded-lg bg-pink-800 px-24 py-8 text-3xl font-black text-white disabled:bg-gray-800 disabled:text-gray-300"
           disabled={selectedPlace === null}
         >
-          {selectedPlace === null ? (
-            "Play!"
-          ) : (
-            <Link href={`play/${selectedPlace.osm_id}`}>Play!</Link>
+          Play!
+          {selectedPlace != null && (
+            <Link
+              className="absolute inset-0 block h-full w-full"
+              href={`play/${selectedPlace.osm_id}`}
+            ></Link>
           )}
         </button>
       </main>
