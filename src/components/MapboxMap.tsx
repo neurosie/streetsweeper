@@ -48,6 +48,7 @@ export default function MapboxMap({
         id: "roads",
         type: "line",
         source: "roads",
+        // textField: "name",
         layout: {
           "line-join": "round",
           "line-cap": "round",
@@ -68,7 +69,25 @@ export default function MapboxMap({
             15,
             16,
           ],
-          "line-color-transition": { duration: 600 },
+        },
+      });
+      map.addLayer({
+        id: "roadNames",
+        type: "symbol",
+        source: "roads",
+        layout: {
+          "text-field": "{name}",
+          "symbol-placement": "line",
+        },
+        paint: {
+          "text-halo-color": "#fff",
+          "text-halo-width": 2,
+          "text-opacity": [
+            "case",
+            ["boolean", ["feature-state", "guessed"], false],
+            1,
+            0,
+          ],
         },
       });
     });
