@@ -5,6 +5,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
 import { Place } from "~/server/api/routers/search";
 import { api } from "~/utils/api";
+import LinkButton from "~/components/LinkButton";
 
 export default function Home() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
@@ -20,18 +21,19 @@ export default function Home() {
           selectedPlace={selectedPlace}
           onSelectPlace={setSelectedPlace}
         />
-        <button
-          className="relative rounded-lg bg-pink-800 px-24 py-8 text-3xl font-black text-white disabled:bg-gray-800 disabled:text-gray-300"
+        <LinkButton
           disabled={selectedPlace === null}
+          href={selectedPlace ? `play/${selectedPlace.osm_id}` : ""}
         >
-          Play!
-          {selectedPlace != null && (
-            <Link
-              className="absolute inset-0 block h-full w-full"
-              href={`play/${selectedPlace.osm_id}`}
-            ></Link>
-          )}
-        </button>
+          <div
+            className={
+              "rounded-lg px-24 py-8 text-3xl font-black text-white " +
+              (selectedPlace ? "bg-pink-800" : "bg-gray-800 text-gray-300")
+            }
+          >
+            Play!
+          </div>
+        </LinkButton>
       </main>
     </>
   );
