@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { type FormEvent, useState } from "react";
 import MapboxMap from "~/components/MapboxMap";
 import { api } from "~/utils/api";
 
@@ -9,7 +9,7 @@ export default function Play() {
   const router = useRouter();
   const placeId = router.query.id as string | undefined;
   const { status, data, error } = api.place.getById.useQuery(
-    { id: placeId as string },
+    { id: placeId ?? "" },
     { enabled: !!placeId },
   );
   const [guessedRoads, setGuessedRoads] = useState(new Set<string>());
@@ -50,7 +50,8 @@ export default function Play() {
   if (status === "loading") {
     body = <div className="self-center">Loading...</div>;
   } else if (status === "error") {
-    body = <div>Error: {error.toString()}</div>;
+    console.error(error);
+    body = <div>Something went wrong :(</div>;
   } else {
     const guessedLength = data.roads.features.reduce(
       (sum, road) =>
@@ -90,7 +91,7 @@ export default function Play() {
                 }[lastGuess.state]
               }
             >
-              <span className="italic">"{lastGuess.guess}"</span>:{" "}
+              <span className="italic">&ldquo;{lastGuess.guess}&rdquo;</span>:{" "}
               {{
                 right: (x: number) => `+${x} roads!`,
                 wrong: () => "0 roads",

@@ -1,9 +1,8 @@
 import Head from "next/head";
-import Link from "next/link";
 import { Combobox } from "@headlessui/react";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
-import { Place } from "~/server/api/routers/search";
+import { type Place } from "~/server/api/routers/search";
 import { api } from "~/utils/api";
 import LinkButton from "~/components/LinkButton";
 

@@ -1,5 +1,5 @@
-import Link, { LinkProps } from "next/link";
-import { ReactNode } from "react";
+import Link, { type LinkProps } from "next/link";
+import { type ReactNode } from "react";
 
 export default function LinkButton({
   disabled,

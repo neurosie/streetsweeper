@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl";
 import { useEffect, useState } from "react";
-import { PlaceResponse } from "~/server/api/routers/place";
+import { type PlaceResponse } from "~/server/api/routers/place";
 
 export default function MapboxMap({
   place,
@@ -17,7 +17,7 @@ export default function MapboxMap({
     if (!place) {
       return;
     }
-    let map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: "my-map",
       style: "mapbox://styles/neurosie/cllwx185501bg01qi8q5l4ntt",
       bounds: place.place.bbox,
@@ -89,19 +89,19 @@ export default function MapboxMap({
           ],
         },
       });
-    });
 
-    setMap(map);
+      setMap(map);
+    });
   }, [place]);
 
   useEffect(() => {
-    if (!place || !map) {
+    if (!map) {
       return;
     }
     for (const roadId of guessedRoads) {
       map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
     }
-  }, [place, guessedRoads]);
+  }, [guessedRoads, map]);
 
   return (
     <div

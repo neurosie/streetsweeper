@@ -1,14 +1,14 @@
 import bbox from "@turf/bbox";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
-import { BBox2d } from "@turf/helpers/dist/js/lib/geojson";
+import { type BBox2d } from "@turf/helpers/dist/js/lib/geojson";
 import length from "@turf/length";
 import lineSplit from "@turf/line-split";
 import {
-  Feature,
-  FeatureCollection,
-  Geometry,
-  LineString,
-  Polygon,
+  type Feature,
+  type FeatureCollection,
+  type Geometry,
+  type LineString,
+  type Polygon,
 } from "geojson";
 import osmtogeojson from "osmtogeojson";
 import { z } from "zod";
@@ -27,7 +27,7 @@ type PlaceProperties = {
   totalLengthMi: number;
 };
 
-interface Road extends Feature<LineString, RoadProperties> {}
+type Road = Feature<LineString, RoadProperties>;
 type RoadProperties = {
   name: string;
   id: string;
@@ -80,7 +80,7 @@ export const placeRouter = createTRPCRouter({
     }),
 });
 
-function transformGeodata(response: any): PlaceResponse {
+function transformGeodata(response: unknown): PlaceResponse {
   const [place, ...roads] = osmtogeojson(response).features;
 
   if (!place || !isFeature(place, "Polygon")) {
@@ -103,10 +103,17 @@ function transformGeodata(response: any): PlaceResponse {
       road.properties["name:left"],
       road.properties["name:right"],
       road.properties["bridge:name"],
-    ].filter((name): name is string => !!name && name.length > 0);
+    ].filter(
+      (name): name is string => typeof name === "string" && name.length > 0,
+    );
 
     const displayName = alternateNames[0];
     if (!displayName) {
+      return [];
+    }
+
+    const id: unknown = road.properties.id;
+    if (typeof id !== "string") {
       return [];
     }
 
@@ -120,9 +127,9 @@ function transformGeodata(response: any): PlaceResponse {
         if (seg.geometry.coordinates.length < 2) {
           return false;
         }
-        let pointA = seg.geometry.coordinates[0]!;
-        let pointB = seg.geometry.coordinates[1]!;
-        let testPoint = [
+        const pointA = seg.geometry.coordinates[0]!;
+        const pointB = seg.geometry.coordinates[1]!;
+        const testPoint = [
           (pointA[0]! + pointB[0]!) / 2,
           (pointA[1]! + pointB[1]!) / 2,
         ];
@@ -145,7 +152,7 @@ function transformGeodata(response: any): PlaceResponse {
         ...road,
         properties: {
           name: displayName,
-          id: road.properties.id!,
+          id,
           alternateNames: alternateNames.map((name) => name.toLowerCase()),
           lengthMi: length(road, { units: "miles" }),
         },
