@@ -79,3 +79,13 @@ Next up:
 - Loose street suffix matching. I'm mulling over doing this on the client or server side. I'll also want to handle things like "N" for "North".
 - Difficulty levels. Labels was one blocker for this, suffix matching is the remaining one.
 - Street joining.
+
+# 2023-10-12
+
+Over the weekend I did some thinking about the direction of the project, what I want to take from the games that inspired this one and what I want to leave behind. My vision is more focused now, and while I'll keep some of my ideas as stretch goals, I won't let them block an initial release.
+
+I also started thinking about the UI design a bit more concretely, which spurred me to do a design pass on the landing page:
+
+<img src="20231012.png" alt="StreetSweeper landing page. The logo resembles a street sign, and the page reads 'Choose a city or town in the United States, and see how many streets you can name!' There is a search box  and a Play button" width="600"/>
+
+I think it looks pretty good! Definitely things I will tweak further. I have to shout out the book _[Refactoring UI](refactoringui.com)_ here. Before reading that I don't think I could have designed something like the above. It's got a lot of practical advice for engineers who want to step up their design skills.
