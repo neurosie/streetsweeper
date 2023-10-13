@@ -13,6 +13,7 @@ import {
 import osmtogeojson from "osmtogeojson";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { generateAbbreviations } from "~/utils/abbreviations";
 import { fetchWithUA } from "~/utils/fetch";
 
 export type PlaceResponse = {
@@ -153,7 +154,11 @@ function transformGeodata(response: unknown): PlaceResponse {
         properties: {
           name: displayName,
           id,
-          alternateNames: alternateNames.map((name) => name.toLowerCase()),
+          alternateNames: [
+            ...new Set(
+              alternateNames.flatMap((name) => generateAbbreviations(name)),
+            ),
+          ],
           lengthMi: length(road, { units: "miles" }),
         },
       },

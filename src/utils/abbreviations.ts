@@ -1,6 +1,17 @@
+import fastCartesian from "fast-cartesian";
+
 export function generateAbbreviations(name: string): string[] {
   const words = name.toLowerCase().split(" ");
-  return [];
+  const wordChoices = [];
+  for (const word of words) {
+    const choices = [word];
+    const alt = DIRECTIONS[word] ?? SUFFIXES[word];
+    if (alt && alt != word) {
+      choices.push(alt);
+    }
+    wordChoices.push(choices);
+  }
+  return fastCartesian(wordChoices).map((words) => words.join(" "));
 }
 
 // keep quotes around keys
