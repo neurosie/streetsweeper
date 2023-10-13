@@ -10,6 +10,9 @@ export default {
           400: "#7FC9B2",
           800: "#006747",
         },
+        royalblue: {
+          500: "#0047A3",
+        },
       },
       fontFamily: {
         sans: ["var(--font-overpass)"],

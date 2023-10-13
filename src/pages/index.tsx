@@ -19,7 +19,7 @@ export default function Home() {
       {/* whole page */}
       <div className="flex min-h-screen flex-col items-center">
         <div className="flex flex-col items-center gap-4 pt-16">
-          <h1 className="bg-sign-800 rounded-xl border-[3px] border-white px-4 py-3 text-4xl text-white shadow-md sm:border-4 sm:text-6xl">
+          <h1 className="rounded-xl bg-sign-800 px-4 py-3 text-4xl font-semibold text-white shadow-md ring-1 ring-black ring-offset-2 ring-offset-white sm:border-4 sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic text-gray-800">A local geography trivia game</p>
@@ -42,11 +42,11 @@ export default function Home() {
             >
               <div
                 className={
-                  "bg-sign-800 rounded-lg px-16 py-4 text-2xl text-white " +
+                  "rounded-lg bg-sign-800 px-16 py-4 text-2xl text-white ring-1 ring-black ring-offset-2 ring-offset-white " +
                   (selectedPlace ? "" : "opacity-50")
                 }
               >
-                Play!
+                PLAY
               </div>
             </LinkButton>
           </div>

@@ -15,6 +15,7 @@ export default function Play() {
   const [guessedRoads, setGuessedRoads] = useState(new Set<string>());
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatches: number } | undefined
+    // >({ guess: "fake street", state: "wrong", newMatches: 0 });
   >(undefined);
 
   function onGuess(event: FormEvent) {
@@ -46,12 +47,11 @@ export default function Play() {
     setLastGuess({ guess, state: guessState, newMatches });
   }
 
-  let body;
   if (status === "loading") {
-    body = <div className="self-center">Loading...</div>;
+    return <div className="self-center">Loading...</div>;
   } else if (status === "error") {
     console.error(error);
-    body = <div>Something went wrong :(</div>;
+    return <div>Something went wrong :(</div>;
   } else {
     const guessedLength = data.roads.features.reduce(
       (sum, road) =>
@@ -60,10 +60,18 @@ export default function Play() {
       0,
     );
     const totalLength = data.place.properties.totalLengthMi;
+    const lengthLabel = `${guessedLength.toFixed(1)} mi/${totalLength.toFixed(
+      1,
+    )} mi`;
+    // This doesn't work on narrow viewports, will need to revisit
+    const showLengthOnBar = guessedLength / totalLength > 0.3;
 
-    body = (
-      <>
-        <form onSubmit={onGuess} className="mx-8 flex">
+    return (
+      <div className="grid h-screen auto-rows-min sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_auto_1fr]">
+        <form
+          onSubmit={onGuess}
+          className="col-start-1 col-end-1 mx-8 my-4 flex"
+        >
           <input className="flex-1 rounded p-2"></input>
           <button
             className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
@@ -74,7 +82,7 @@ export default function Play() {
         </form>
 
         <div
-          className="overflow-hidden transition-[max-height] duration-300"
+          className="col-start-1 col-end-1 overflow-hidden transition-[max-height] duration-300"
           style={{
             /* 300 is an arbitrary value to force animation */
             maxHeight: lastGuess ? 300 : 0,
@@ -83,12 +91,7 @@ export default function Play() {
           {lastGuess ? (
             <div
               className={
-                "mx-8 rounded px-2 py-1 transition-[background-color] duration-[50ms] " +
-                {
-                  right: "bg-green-200",
-                  wrong: "bg-red-100",
-                  repeat: "bg-amber-100",
-                }[lastGuess.state]
+                "mx-8 rounded bg-amber-100 px-2 py-1 transition-[background-color] duration-[50ms]"
               }
             >
               <span className="italic">&ldquo;{lastGuess.guess}&rdquo;</span>:{" "}
@@ -103,26 +106,35 @@ export default function Play() {
           )}
         </div>
 
-        <MapboxMap place={data} guessedRoads={guessedRoads} />
+        <div className="relative h-[400px] w-full sm:col-start-2 sm:col-end-3 sm:row-span-full sm:h-full">
+          <MapboxMap
+            className="h-full w-full"
+            place={data}
+            guessedRoads={guessedRoads}
+          />
 
-        <div className="mx-8 h-2 rounded-full bg-gray-200">
-          <div
-            className="h-2 rounded-full bg-cyan-500 transition-[width] duration-500"
-            style={{ width: `${(guessedLength / totalLength) * 100}%` }}
-          ></div>
+          <div className="absolute bottom-10 w-full">
+            <div className="z-10 mx-8 flex h-6 items-center rounded-full bg-white drop-shadow-lg">
+              <div
+                className="bg-royalblue-500 flex h-full items-center rounded-full transition-[width] duration-500"
+                style={{ width: `${(guessedLength / totalLength) * 100}%` }}
+              >
+                {showLengthOnBar && (
+                  <div className="mx-auto text-sm text-white">
+                    {lengthLabel}
+                  </div>
+                )}
+              </div>
+              {!showLengthOnBar && (
+                <div className="mx-auto text-sm">{lengthLabel}</div>
+              )}
+            </div>
+            {/* <div className="mx-8">
+            {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
+          </div> */}
+          </div>
         </div>
-        <div className="mx-8">
-          {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
-        </div>
-      </>
+      </div>
     );
   }
-
-  return (
-    <>
-      <main className="md: flex min-h-screen flex-col items-stretch justify-center gap-4 bg-gradient-to-b from-pink-500 to-stone-400 py-4 md:px-12">
-        {body}
-      </main>
-    </>
-  );
 }
