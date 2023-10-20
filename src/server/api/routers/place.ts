@@ -15,6 +15,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { generateAbbreviations } from "~/utils/abbreviations";
 import { fetchWithUA } from "~/utils/fetch";
+import { joinRoadSegments } from "~/utils/geojson";
 
 export type PlaceResponse = {
   place: Place;
@@ -28,7 +29,7 @@ type PlaceProperties = {
   totalLengthMi: number;
 };
 
-type Road = Feature<LineString, RoadProperties>;
+export type Road = Feature<LineString, RoadProperties>;
 type RoadProperties = {
   name: string;
   id: string;
@@ -90,7 +91,7 @@ function transformGeodata(response: unknown): PlaceResponse {
 
   const transformedRoads = roads.flatMap((road): [Road] | [] => {
     if (!isFeature(road, "LineString") || road.properties == null) {
-      console.log("skipping road " + road.id);
+      console.log(`skipping road ${road.id} (${road.type})`);
       return [];
     }
 
@@ -165,18 +166,20 @@ function transformGeodata(response: unknown): PlaceResponse {
     ];
   });
 
+  const joinedRoads = joinRoadSegments(transformedRoads);
+
   return {
     place: {
       ...place,
       bbox: (place.bbox ?? bbox(place)) as BBox2d,
       properties: {
-        totalLengthMi: transformedRoads.reduce(
+        totalLengthMi: joinedRoads.reduce(
           (sum, road) => sum + road.properties.lengthMi,
           0,
         ),
       },
     },
-    roads: { type: "FeatureCollection", features: transformedRoads },
+    roads: { type: "FeatureCollection", features: joinedRoads },
   };
 }
 
