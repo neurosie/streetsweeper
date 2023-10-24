@@ -12,7 +12,9 @@ const overpass = Overpass({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <main className={`${overpass.variable} bg-sign-400 min-h-screen font-sans`}>
+    <main
+      className={`${overpass.variable} min-h-[100svh] bg-sign-400 font-sans`}
+    >
       <Component {...pageProps} />
     </main>
   );

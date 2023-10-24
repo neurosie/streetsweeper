@@ -17,17 +17,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* whole page */}
-      <div className="flex min-h-screen flex-col items-center">
-        <div className="flex flex-col items-center gap-4 pt-16">
-          <h1 className="rounded-xl bg-sign-800 px-4 py-3 text-4xl font-semibold text-white shadow-md ring-1 ring-black ring-offset-2 ring-offset-white sm:border-4 sm:text-6xl">
+      <div className="flex min-h-[100svh] flex-col items-center">
+        <div className="flex flex-col items-center gap-4 pt-8 sm:pt-16">
+          <h1 className="rounded-xl bg-sign-800 px-4 py-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-[6px] ring-offset-white  sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic text-gray-800">A local geography trivia game</p>
         </div>
         {/* container for centering main content */}
-        <div className="flex w-full flex-grow flex-col items-center justify-around py-4">
+        <div className="flex w-full flex-col items-center justify-around px-4 py-8">
           {/* main content box */}
-          <div className="flex w-full flex-col items-center justify-center gap-12 bg-white px-4 py-8 shadow-md sm:w-[600px] sm:rounded-md sm:px-8">
+          <div className="flex w-full flex-col items-center justify-center gap-12 rounded-md bg-white px-8 py-8 shadow-md sm:w-[600px]">
             <p>
               Choose a city or town in the United States, and see how many
               streets you can name!
@@ -42,7 +42,7 @@ export default function Home() {
             >
               <div
                 className={
-                  "rounded-lg bg-sign-800 px-16 py-4 text-2xl text-white ring-1 ring-black ring-offset-2 ring-offset-white " +
+                  "rounded-lg bg-sign-800 px-16 py-3 text-2xl font-semibold text-white ring-1 ring-sign-800 ring-offset-2 ring-offset-white " +
                   (selectedPlace ? "" : "opacity-50")
                 }
               >
@@ -51,7 +51,7 @@ export default function Home() {
             </LinkButton>
           </div>
         </div>
-        <p className="p-2 text-gray-700">
+        <p className="mt-auto p-2 text-gray-700">
           Created by{" "}
           <Link
             className="font-semibold text-gray-900"
@@ -66,18 +66,18 @@ export default function Home() {
 }
 
 function SearchBox({
-  selectedPlace: selectedCity,
-  onSelectPlace: onSelectCity,
+  selectedPlace,
+  onSelectPlace,
 }: {
   selectedPlace: Place | null;
-  onSelectPlace: (city: Place | null) => void;
+  onSelectPlace: (place: Place | null) => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
   return (
     <div className="sm:w-12/12 w-full">
-      <Combobox value={selectedCity} onChange={onSelectCity}>
+      <Combobox value={selectedPlace} onChange={onSelectPlace}>
         <div className="relative mt-1">
           <div className="relative flex w-full cursor-default overflow-hidden rounded-lg bg-gray-200 py-4 text-left text-gray-500 focus-within:bg-white focus-within:text-gray-900 focus-within:shadow-md focus-within:ring-2 focus-within:ring-black focus-within:ring-opacity-75 focus-within:ring-offset-1 focus-within:ring-offset-white">
             <span className="relative bottom-[0.1em] pl-3 pr-2">
@@ -86,7 +86,9 @@ function SearchBox({
             <Combobox.Input
               className="w-full overflow-ellipsis border-none bg-inherit pr-2 text-lg leading-5 text-gray-900 outline-none placeholder:text-gray-500"
               onChange={(event) => setSearchTerm(event.target.value)}
-              displayValue={(city: Place) => city?.display_name}
+              displayValue={(place: typeof selectedPlace) =>
+                place?.display_name ?? ""
+              }
               placeholder="Search for a city or town"
             />
           </div>
