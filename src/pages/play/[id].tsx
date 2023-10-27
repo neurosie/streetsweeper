@@ -1,3 +1,4 @@
+import { GetServerSideProps, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
