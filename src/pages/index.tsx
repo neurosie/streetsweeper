@@ -1,14 +1,12 @@
 import Head from "next/head";
-import { Combobox } from "@headlessui/react";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useState } from "react";
-import { type Place } from "~/server/api/routers/search";
+import { type KeyboardEvent, useCallback, useEffect, useState } from "react";
+import { type PlaceResult } from "~/server/api/routers/search";
 import { api } from "~/utils/api";
-import LinkButton from "~/components/LinkButton";
 import Link from "next/link";
+import scrollIntoView from "scroll-into-view-if-needed";
 
 export default function Home() {
-  const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   return (
     <>
       <Head>
@@ -17,9 +15,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       {/* whole page */}
-      <div className="flex min-h-[100svh] flex-col items-center">
+      <div className="flex flex-col items-center">
         <div className="flex flex-col items-center gap-4 pt-8 sm:pt-16">
-          <h1 className="rounded-xl bg-sign-800 px-4 py-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-[6px] ring-offset-white  sm:text-6xl">
+          <h1 className="rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-[6px] ring-offset-white  sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic text-gray-800">A local geography trivia game</p>
@@ -27,28 +25,24 @@ export default function Home() {
         {/* container for centering main content */}
         <div className="flex w-full flex-col items-center justify-around px-4 py-8">
           {/* main content box */}
-          <div className="flex w-full flex-col items-center justify-center gap-12 rounded-md bg-white px-8 py-8 shadow-md sm:w-[600px]">
+          <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-white px-8 py-8 shadow-md sm:w-[600px]">
             <p>
               Choose a city or town in the United States, and see how many
               streets you can name!
             </p>
-            <SearchBox
+
+            <PlaceSelector
               selectedPlace={selectedPlace}
               onSelectPlace={setSelectedPlace}
             />
-            <LinkButton
-              disabled={selectedPlace === null}
-              href={selectedPlace ? `play/${selectedPlace.osm_id}` : ""}
-            >
-              <div
-                className={
-                  "rounded-lg bg-sign-800 px-16 py-3 text-2xl font-semibold text-white ring-1 ring-sign-800 ring-offset-2 ring-offset-white " +
-                  (selectedPlace ? "" : "opacity-50")
-                }
-              >
-                PLAY
-              </div>
-            </LinkButton>
+
+            {selectedPlace && (
+              <Link href={`play/${selectedPlace.osm_id}`}>
+                <div className="rounded-lg bg-sign-800 px-16 py-3 text-2xl font-semibold text-white ring-1 ring-sign-800 ring-offset-2 ring-offset-white">
+                  PLAY
+                </div>
+              </Link>
+            )}
           </div>
         </div>
         <p className="mt-auto p-2 text-gray-700">
@@ -65,82 +59,197 @@ export default function Home() {
   );
 }
 
-function SearchBox({
+function PlaceSelector({
   selectedPlace,
   onSelectPlace,
 }: {
-  selectedPlace: Place | null;
-  onSelectPlace: (place: Place | null) => void;
+  selectedPlace: PlaceResult | null;
+  onSelectPlace: (place: PlaceResult | null) => void;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 1000);
+  const searchboxId = "homepage-searchbox";
+
+  function search() {
+    const searchBox = document.getElementById(searchboxId) as HTMLInputElement;
+    setSearchTerm(searchBox.value);
+  }
+
+  if (selectedPlace) {
+    return (
+      <div className="flex w-full overflow-hidden rounded-lg border-2 border-gray-400">
+        <PlaceCard place={selectedPlace} isStandalone={true}></PlaceCard>
+
+        <button
+          className="ml-auto px-4 py-4"
+          onClick={() => onSelectPlace(null)}
+          aria-label="Clear city selection"
+        >
+          {xIcon}
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="sm:w-12/12 w-full">
-      <Combobox value={selectedPlace} onChange={onSelectPlace}>
-        <div className="relative mt-1">
-          <div className="relative flex w-full cursor-default overflow-hidden rounded-lg bg-gray-200 py-4 text-left text-gray-500 focus-within:bg-white focus-within:text-gray-900 focus-within:shadow-md focus-within:ring-2 focus-within:ring-black focus-within:ring-opacity-75 focus-within:ring-offset-1 focus-within:ring-offset-white">
-            <span className="relative bottom-[0.1em] pl-3 pr-2">
-              {mapPinIcon}
-            </span>
-            <Combobox.Input
-              className="w-full overflow-ellipsis border-none bg-inherit pr-2 text-lg leading-5 text-gray-900 outline-none placeholder:text-gray-500"
-              onChange={(event) => setSearchTerm(event.target.value)}
-              displayValue={(place: typeof selectedPlace) =>
-                place?.display_name ?? ""
-              }
-              placeholder="Search for a city or town"
-            />
-          </div>
-          {debouncedSearchTerm.length > 0 && (
-            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              <SearchSuggestions searchTerm={debouncedSearchTerm} />
-            </Combobox.Options>
-          )}
-        </div>
-      </Combobox>
+    <div className="sm:w-12/12 flex w-full flex-col gap-0">
+      <div className="z-10 flex w-full cursor-default overflow-hidden rounded-t-lg border-2 border-gray-400 bg-gray-200 text-left text-gray-500 last:rounded-b-lg focus-within:bg-white focus-within:text-gray-900 focus-within:shadow-md focus-within:ring-2 focus-within:ring-black">
+        <span className="relative bottom-[0.1em] my-auto pl-3 pr-2">
+          {mapPinIcon}
+        </span>
+        <input
+          id={searchboxId}
+          className="w-full overflow-ellipsis border-none bg-inherit text-gray-900 outline-none placeholder:text-gray-500"
+          onKeyDown={(event) => event.key === "Enter" && search()}
+          placeholder="Search for a city or town"
+          defaultValue={searchTerm}
+        />
+        <button className="px-4 py-4" onClick={search} aria-label="Search">
+          {searchIcon}
+        </button>
+      </div>
+      {!!searchTerm.length && (
+        <SearchResults
+          searchTerm={searchTerm}
+          onSelectPlace={onSelectPlace}
+        ></SearchResults>
+      )}
     </div>
   );
 }
 
-function SearchSuggestions({ searchTerm }: { searchTerm: string }) {
+function SearchResults({
+  searchTerm,
+  onSelectPlace,
+}: {
+  searchTerm: string;
+  onSelectPlace: (place: PlaceResult | null) => void;
+}) {
   const { status, data, error } = api.search.useQuery({
     query: searchTerm,
   });
 
+  let content;
   if (status === "loading") {
-    return <span>loading...</span>;
-  }
-  if (status === "error") {
-    return <span>Error: {error.message}</span>;
+    content = <span>loading...</span>;
+  } else if (status === "error") {
+    content = <span>Error: {error.message}</span>;
+  } else {
+    const items = data.filter((entry) => entry.osm_type === "relation");
+    if (items.length > 0) {
+      content = (
+        <SuggestionListBox
+          items={items}
+          key={searchTerm}
+          onSelectPlace={onSelectPlace}
+        ></SuggestionListBox>
+      );
+    } else {
+      content = <span>No results for &quot;{searchTerm}&quot;.</span>;
+    }
   }
   return (
-    <div>
-      {data
-        .filter((entry) => entry.osm_type === "relation")
-        .map((entry) => (
-          <Combobox.Option
-            key={entry.osm_id}
-            className={({ active }) =>
-              `relative cursor-default select-none px-4 py-2 ${
-                active ? "bg-pink-600 text-white" : "text-gray-900"
-              }`
-            }
-            value={entry}
-          >
-            {({ selected, active: _ }) => (
-              <>
-                <span
-                  className={`block truncate ${
-                    selected ? "font-medium" : "font-normal"
-                  }`}
-                >
-                  {entry.display_name}
-                </span>
-              </>
-            )}
-          </Combobox.Option>
-        ))}
+    <div className="overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-400">
+      {content}
+    </div>
+  );
+}
+
+// Assumes items is a non-empty list
+function SuggestionListBox({
+  items,
+  onSelectPlace,
+}: {
+  items: PlaceResult[];
+  onSelectPlace: (place: PlaceResult | null) => void;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const id = useCallback(
+    (index: number) => `option-${items[index]!.osm_id}`,
+    [items],
+  );
+
+  /**
+   * When the list box receives focus it'll auto scroll into view.
+   * This is only needed if I give the listbox a max-height and make it scrollable,
+   * so the specific active option scrolls into view.
+   */
+  function scrollActiveOptionIntoView() {
+    const node = document.getElementById(id(activeIndex))!;
+    scrollIntoView(node, { scrollMode: "if-needed" });
+  }
+
+  function keyDown(event: KeyboardEvent) {
+    switch (event.key) {
+      case "ArrowUp":
+      case "ArrowDown":
+        event.preventDefault();
+        if (event.key === "ArrowUp") {
+          setActiveIndex(Math.max(activeIndex - 1, 0));
+        } else {
+          setActiveIndex(Math.min(activeIndex + 1, items.length - 1));
+        }
+        break;
+      case "Enter":
+      case " ":
+        event.preventDefault();
+        onSelectPlace(items[activeIndex]!);
+    }
+  }
+
+  useEffect(scrollActiveOptionIntoView, [activeIndex, id]);
+
+  return (
+    <ul
+      role="listbox"
+      tabIndex={0}
+      aria-label="Search results"
+      aria-activedescendant={activeIndex >= 0 ? id(activeIndex) : undefined}
+      onKeyDown={keyDown}
+      onFocus={scrollActiveOptionIntoView}
+      className="group"
+    >
+      {items.map((entry, index) => (
+        <li
+          role="option"
+          aria-selected={false}
+          data-active={index === activeIndex}
+          className="group group-focus:data-[active=true]:bg-gray-300"
+          key={entry.osm_id}
+          id={id(index)}
+          onClick={() => onSelectPlace(entry)}
+        >
+          <PlaceCard place={entry}></PlaceCard>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PlaceCard({
+  place,
+  isStandalone,
+}: {
+  place: PlaceResult;
+  isStandalone?: boolean;
+}) {
+  const { address } = place;
+  return (
+    <div className={`flex p-3 ${!isStandalone ? "hover:bg-sky-200" : ""}`}>
+      <span className="pr-4">{mapIcon}</span>
+      <div>
+        <div className="text-md">
+          {address.suburb?.concat(", ") ?? ""}
+          {address.city ??
+            address.town ??
+            address.village ??
+            address.municipality}
+          , <span className="font-semibold">{address.state}</span>
+        </div>
+        {address.county && (
+          <div className="text-sm text-gray-600">{address.county}</div>
+        )}
+      </div>
     </div>
   );
 }
@@ -148,6 +257,7 @@ function SearchSuggestions({ searchTerm }: { searchTerm: string }) {
 // from heroicons.com, MIT license (https://opensource.org/license/mit/)
 const mapPinIcon = (
   <svg
+    aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 20 20"
     fill="currentColor"
@@ -157,6 +267,57 @@ const mapPinIcon = (
       fillRule="evenodd"
       d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"
       clipRule="evenodd"
+    />
+  </svg>
+);
+
+const searchIcon = (
+  <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    className="h-5 w-5"
+  >
+    <path
+      fillRule="evenodd"
+      d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const mapIcon = (
+  <svg
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="h-6 w-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"
+    />
+  </svg>
+);
+
+const xIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="h-6 w-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 18L18 6M6 6l12 12"
     />
   </svg>
 );
