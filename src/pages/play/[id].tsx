@@ -1,5 +1,6 @@
+import { GetServerSideProps, GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
 import { api } from "~/utils/api";
 
@@ -15,8 +16,31 @@ export default function Play() {
   const [guessedRoads, setGuessedRoads] = useState(new Set<string>());
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatches: number } | undefined
-    // >({ guess: "fake street", state: "wrong", newMatches: 0 });
   >(undefined);
+
+  /**
+   * Load game from localStorage.
+   * This needs to be in an effect because placeId is not available during prerendering.
+   */
+  useEffect(() => {
+    if (!placeId) return;
+    const savedGame = localStorage.getItem(storageKey(placeId));
+    if (savedGame) {
+      const parsedSave = JSON.parse(savedGame) as string[];
+      setGuessedRoads(new Set(parsedSave));
+    }
+  }, [placeId]);
+
+  /**
+   * Save game to localStorage.
+   */
+  useEffect(() => {
+    if (!placeId || guessedRoads.size === 0) return;
+    localStorage.setItem(
+      storageKey(placeId),
+      JSON.stringify(Array.from(guessedRoads)),
+    );
+  }, [placeId, guessedRoads]);
 
   function onGuess(event: FormEvent) {
     event.preventDefault();
@@ -116,7 +140,7 @@ export default function Play() {
           <div className="absolute bottom-10 w-full">
             <div className="z-10 mx-8 flex h-6 items-center rounded-full bg-white drop-shadow-lg">
               <div
-                className="bg-royalblue-500 flex h-full items-center rounded-full transition-[width] duration-500"
+                className="flex h-full items-center rounded-full bg-royalblue-500 transition-[width] duration-500"
                 style={{ width: `${(guessedLength / totalLength) * 100}%` }}
               >
                 {showLengthOnBar && (
@@ -137,4 +161,8 @@ export default function Play() {
       </div>
     );
   }
+}
+
+function storageKey(placeId: string) {
+  return `game-${placeId}`;
 }
