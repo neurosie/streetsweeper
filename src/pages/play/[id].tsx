@@ -1,4 +1,3 @@
-import { GetServerSideProps, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
@@ -90,8 +89,13 @@ export default function Play() {
     // This doesn't work on narrow viewports, will need to revisit
     const showLengthOnBar = guessedLength / totalLength > 0.3;
 
+    const sortedGuesses = data.roads.features
+      .filter((road) => guessedRoads.has(road.properties.id))
+      .sort((a, b) => b.properties.lengthMi - a.properties.lengthMi);
+
     return (
       <div className="grid h-screen auto-rows-min sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_auto_1fr]">
+        {/* Guess box */}
         <form
           onSubmit={onGuess}
           className="col-start-1 col-end-1 mx-8 my-4 flex"
@@ -105,6 +109,7 @@ export default function Play() {
           </button>
         </form>
 
+        {/* Last guess message */}
         <div
           className="col-start-1 col-end-1 overflow-hidden transition-[max-height] duration-300"
           style={{
@@ -130,6 +135,7 @@ export default function Play() {
           )}
         </div>
 
+        {/* Map */}
         <div className="relative h-[400px] w-full sm:col-start-2 sm:col-end-3 sm:row-span-full sm:h-full">
           <MapboxMap
             className="h-full w-full"
@@ -157,6 +163,18 @@ export default function Play() {
             {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
           </div> */}
           </div>
+        </div>
+
+        {/* Guess list */}
+        <div className="m-4 bg-white p-4">
+          <ol>
+            {sortedGuesses.map((road) => (
+              <li key={road.properties.id}>
+                {road.properties.name} ({road.properties.lengthMi.toFixed(1)}{" "}
+                mi)
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     );
