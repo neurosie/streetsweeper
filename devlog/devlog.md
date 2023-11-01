@@ -89,3 +89,16 @@ I also started thinking about the UI design a bit more concretely, which spurred
 <img src="20231012.png" alt="StreetSweeper landing page. The logo resembles a street sign, and the page reads 'Choose a city or town in the United States, and see how many streets you can name!' There is a search box  and a Play button" width="600"/>
 
 I think it looks pretty good! Definitely things I will tweak further. I have to shout out the book _[Refactoring UI](refactoringui.com)_ here. Before reading that I don't think I could have designed something like the above. It's got a lot of practical advice for engineers who want to step up their design skills.
+
+# 2023-10-31
+
+Today I got going on something I've been excited about: a visual redesign focusing on the street sign motif. First pass on the landing page:
+
+<img src="20231031.png" alt="StreetSweeper landing page. The background looks like a road and the UI elements all resemble street signs. A blue sign reads 'Choose a city or town in the United States, and see how many streets you can name!' with a search box. Below is a button saying 'PLAY', looking like a one-way sign." width="600"/>
+
+It's a really distinctive and fun look (not to mention high contrast), but I'll have to be careful to make sure it stays clean and usable as an interface. I couldn't find a good SVG of a one-way sign for the "PLAY" button, so I created that one in Inkscape.
+
+For the game page, it didn't make sense to me to have the map on a sign. After some thought, I landed on a cute solution: a paper map!
+<img src="202310312.png" alt="A map with a white border, curled edges and a drop shadow creating the effect of a physical piece of paper."/>
+
+I really like how this turned out. This was my first time using [`filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/filter) and [`clip-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path), and it's really astonishing what you can accomplish with modern CSS. I took inspiration from CSS demos by [Saman Rohanizade](https://codepen.io/SamanRohanizade/pen/opgdKZ) and [Martin Wolf](https://codepen.io/martinwolf/pen/GRaWPy), as well as Temani Afif's [CSS custom corner generator](https://css-generators.com/custom-corners/).

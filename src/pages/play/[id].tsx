@@ -87,14 +87,14 @@ export default function Play() {
       1,
     )} mi`;
     // This doesn't work on narrow viewports, will need to revisit
-    const showLengthOnBar = guessedLength / totalLength > 0.3;
+    // const showLengthOnBar = guessedLength / totalLength > 0.3;
 
     const sortedGuesses = data.roads.features
       .filter((road) => guessedRoads.has(road.properties.id))
       .sort((a, b) => b.properties.lengthMi - a.properties.lengthMi);
 
     return (
-      <div className="grid h-screen auto-rows-min sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_auto_1fr]">
+      <div className="grid h-screen auto-rows-min gap-2 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_auto_1fr]">
         {/* Guess box */}
         <form
           onSubmit={onGuess}
@@ -117,7 +117,7 @@ export default function Play() {
             maxHeight: lastGuess ? 300 : 0,
           }}
         >
-          {lastGuess ? (
+          {/* {lastGuess ? (
             <div
               className={
                 "mx-8 rounded bg-amber-100 px-2 py-1 transition-[background-color] duration-[50ms]"
@@ -132,18 +132,20 @@ export default function Play() {
             </div>
           ) : (
             ""
-          )}
+          )} */}
         </div>
 
         {/* Map */}
-        <div className="relative h-[400px] w-full sm:col-start-2 sm:col-end-3 sm:row-span-full sm:h-full">
-          <MapboxMap
-            className="h-full w-full"
-            place={data}
-            guessedRoads={guessedRoads}
-          />
+        <div className="paper-shadow inset-0 mx-3 h-[400px] sm:col-start-2 sm:col-end-3 sm:row-span-full sm:m-4 sm:h-[calc(100%-2rem)]">
+          <div className="paper h-full bg-white p-2 sm:p-4">
+            <MapboxMap
+              className="relative h-full ring-1 ring-slate-400"
+              place={data}
+              guessedRoads={guessedRoads}
+            />
+          </div>
 
-          <div className="absolute bottom-10 w-full">
+          {/* <div className="absolute bottom-10 w-full">
             <div className="z-10 mx-8 flex h-6 items-center rounded-full bg-white drop-shadow-lg">
               <div
                 className="flex h-full items-center rounded-full bg-royalblue-500 transition-[width] duration-500"
@@ -158,15 +160,15 @@ export default function Play() {
               {!showLengthOnBar && (
                 <div className="mx-auto text-sm">{lengthLabel}</div>
               )}
-            </div>
-            {/* <div className="mx-8">
+            </div> */}
+          {/* <div className="mx-8">
             {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
           </div> */}
-          </div>
+          {/* </div> */}
         </div>
 
         {/* Guess list */}
-        <div className="m-4 bg-white p-4">
+        <div className="m-4 rounded-md bg-white p-4 text-black ring-1 ring-white ring-offset-2 ring-offset-black">
           <ol>
             {sortedGuesses.map((road) => (
               <li key={road.properties.id}>

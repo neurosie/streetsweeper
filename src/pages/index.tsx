@@ -16,16 +16,21 @@ export default function Home() {
       </Head>
       {/* whole page */}
       <div className="flex flex-col items-center">
-        <div className="flex flex-col items-center gap-4 pt-8 sm:pt-16">
-          <h1 className="rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-[6px] ring-offset-white  sm:text-6xl">
+        {/* header */}
+        <div className="flex w-full flex-col items-center gap-4 py-4 text-white sm:pt-8">
+          <h1 className="rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-4 ring-offset-white sm:text-6xl">
             StreetSweeper
           </h1>
-          <p className="italic text-gray-800">A local geography trivia game</p>
+          <p className="italic">A local geography trivia game</p>
+          <hr
+            role="presentation"
+            className="bg-road-line h-2 w-full border-none from-amber-300"
+          />
         </div>
         {/* container for centering main content */}
-        <div className="flex w-full flex-col items-center justify-around px-4 py-8">
+        <div className="flex w-full flex-col items-center justify-around gap-8 px-4 py-8 sm:gap-12">
           {/* main content box */}
-          <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-white px-8 py-8 shadow-md sm:w-[600px]">
+          <div className="bg-infosign-500 ring-infosign-500 flex w-full flex-col items-center justify-center gap-8 rounded-md px-8 py-8 ring-4 ring-offset-4 ring-offset-white sm:w-[600px]">
             <p>
               Choose a city or town in the United States, and see how many
               streets you can name!
@@ -35,20 +40,20 @@ export default function Home() {
               selectedPlace={selectedPlace}
               onSelectPlace={setSelectedPlace}
             />
-
-            {selectedPlace && (
-              <Link href={`play/${selectedPlace.osm_id}`}>
-                <div className="rounded-lg bg-sign-800 px-16 py-3 text-2xl font-semibold text-white ring-1 ring-sign-800 ring-offset-2 ring-offset-white">
-                  PLAY
-                </div>
-              </Link>
-            )}
           </div>
+
+          {selectedPlace && (
+            <Link href={`play/${selectedPlace.osm_id}`}>
+              <div className="relative rounded-lg bg-black p-1 text-black ring-1 ring-black ring-offset-2 ring-offset-white">
+                <div className="w-full">{oneWayPlay}</div>
+              </div>
+            </Link>
+          )}
         </div>
-        <p className="mt-auto p-2 text-gray-700">
+        <p className="mt-auto p-2 text-gray-300">
           Created by{" "}
           <Link
-            className="font-semibold text-gray-900"
+            className="font-semibold text-white underline underline-offset-2"
             href="https://github.com/neurosie"
           >
             Hayes Neuman
@@ -319,5 +324,22 @@ const xIcon = (
       strokeLinejoin="round"
       d="M6 18L18 6M6 6l12 12"
     />
+  </svg>
+);
+
+const oneWayPlay = (
+  <svg
+    viewBox="30 99 137 47"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="white"
+    className="h-16"
+    aria-label="Play"
+  >
+    <path d="m 134.52344,99.867187 c -0.36676,-0.0073 -0.71274,0.03838 -1.02539,0.142583 -0.80414,0.268 -1.97142,1.3264 -1.08203,3.90429 0.69415,2.01203 2.54687,5.60742 2.54687,5.60742 H 36.970703 v 25.95704 h 97.992187 c 0,0 -1.85272,3.59539 -2.54687,5.60742 -0.88939,2.57789 0.27789,3.63629 1.08203,3.90429 1.25063,0.41681 3.03808,-0.10466 4.53515,-1.19336 1.49635,-1.08817 18.69909,-14.11145 28.13477,-21.29687 -9.43568,-7.18542 -26.63842,-20.2087 -28.13477,-21.29687 -1.1228,-0.81653 -2.40949,-1.313977 -3.50976,-1.335943 z" />
+
+    <text x="55" y="132" fill="currentColor" className="text-[28px] font-bold">
+      PLAY
+    </text>
   </svg>
 );

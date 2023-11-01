@@ -2,3 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 @import "mapbox-gl/dist/mapbox-gl.css";
+
+@layer components {
+  .paper-shadow {
+    position: relative;
+    filter: drop-shadow(0 1px var(--drop-shadow-blur) rgba(0, 0, 0, 0.7));
+    --lift-shadow-opacity: 0.9;
+    --drop-shadow-blur: 3px;
+  }
+  @media screen(sm) {
+    .paper-shadow {
+      --lift-shadow-opacity: 0.5;
+      --drop-shadow-blur: 4px;
+    }
+  }
+
+  .paper-shadow::before,
+  .paper-shadow::after {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    width: 40%;
+    height: 10px;
+    box-shadow: 0 5px 14px rgba(0, 0, 0, var(--lift-shadow-opacity));
+    z-index: theme(zIndex.10);
+  }
+
+  .paper-shadow::before {
+    left: 15px;
+    transform: skew(-5deg) rotate(-5deg);
+  }
+
+  .paper-shadow::after {
+    right: 15px;
+    transform: skew(5deg) rotate(5deg);
+  }
+
+  .paper {
+    --corner-cut: 12px;
+    position: relative;
+    z-index: theme(zIndex.20);
+    border-top-left-radius: 200px 4px;
+    border-bottom-left-radius: 2px 160px;
+    border-bottom-right-radius: 2px 250px;
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--corner-cut)) 0,
+      100% var(--corner-cut),
+      100% 100%,
+      0 100%
+    );
+  }
+  @media screen(sm) {
+    .paper {
+      --corner-cut: 24px;
+    }
+  }
+
+  .paper::after {
+    content: "";
+    background-color: theme(colors.slate.300);
+    position: absolute;
+    width: var(--corner-cut);
+    height: calc(var(--corner-cut) + 1px);
+    clip-path: polygon(0 0, 100% 100%, 20% 100%);
+    top: 0;
+    right: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+}
