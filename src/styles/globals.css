@@ -13,7 +13,7 @@
   @media screen(sm) {
     .paper-shadow {
       --lift-shadow-opacity: 0.5;
-      --drop-shadow-blur: 4px;
+      --drop-shadow-blur: 3px;
     }
   }
 

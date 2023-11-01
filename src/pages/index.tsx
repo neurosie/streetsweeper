@@ -24,7 +24,7 @@ export default function Home() {
           <p className="italic">A local geography trivia game</p>
           <hr
             role="presentation"
-            className="bg-road-line h-2 w-full border-none from-amber-300"
+            className="bg-road-line h-2 w-full border-none from-yellow-300"
           />
         </div>
         {/* container for centering main content */}

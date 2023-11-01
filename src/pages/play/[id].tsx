@@ -82,12 +82,6 @@ export default function Play() {
         (guessedRoads.has(road.properties.id) ? road.properties.lengthMi : 0),
       0,
     );
-    const totalLength = data.place.properties.totalLengthMi;
-    const lengthLabel = `${guessedLength.toFixed(1)} mi/${totalLength.toFixed(
-      1,
-    )} mi`;
-    // This doesn't work on narrow viewports, will need to revisit
-    // const showLengthOnBar = guessedLength / totalLength > 0.3;
 
     const sortedGuesses = data.roads.features
       .filter((road) => guessedRoads.has(road.properties.id))
@@ -95,85 +89,76 @@ export default function Play() {
 
     return (
       <div className="grid h-screen auto-rows-min gap-2 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_auto_1fr]">
-        {/* Guess box */}
-        <form
-          onSubmit={onGuess}
-          className="col-start-1 col-end-1 mx-8 my-4 flex"
-        >
-          <input className="flex-1 rounded p-2"></input>
-          <button
-            className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
-            type="submit"
-          >
-            Guess
-          </button>
-        </form>
+        {/* Header */}
+        <div className="mt-4 flex flex-col items-center gap-4 sm:col-start-1 sm:col-end-3">
+          <h1 className="rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white ">
+            StreetSweeper
+          </h1>
+          <hr
+            role="presentation"
+            className="bg-road-line h-2 w-full border-none from-yellow-300"
+          />
+        </div>
 
-        {/* Last guess message */}
-        <div
-          className="col-start-1 col-end-1 overflow-hidden transition-[max-height] duration-300"
-          style={{
-            /* 300 is an arbitrary value to force animation */
-            maxHeight: lastGuess ? 300 : 0,
-          }}
-        >
-          {/* {lastGuess ? (
-            <div
-              className={
-                "mx-8 rounded bg-amber-100 px-2 py-1 transition-[background-color] duration-[50ms]"
-              }
+        {/* Guess box */}
+        <div className="mb-8 ml-8 mt-8 flex items-start gap-6 sm:col-start-1 sm:col-end-1">
+          <div className="bg-infosign-500 ring-infosign-500 flex flex-1 flex-col items-center justify-center gap-4 rounded-md p-4 shadow-lg shadow-stone-950 ring-4 ring-offset-4 ring-offset-white">
+            <form onSubmit={onGuess} className="flex">
+              <input className="flex-1 rounded p-2 text-black"></input>
+              {/* <button
+              className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
+              type="submit"
             >
-              <span className="italic">&ldquo;{lastGuess.guess}&rdquo;</span>:{" "}
-              {{
-                right: (x: number) => `+${x} roads!`,
-                wrong: () => "0 roads",
-                repeat: () => "already guessed",
-              }[lastGuess.state](lastGuess.newMatches)}
+              Guess
+            </button> */}
+            </form>
+            {lastGuess ? (
+              <div>
+                <span className="italic">&ldquo;{lastGuess.guess}&rdquo;</span>{" "}
+                :{" "}
+                {{
+                  right: (x: number) => `+${x} roads!`,
+                  wrong: () => "0 roads",
+                  repeat: () => "already guessed",
+                }[lastGuess.state](lastGuess.newMatches)}
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
+          <div className="flex flex-col items-center rounded-md bg-sign-800 px-0.5 py-2 shadow-lg shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white">
+            <div className="text-sm uppercase">Mile</div>
+            <div className="text-3xl font-bold leading-none">
+              {Array.from(guessedLength.toFixed(0)).map((c, i) => (
+                <span className="block" key={i}>
+                  {c}
+                </span>
+              ))}
             </div>
-          ) : (
-            ""
-          )} */}
+          </div>
         </div>
 
         {/* Map */}
-        <div className="paper-shadow inset-0 mx-3 h-[400px] sm:col-start-2 sm:col-end-3 sm:row-span-full sm:m-4 sm:h-[calc(100%-2rem)]">
+        <div className="paper-shadow inset-0 mx-3 h-[400px] sm:col-start-2 sm:col-end-3 sm:row-start-2 sm:row-end-4 sm:m-4 sm:h-[calc(100%-2rem)]">
           <div className="paper h-full bg-white p-2 sm:p-4">
             <MapboxMap
-              className="relative h-full ring-1 ring-slate-400"
+              className="relative h-full ring-1 ring-green-800"
               place={data}
               guessedRoads={guessedRoads}
             />
           </div>
-
-          {/* <div className="absolute bottom-10 w-full">
-            <div className="z-10 mx-8 flex h-6 items-center rounded-full bg-white drop-shadow-lg">
-              <div
-                className="flex h-full items-center rounded-full bg-royalblue-500 transition-[width] duration-500"
-                style={{ width: `${(guessedLength / totalLength) * 100}%` }}
-              >
-                {showLengthOnBar && (
-                  <div className="mx-auto text-sm text-white">
-                    {lengthLabel}
-                  </div>
-                )}
-              </div>
-              {!showLengthOnBar && (
-                <div className="mx-auto text-sm">{lengthLabel}</div>
-              )}
-            </div> */}
-          {/* <div className="mx-8">
-            {guessedLength.toFixed(1)} mi/{totalLength.toFixed(1)} mi
-          </div> */}
-          {/* </div> */}
         </div>
 
         {/* Guess list */}
-        <div className="m-4 rounded-md bg-white p-4 text-black ring-1 ring-white ring-offset-2 ring-offset-black">
+        <div className="mb-8 ml-8 mr-2 flex flex-col overflow-y-auto rounded-md bg-white p-4 text-black shadow-lg shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black sm:col-start-1 sm:col-end-1">
+          <div className="self-center text-xl font-bold uppercase">Roads</div>
           <ol>
             {sortedGuesses.map((road) => (
               <li key={road.properties.id}>
-                {road.properties.name} ({road.properties.lengthMi.toFixed(1)}{" "}
-                mi)
+                {road.properties.name}{" "}
+                <span className="font-light text-gray-600">
+                  - {road.properties.lengthMi.toFixed(1)} mi
+                </span>
               </li>
             ))}
           </ol>
