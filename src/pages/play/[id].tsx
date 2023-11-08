@@ -96,13 +96,13 @@ export default function Play() {
           </h1>
           <hr
             role="presentation"
-            className="bg-road-line h-2 w-full border-none from-yellow-300"
+            className="h-2 w-full border-none bg-road-line from-yellow-300"
           />
         </div>
 
         {/* Guess box */}
         <div className="mb-8 ml-8 mt-8 flex items-start gap-6 sm:col-start-1 sm:col-end-1">
-          <div className="bg-infosign-500 ring-infosign-500 flex flex-1 flex-col items-center justify-center gap-4 rounded-md p-4 shadow-lg shadow-stone-950 ring-4 ring-offset-4 ring-offset-white">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-md bg-infosign-500 p-4 shadow-lg shadow-stone-950 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white">
             <form onSubmit={onGuess} className="flex">
               <input className="flex-1 rounded p-2 text-black"></input>
               {/* <button
