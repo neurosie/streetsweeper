@@ -12,11 +12,11 @@ const overpass = Overpass({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <main
+    <div
       className={`${overpass.variable} min-h-screen bg-gradient-to-b from-neutral-900 to-stone-700 font-sans text-white`}
     >
       <Component {...pageProps} />
-    </main>
+    </div>
   );
 };
 

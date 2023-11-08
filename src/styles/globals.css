@@ -39,11 +39,11 @@
   }
 
   .paper {
-    --corner-cut: 12px;
+    --corner-cut: 14px;
     position: relative;
     z-index: theme(zIndex.20);
-    border-top-left-radius: 200px 4px;
-    border-bottom-left-radius: 2px 160px;
+    border-top-left-radius: 30% 4px;
+    border-bottom-left-radius: 2px 25%;
     border-bottom-right-radius: 2px 250px;
     clip-path: polygon(
       0 0,
@@ -65,7 +65,7 @@
     position: absolute;
     width: var(--corner-cut);
     height: calc(var(--corner-cut) + 1px);
-    clip-path: polygon(0 0, 100% 100%, 20% 100%);
+    clip-path: polygon(0 0, 100% calc(100% - 1px), 100% 100%, 20% 100%);
     top: 0;
     right: 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
