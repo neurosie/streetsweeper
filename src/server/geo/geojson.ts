@@ -235,13 +235,13 @@ export function unifySegments(
         const startB = segmentB[0]!;
         const endB = segmentB[segmentB.length - 1]!;
         if (coordEqual(startB, startA)) {
-          segmentA = segmentB.slice().reverse().concat(segmentA);
+          segmentA = segmentB.slice().reverse().concat(segmentA.slice(1));
         } else if (coordEqual(endB, startA)) {
-          segmentA = segmentB.concat(segmentA);
+          segmentA = segmentB.concat(segmentA.slice(1));
         } else if (coordEqual(startB, endA)) {
-          segmentA = segmentA.concat(segmentB);
+          segmentA = segmentA.concat(segmentB.slice(1));
         } else if (coordEqual(endB, endA)) {
-          segmentA = segmentA.concat(segmentB.slice().reverse());
+          segmentA = segmentA.concat(segmentB.slice(0, -1).reverse());
         } else {
           // No match, keep searching through unmatched segments
           continue search;
