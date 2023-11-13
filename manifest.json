@@ -1,0 +1,6 @@
+{
+    "name": "StreetSweeper, the local geography trivia game",
+    "short_name": "StreetSweeper",
+    "start_url": "/",
+    "display": "standalone"
+  }
