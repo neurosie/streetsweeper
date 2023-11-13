@@ -90,17 +90,17 @@ export default function Play() {
     return (
       <div className="flex min-h-screen flex-col">
         {/* Header */}
-        <header className="flex flex-col items-center gap-4 pt-4">
+        <header className="flex flex-col items-center gap-4 bg-neutral-900 pb-2 pt-4">
           <h1 className="m-[6px] rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white ">
             StreetSweeper
           </h1>
           <hr
             role="presentation"
-            className="h-2 w-full border-none bg-road-line from-yellow-300"
+            className="h-2 w-full border-none bg-road-line from-amber-400"
           />
         </header>
         {/* Main grid */}
-        <main className="m-3 grid grow auto-rows-min gap-3 sm:m-4 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_1fr] sm:gap-4">
+        <main className="grid grow auto-rows-min gap-3 bg-gradient-to-b from-neutral-900 to-stone-700 to-[15px] p-3 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_1fr] sm:gap-12 sm:p-8 md:px-12">
           {/* Guess box */}
           <div className="flex items-start gap-4 sm:col-start-1 sm:col-end-1">
             <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 shadow-stone-950 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white">
@@ -113,21 +113,23 @@ export default function Play() {
                   Guess
                 </button> */}
               </form>
-              {lastGuess ? (
-                <div className="text-sm">
-                  <span className="italic">
-                    &ldquo;{lastGuess.guess}&rdquo;
-                  </span>{" "}
-                  :{" "}
-                  {{
-                    right: (x: number) => `+${x} road${x === 1 ? "" : "s"}!`,
-                    wrong: () => "0 roads",
-                    repeat: () => "already guessed",
-                  }[lastGuess.state](lastGuess.newMatches)}
-                </div>
-              ) : (
-                <div>&nbsp;</div>
-              )}
+              <div className="text-sm">
+                {lastGuess ? (
+                  <>
+                    <span className="italic">
+                      &ldquo;{lastGuess.guess}&rdquo;
+                    </span>{" "}
+                    :{" "}
+                    {{
+                      right: (x: number) => `+${x} road${x === 1 ? "" : "s"}!`,
+                      wrong: () => "0 roads",
+                      repeat: () => "already guessed",
+                    }[lastGuess.state](lastGuess.newMatches)}
+                  </>
+                ) : (
+                  <>&nbsp;</>
+                )}
+              </div>
             </div>
             {/* Score box */}
             <div className="m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-800 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white">
@@ -143,7 +145,7 @@ export default function Play() {
           </div>
 
           {/* Map */}
-          <div className="paper-shadow inset-0 h-[400px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
+          <div className="paper-shadow h-[400px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
             <div className="paper h-full bg-white p-2 sm:p-4">
               <MapboxMap
                 className="relative h-full ring-1 ring-gray-600"

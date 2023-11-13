@@ -21,7 +21,7 @@
   .paper-shadow::after {
     content: "";
     position: absolute;
-    bottom: 10px;
+    bottom: 1px;
     width: 40%;
     height: 10px;
     box-shadow: 0 5px 14px rgba(0, 0, 0, var(--lift-shadow-opacity));
@@ -30,11 +30,13 @@
 
   .paper-shadow::before {
     left: 15px;
+    transform-origin: bottom left;
     transform: skew(-5deg) rotate(-5deg);
   }
 
   .paper-shadow::after {
     right: 15px;
+    transform-origin: bottom right;
     transform: skew(5deg) rotate(5deg);
   }
 
