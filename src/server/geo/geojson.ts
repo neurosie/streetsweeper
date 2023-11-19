@@ -15,6 +15,7 @@ import {
 } from "geojson";
 import osmtogeojson from "osmtogeojson";
 import { generateAbbreviations } from "./abbreviations";
+import { z } from "zod";
 
 /**
  * Top-level geodata for a city or town.
@@ -24,6 +25,7 @@ export interface Place
   bbox: BBox2d;
 }
 type PlaceProperties = {
+  name: string;
   totalLengthMi: number;
 };
 
@@ -51,6 +53,11 @@ export interface TypedCollection<T extends Feature>
   extends FeatureCollection<T["geometry"], T["properties"]> {
   features: Array<T>;
 }
+
+const PlaceProperties = z.object({
+  name: z.string(),
+  population: z.string().optional(),
+});
 
 export function transformGeodata(response: unknown): PlaceResponse {
   const [place, ...roads] = osmtogeojson(response).features;
@@ -188,11 +195,14 @@ export function transformGeodata(response: unknown): PlaceResponse {
     },
   );
 
+  const placeProperties = PlaceProperties.parse(place.properties);
+
   return {
     place: {
       ...place,
       bbox: (place.bbox ?? bbox(place)) as BBox2d,
       properties: {
+        name: placeProperties.name,
         totalLengthMi: finalRoads.reduce(
           (sum, road) => sum + road.properties.lengthMi,
           0,

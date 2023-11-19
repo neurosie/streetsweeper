@@ -1,6 +1,6 @@
 import mapboxgl from "mapbox-gl";
 import { useEffect, useState } from "react";
-import { type PlaceResponse } from "~/server/api/routers/place";
+import { type PlaceResponse } from "~/server/geo/geojson";
 
 export default function MapboxMap({
   place,
@@ -46,8 +46,16 @@ export default function MapboxMap({
           source: "boundary",
           layout: {},
           paint: {
-            "line-color": "#333",
-            "line-width": 3,
+            "line-color": "hsl(209, 80%, 20%)",
+            "line-width": [
+              "interpolate",
+              ["exponential", 2],
+              ["zoom"],
+              10,
+              2,
+              15,
+              32,
+            ],
           },
         },
         firstSymbolId,
@@ -71,8 +79,8 @@ export default function MapboxMap({
             "line-color": [
               "case",
               ["boolean", ["feature-state", "guessed"], false],
-              "#0047A3",
-              "#999",
+              "hsl(161, 97%, 32%)",
+              "hsl(209, 20%, 70%)",
             ],
             "line-width": [
               "interpolate",
@@ -85,7 +93,7 @@ export default function MapboxMap({
             ],
           },
         },
-        firstSymbolId,
+        "boundary",
       );
 
       map.addLayer({

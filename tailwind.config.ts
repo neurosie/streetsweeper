@@ -22,6 +22,7 @@ export default {
       },
       fontFamily: {
         sans: ["var(--font-overpass)"],
+        cursive: ["var(--font-sail)"],
       },
       backgroundImage: {
         "road-line":
