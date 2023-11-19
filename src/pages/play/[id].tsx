@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
@@ -100,33 +101,38 @@ export default function Play() {
     return (
       <div className="flex min-h-screen flex-col sm:max-h-screen">
         {/* Header */}
-        <header className="flex flex-col items-center gap-3 bg-neutral-900 pt-3">
-          <h1 className="m-[6px] rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white ">
-            StreetSweeper
-          </h1>
+        <header className="flex flex-col items-center gap-3 pt-3">
+          <Link href="/">
+            <h1 className="m-[6px] rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.gray.600)]">
+              StreetSweeper
+            </h1>
+          </Link>
           <hr
             role="presentation"
-            className="h-2 w-full border-y-2 border-amber-400"
+            className="h-2 w-full border-y-2 border-amber-300"
           />
         </header>
         {/* Main grid */}
-        <main className="grid grow gap-x-3 gap-y-3 bg-gradient-to-b from-neutral-900 to-stone-700 to-40% pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
+        <main className="grid grow gap-x-3 gap-y-3 pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
           {/* Guess box */}
           <div className="mx-4 mt-2 flex items-start gap-4 sm:col-start-1 sm:col-end-1">
-            <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white ">
+            <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
               <div className="flex flex-wrap items-baseline justify-center text-sm text-sky-100">
                 <span className="inline-block whitespace-pre">
                   Welcome to {useThe ? "the " : ""}
                 </span>
                 <span className="inline-block">
-                  <span className="font-cursive text-2xl">
+                  <span className="font-cursive text-2xl sm:text-3xl">
                     {data.place.properties.name}
                   </span>
                   .
                 </span>
               </div>
               <form onSubmit={onGuess} className="flex">
-                <input className="flex-1 p-2 text-black"></input>
+                <input
+                  className="flex-1 rounded-lg border-2 border-gray-400 p-2 text-black"
+                  placeholder="e.g. 'main st' or '1st'"
+                ></input>
                 {/* <button
                   className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
                   type="submit"
@@ -157,12 +163,12 @@ export default function Play() {
           {/* Map */}
           <div className="relative h-[400px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
             <MapboxMap
-              className="relative h-full ring-1 ring-gray-600"
+              className="relative h-full"
               place={data}
               guessedRoads={guessedRoads}
             />
             {/* Score box */}
-            <div className="absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-800 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white">
+            <div className="absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-800 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white drop-shadow-[1px_2px_theme(colors.gray.400)]">
               <div className="text-sm uppercase tracking-tighter">Miles</div>
               <div className="text-3xl font-bold leading-none">
                 {Array.from(guessedLength.toFixed(0)).map((c, i) => (
@@ -176,14 +182,14 @@ export default function Play() {
 
           {/* Guess list */}
           <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:h-0 sm:min-h-full">
-            <div className="m-[8px] flex h-[calc(100%-16px)] flex-col rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black sm:col-start-1 sm:col-end-1">
+            <div className="m-[8px] flex h-[calc(100%-16px)] flex-col rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black drop-shadow-[-3px_4px_theme(colors.gray.400)] sm:col-start-1 sm:col-end-1">
               <div className="mb-2 self-center text-xl font-bold uppercase">
                 Guessed Streets
               </div>
-              <ul className="ml-8 list-disc overflow-y-auto italic leading-relaxed text-gray-600">
+              <ul className="list-disc overflow-y-auto pl-8 leading-relaxed text-gray-600">
                 {guessedRoadsData.map((road) => (
                   <li key={road.properties.id}>
-                    <span className="pl-1 not-italic text-gray-900">
+                    <span className="text-gray-900">
                       {road.properties.name}{" "}
                       <span className="font-light text-gray-600">
                         - {road.properties.lengthMi.toFixed(1)} mi

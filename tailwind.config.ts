@@ -12,12 +12,10 @@ export default {
         },
         infosign: {
           500: "#0054a5",
+          900: "hsl(209, 65%, 30%)",
         },
         warningsign: {
           500: "#ffcd00",
-        },
-        royalblue: {
-          500: "#0047A3",
         },
       },
       fontFamily: {

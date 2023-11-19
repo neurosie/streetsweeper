@@ -21,7 +21,7 @@ const sail = Sail({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div
-      className={`${overpass.variable} ${sail.variable} min-h-screen bg-gradient-to-b from-neutral-900 to-stone-700 font-sans text-white`}
+      className={`${overpass.variable} ${sail.variable} min-h-screen bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
     >
       <Component {...pageProps} />
     </div>

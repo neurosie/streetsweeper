@@ -18,19 +18,19 @@ export default function Home() {
       <div className="flex flex-col items-center">
         {/* header */}
         <div className="flex w-full flex-col items-center gap-4 py-4 text-white sm:pt-8">
-          <h1 className="rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-4 ring-offset-white sm:text-6xl">
+          <h1 className="mb-1 rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-4 ring-offset-white drop-shadow-[-2px_3px_theme(colors.gray.600)] sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic">A local geography trivia game</p>
           <hr
             role="presentation"
-            className="h-2 w-full border-none bg-road-line from-yellow-300"
+            className="h-2 w-full border-none bg-road-line from-amber-300"
           />
         </div>
         {/* container for centering main content */}
         <div className="flex w-full flex-col items-center justify-around gap-8 px-4 py-8 sm:gap-12">
           {/* main content box */}
-          <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-infosign-500 px-8 py-8 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white sm:w-[600px]">
+          <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-infosign-500 px-8 py-8 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_5px_theme(colors.blue.900)] sm:w-[600px]">
             <p>
               Choose a city or town in the United States, and see how many
               streets you can name!
@@ -40,15 +40,15 @@ export default function Home() {
               selectedPlace={selectedPlace}
               onSelectPlace={setSelectedPlace}
             />
-          </div>
 
-          {selectedPlace && (
-            <Link href={`play/${selectedPlace.osm_id}`}>
-              <div className="relative rounded-lg bg-black p-1 text-black ring-1 ring-black ring-offset-2 ring-offset-white">
-                <div className="w-full">{oneWayPlay}</div>
-              </div>
-            </Link>
-          )}
+            {selectedPlace && (
+              <Link href={`play/${selectedPlace.osm_id}`}>
+                <div className="relative m-[3px] rounded-lg bg-black p-1 text-black ring-2 ring-white drop-shadow-[-4px_6px_theme(colors.neutral.900)] active:-left-[4px] active:top-[6px] active:drop-shadow-none">
+                  <div className="w-full">{oneWayPlay}</div>
+                </div>
+              </Link>
+            )}
+          </div>
         </div>
         <p className="mt-auto p-2 text-gray-300">
           Created by{" "}
@@ -81,7 +81,7 @@ function PlaceSelector({
 
   if (selectedPlace) {
     return (
-      <div className="flex w-full overflow-hidden rounded-lg border-2 border-gray-400">
+      <div className="bg-infosign-900 flex w-full overflow-hidden rounded-lg border-2 border-gray-700">
         <PlaceCard place={selectedPlace} isStandalone={true}></PlaceCard>
 
         <button
@@ -97,7 +97,7 @@ function PlaceSelector({
 
   return (
     <div className="sm:w-12/12 flex w-full flex-col gap-0">
-      <div className="z-10 flex w-full cursor-default overflow-hidden rounded-t-lg border-2 border-gray-400 bg-gray-200 text-left text-gray-500 last:rounded-b-lg focus-within:bg-white focus-within:text-gray-900 focus-within:shadow-md focus-within:ring-2 focus-within:ring-black">
+      <div className="z-10 flex w-full cursor-default overflow-hidden rounded-t-lg border-2 border-gray-700 bg-gray-100 text-left text-gray-500 last:rounded-b-lg focus-within:bg-white focus-within:shadow-md focus-within:ring-2 focus-within:ring-black">
         <span className="relative bottom-[0.1em] my-auto pl-3 pr-2">
           {mapPinIcon}
         </span>
@@ -153,7 +153,7 @@ function SearchResults({
     }
   }
   return (
-    <div className="overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-400">
+    <div className="overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-700">
       {content}
     </div>
   );
@@ -219,7 +219,7 @@ function SuggestionListBox({
           role="option"
           aria-selected={false}
           data-active={index === activeIndex}
-          className="group group-focus:data-[active=true]:bg-gray-300"
+          className="bg-infosign-900 text-white group-focus:data-[active=true]:bg-slate-700"
           key={entry.osm_id}
           id={id(index)}
           onClick={() => onSelectPlace(entry)}
@@ -240,10 +240,14 @@ function PlaceCard({
 }) {
   const { address } = place;
   return (
-    <div className={`flex p-3 ${!isStandalone ? "hover:bg-sky-200" : ""}`}>
-      <span className="pr-4">{mapIcon}</span>
+    <div
+      className={`flex items-center p-3 ${
+        !isStandalone ? "hover:bg-sky-700" : ""
+      }`}
+    >
+      <span className="pr-4 text-blue-100">{mapIcon}</span>
       <div>
-        <div className="text-md">
+        <div>
           {address.suburb?.concat(", ") ?? ""}
           {address.village ??
             address.town ??
@@ -252,7 +256,7 @@ function PlaceCard({
           , <span className="font-semibold">{address.state}</span>
         </div>
         {address.county && (
-          <div className="text-sm text-gray-600">{address.county}</div>
+          <div className="text-sm text-blue-100">{address.county}</div>
         )}
       </div>
     </div>
