@@ -79,7 +79,7 @@ export default function MapboxMap({
             "line-color": [
               "case",
               ["boolean", ["feature-state", "guessed"], false],
-              "hsl(161, 97%, 28%)",
+              "hsl(209, 92%, 50%)",
               "hsl(209, 20%, 70%)",
             ],
             "line-width": [

@@ -100,7 +100,7 @@ export default function Play() {
     return (
       <div className="flex min-h-screen flex-col sm:max-h-screen">
         {/* Header */}
-        <header className="flex flex-col items-center gap-3 bg-neutral-900 pb-3 pt-3">
+        <header className="flex flex-col items-center gap-3 bg-neutral-900 pt-3">
           <h1 className="m-[6px] rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white ">
             StreetSweeper
           </h1>
@@ -110,9 +110,9 @@ export default function Play() {
           />
         </header>
         {/* Main grid */}
-        <main className="grid grow gap-x-3 gap-y-3 bg-neutral-900 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
+        <main className="grid grow gap-x-3 gap-y-3 bg-gradient-to-b from-neutral-900 to-stone-700 to-40% pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
           {/* Guess box */}
-          <div className="mx-4 flex items-start gap-4 sm:col-start-1 sm:col-end-1">
+          <div className="mx-4 mt-2 flex items-start gap-4 sm:col-start-1 sm:col-end-1">
             <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white ">
               <div className="flex flex-wrap items-baseline justify-center text-sm text-sky-100">
                 <span className="inline-block whitespace-pre">
