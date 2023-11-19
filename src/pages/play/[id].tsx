@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
-import { Road } from "~/server/geo/geojson";
+import { type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
 
 type GuessState = "right" | "wrong" | "repeat";
