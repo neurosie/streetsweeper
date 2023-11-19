@@ -24,13 +24,13 @@ export default function Home() {
           <p className="italic">A local geography trivia game</p>
           <hr
             role="presentation"
-            className="bg-road-line h-2 w-full border-none from-yellow-300"
+            className="h-2 w-full border-none bg-road-line from-yellow-300"
           />
         </div>
         {/* container for centering main content */}
         <div className="flex w-full flex-col items-center justify-around gap-8 px-4 py-8 sm:gap-12">
           {/* main content box */}
-          <div className="bg-infosign-500 ring-infosign-500 flex w-full flex-col items-center justify-center gap-8 rounded-md px-8 py-8 ring-4 ring-offset-4 ring-offset-white sm:w-[600px]">
+          <div className="flex w-full flex-col items-center justify-center gap-8 rounded-md bg-infosign-500 px-8 py-8 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white sm:w-[600px]">
             <p>
               Choose a city or town in the United States, and see how many
               streets you can name!
@@ -245,9 +245,9 @@ function PlaceCard({
       <div>
         <div className="text-md">
           {address.suburb?.concat(", ") ?? ""}
-          {address.city ??
+          {address.village ??
             address.town ??
-            address.village ??
+            address.city ??
             address.municipality}
           , <span className="font-semibold">{address.state}</span>
         </div>
