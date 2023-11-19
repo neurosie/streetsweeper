@@ -5,8 +5,6 @@ test("unifySegments", () => {
   const pointCount = ROAD_SEGMENTS.flat().length;
   const joinedSegments = unifySegments(ROAD_SEGMENTS);
 
-  console.log(joinedSegments);
-
   expect(joinedSegments.length).toBe(1);
   // Overlapped points are trimmed
   expect(joinedSegments.flat().length).toBe(

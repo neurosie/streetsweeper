@@ -182,7 +182,7 @@ export function transformGeodata(response: unknown): PlaceResponse {
           alternateNames: Array.from(
             new Set(
               Array.from(alternateNames).flatMap((name) =>
-                generateAbbreviations(name),
+                generateAbbreviations(name, "easy"),
               ),
             ),
           ),
