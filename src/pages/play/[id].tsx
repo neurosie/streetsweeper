@@ -44,7 +44,7 @@ export default function Play() {
   function onGuess(event: FormEvent) {
     event.preventDefault();
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
-    const guess = guessBox.value.toLowerCase();
+    const guess = guessBox.value.toLowerCase().trim();
     guessBox.value = "";
     if (guess.trim().length === 0) {
       return;
