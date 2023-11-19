@@ -55,6 +55,8 @@ const SUFFIXES: Record<string, string> = {
   "corner": "cor",
   "corners": "cors",
   "course": "crse",
+  "court": "ct",
+  "courts": "cts",
   "cove": "cv",
   "coves": "cvs",
   "creek": "crk",
