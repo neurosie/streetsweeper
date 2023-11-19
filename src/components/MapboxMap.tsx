@@ -8,7 +8,7 @@ export default function MapboxMap({
   className,
 }: {
   place: PlaceResponse;
-  guessedRoads: Set<string>;
+  guessedRoads: string[];
   className: string | undefined;
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();

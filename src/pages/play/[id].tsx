@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import MapboxMap from "~/components/MapboxMap";
+import { Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
 
 type GuessState = "right" | "wrong" | "repeat";
@@ -12,7 +13,7 @@ export default function Play() {
     { id: placeId ?? "" },
     { enabled: !!placeId },
   );
-  const [guessedRoads, setGuessedRoads] = useState(new Set<string>());
+  const [guessedRoads, setGuessedRoads] = useState<string[]>([]);
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatches: number } | undefined
   >(undefined);
@@ -25,8 +26,14 @@ export default function Play() {
     if (!placeId) return;
     const savedGame = localStorage.getItem(storageKey(placeId));
     if (savedGame) {
-      const parsedSave = JSON.parse(savedGame) as string[];
-      setGuessedRoads(new Set(parsedSave));
+      const parsedSave: unknown = JSON.parse(savedGame);
+      if (
+        Array.isArray(parsedSave) &&
+        parsedSave.length > 0 &&
+        typeof parsedSave[0] === "string"
+      ) {
+        setGuessedRoads(parsedSave);
+      }
     }
   }, [placeId]);
 
@@ -34,7 +41,7 @@ export default function Play() {
    * Save game to localStorage.
    */
   useEffect(() => {
-    if (!placeId || guessedRoads.size === 0) return;
+    if (!placeId || guessedRoads.length === 0) return;
     localStorage.setItem(
       storageKey(placeId),
       JSON.stringify(Array.from(guessedRoads)),
@@ -56,16 +63,14 @@ export default function Play() {
       .map((road) => road.properties.id);
     if (matchedRoads.length > 0) {
       newMatches = matchedRoads.filter(
-        (road) => !guessedRoads.has(road),
+        (road) => !guessedRoads.includes(road),
       ).length;
       if (newMatches === 0) {
         guessState = "repeat";
       } else {
         guessState = "right";
       }
-      setGuessedRoads(
-        (guessedRoads) => new Set([...guessedRoads, ...matchedRoads]),
-      );
+      setGuessedRoads((guessedRoads) => guessedRoads.concat(matchedRoads));
     }
     setLastGuess({ guess, state: guessState, newMatches });
   }
@@ -80,13 +85,17 @@ export default function Play() {
     const guessedLength = data.roads.features.reduce(
       (sum, road) =>
         sum +
-        (guessedRoads.has(road.properties.id) ? road.properties.lengthMi : 0),
+        (guessedRoads.includes(road.properties.id)
+          ? road.properties.lengthMi
+          : 0),
       0,
     );
-
-    const sortedGuesses = data.roads.features
-      .filter((road) => guessedRoads.has(road.properties.id))
-      .sort((a, b) => b.properties.lengthMi - a.properties.lengthMi);
+    const guessedRoadsData = guessedRoads
+      .toReversed()
+      .map((roadId) =>
+        data.roads.features.find((road) => road.properties.id === roadId),
+      )
+      .filter((road): road is Road => road !== null);
 
     return (
       <div className="flex min-h-screen flex-col sm:max-h-screen">
@@ -167,12 +176,12 @@ export default function Play() {
 
           {/* Guess list */}
           <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:h-0 sm:min-h-full">
-            <div className="m-[8px] flex h-[calc(100%-16px)] flex-col overflow-y-auto rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black sm:col-start-1 sm:col-end-1">
+            <div className="m-[8px] flex h-[calc(100%-16px)] flex-col rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black sm:col-start-1 sm:col-end-1">
               <div className="mb-2 self-center text-xl font-bold uppercase">
                 Guessed Streets
               </div>
-              <ol className="ml-8 list-decimal italic leading-relaxed text-gray-600">
-                {sortedGuesses.map((road) => (
+              <ul className="ml-8 list-disc overflow-y-auto italic leading-relaxed text-gray-600">
+                {guessedRoadsData.map((road) => (
                   <li key={road.properties.id}>
                     <span className="pl-1 not-italic text-gray-900">
                       {road.properties.name}{" "}
@@ -182,7 +191,7 @@ export default function Play() {
                     </span>
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
           </div>
         </main>
