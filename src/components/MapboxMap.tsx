@@ -5,11 +5,13 @@ import { type PlaceResponse } from "~/server/geo/geojson";
 export default function MapboxMap({
   place,
   guessedRoads,
+  finished,
   className,
 }: {
   place: PlaceResponse;
   guessedRoads: string[];
   className: string | undefined;
+  finished: boolean;
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();
 
@@ -108,12 +110,7 @@ export default function MapboxMap({
         paint: {
           "text-halo-color": "#fff",
           "text-halo-width": 2,
-          "text-opacity": [
-            "case",
-            ["boolean", ["feature-state", "guessed"], false],
-            1,
-            0,
-          ],
+          "text-opacity": labelOpacityExpression,
         },
       });
 
@@ -121,14 +118,35 @@ export default function MapboxMap({
     });
   }, [place]);
 
+  if (map) {
+    for (const roadId of guessedRoads) {
+      map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
+    }
+  }
+
   useEffect(() => {
     if (!map) {
       return;
     }
-    for (const roadId of guessedRoads) {
-      map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
+    if (finished) {
+      map.setPaintProperty("roadNames", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("roadNames", "text-opacity", labelOpacityExpression);
+      for (const road of place.roads.features) {
+        map.setFeatureState(
+          { source: "roads", id: road.properties.id },
+          { guessed: false },
+        );
+      }
     }
-  }, [guessedRoads, map]);
+  }, [map, finished, place]);
 
   return <div id="my-map" className={className} />;
 }
+
+const labelOpacityExpression: mapboxgl.Expression = [
+  "case",
+  ["boolean", ["feature-state", "guessed"], false],
+  1,
+  0,
+];

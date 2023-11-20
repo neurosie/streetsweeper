@@ -18,6 +18,7 @@ export default function Play() {
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatchCount: number } | undefined
   >(undefined);
+  const [finished, setFinished] = useState(false);
 
   /**
    * Load game from localStorage.
@@ -50,6 +51,7 @@ export default function Play() {
   }, [placeId, guessedRoads]);
 
   function onGuess(event: FormEvent) {
+    console.log("onGuess");
     event.preventDefault();
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
     const guess = guessBox.value.toLowerCase().trim();
@@ -75,6 +77,12 @@ export default function Play() {
       setGuessedRoads((guessedRoads) => guessedRoads.concat(newlyMatchedRoads));
     }
     setLastGuess({ guess, state: guessState, newMatchCount });
+  }
+
+  function playAgain() {
+    setFinished(false);
+    setGuessedRoads([]);
+    setLastGuess(undefined);
   }
 
   if (status === "loading") {
@@ -116,7 +124,7 @@ export default function Play() {
         {/* Main grid */}
         <main className="grid grow gap-x-3 gap-y-3 pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
           {/* Guess box */}
-          <div className="mx-4 mt-2 flex items-start gap-4 sm:col-start-1 sm:col-end-1">
+          <div className="mx-4 mt-2 gap-4 sm:col-start-1 sm:col-end-1">
             <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
               <div className="flex flex-wrap items-baseline justify-center text-sm text-sky-100">
                 <span className="inline-block whitespace-pre">
@@ -129,35 +137,59 @@ export default function Play() {
                   .
                 </span>
               </div>
-              <form onSubmit={onGuess} className="flex">
-                <input
-                  className="flex-1 rounded-lg border-2 border-gray-400 p-2 text-black"
-                  placeholder="e.g. 'main st' or '1st'"
-                ></input>
-                {/* <button
-                  className="ml-4 rounded bg-gray-700 px-4 py-2 text-white"
-                  type="submit"
-                >
-                  Guess
-                </button> */}
-              </form>
-              <div className="text-sm text-sky-100">
-                {lastGuess ? (
-                  <>
-                    <span className="italic">
-                      &ldquo;{lastGuess.guess}&rdquo;
+              {finished ? (
+                <>
+                  <div>
+                    You guessed{" "}
+                    <span className="font-bold">{guessedRoadsData.length}</span>{" "}
+                    out of{" "}
+                    <span className="font-bold">
+                      {data.roads.features.length}
                     </span>{" "}
-                    :{" "}
-                    {{
-                      right: (x: number) => `+${x} road${x === 1 ? "" : "s"}!`,
-                      wrong: () => "no roads",
-                      repeat: () => "already guessed",
-                    }[lastGuess.state](lastGuess.newMatchCount)}
-                  </>
-                ) : (
-                  <>&nbsp;</>
-                )}
-              </div>
+                    streets!
+                  </div>
+                  <button
+                    className="relative bottom-[4px] rounded-lg bg-sign-400 p-2 font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.800)] active:bottom-0 active:drop-shadow-none"
+                    onClick={playAgain}
+                  >
+                    Play again
+                  </button>
+                </>
+              ) : (
+                <>
+                  <form onSubmit={onGuess} className="flex w-full gap-4">
+                    <input
+                      className="min-w-0 flex-1 rounded-lg border-2 border-gray-400 p-2 text-black"
+                      placeholder="e.g. 'main st' or '1st'"
+                    ></input>
+                    <button
+                      className="relative bottom-[4px] rounded-lg bg-gray-700 px-2 text-white drop-shadow-[0px_4px_theme(colors.gray.600)] active:bottom-0 active:drop-shadow-none"
+                      onClick={() => setFinished(true)}
+                      type="button"
+                    >
+                      Finish
+                    </button>
+                  </form>
+                  <div className="text-sm text-sky-100">
+                    {lastGuess ? (
+                      <>
+                        <span className="italic">
+                          &ldquo;{lastGuess.guess}&rdquo;
+                        </span>{" "}
+                        :{" "}
+                        {{
+                          right: (x: number) =>
+                            `+${x} road${x === 1 ? "" : "s"}!`,
+                          wrong: () => "no roads",
+                          repeat: () => "already guessed",
+                        }[lastGuess.state](lastGuess.newMatchCount)}
+                      </>
+                    ) : (
+                      <>&nbsp;</>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -167,6 +199,7 @@ export default function Play() {
               className="relative h-full"
               place={data}
               guessedRoads={guessedRoads}
+              finished={finished}
             />
             {/* Score box */}
             <div className="absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-800 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white drop-shadow-[1px_2px_theme(colors.gray.400)]">
