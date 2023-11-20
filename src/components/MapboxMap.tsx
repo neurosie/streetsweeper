@@ -1,5 +1,5 @@
 import mapboxgl from "mapbox-gl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type PlaceResponse } from "~/server/geo/geojson";
 
 export default function MapboxMap({
@@ -14,6 +14,7 @@ export default function MapboxMap({
   finished: boolean;
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();
+  const mapContainer = useRef(null);
 
   mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -22,7 +23,7 @@ export default function MapboxMap({
       return;
     }
     const map = new mapboxgl.Map({
-      container: "my-map",
+      container: mapContainer.current!,
       style: "mapbox://styles/neurosie/clnorauph008x01p3db1a6tuf",
       bounds: place.place.bbox,
     });
@@ -116,13 +117,18 @@ export default function MapboxMap({
 
       setMap(map);
     });
+
+    return () => map.remove();
   }, [place]);
 
-  if (map) {
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
     for (const roadId of guessedRoads) {
       map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
     }
-  }
+  }, [map, guessedRoads]);
 
   useEffect(() => {
     if (!map) {
@@ -141,7 +147,7 @@ export default function MapboxMap({
     }
   }, [map, finished, place]);
 
-  return <div id="my-map" className={className} />;
+  return <div id="my-map" ref={mapContainer} className={className} />;
 }
 
 const labelOpacityExpression: mapboxgl.Expression = [
