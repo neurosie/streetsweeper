@@ -18,7 +18,7 @@ export default function Home() {
       <div className="flex flex-col items-center">
         {/* header */}
         <div className="flex w-full flex-col items-center gap-4 py-4 text-white sm:pt-8">
-          <h1 className="mb-1 rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-800 ring-offset-4 ring-offset-white drop-shadow-[-2px_3px_theme(colors.gray.600)] sm:text-6xl">
+          <h1 className="bg-sign-600 ring-sign-600 mb-1 rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_3px_theme(colors.sign.700)] sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic">A local geography trivia game</p>
@@ -81,7 +81,7 @@ function PlaceSelector({
 
   if (selectedPlace) {
     return (
-      <div className="bg-infosign-900 flex w-full overflow-hidden rounded-lg border-2 border-gray-700">
+      <div className="bg-infosign-800 flex w-full overflow-hidden rounded-lg border-2 border-gray-700">
         <PlaceCard place={selectedPlace} isStandalone={true}></PlaceCard>
 
         <button
@@ -219,7 +219,7 @@ function SuggestionListBox({
           role="option"
           aria-selected={false}
           data-active={index === activeIndex}
-          className="bg-infosign-900 text-white group-focus:data-[active=true]:bg-slate-700"
+          className="bg-infosign-800 text-white group-focus:data-[active=true]:bg-slate-700"
           key={entry.osm_id}
           id={id(index)}
           onClick={() => onSelectPlace(entry)}

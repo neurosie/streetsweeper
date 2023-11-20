@@ -112,7 +112,7 @@ export default function Play() {
         {/* Header */}
         <header className="flex flex-col items-center gap-3 pt-3">
           <Link href="/">
-            <h1 className="m-[6px] rounded-xl bg-sign-800 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-800 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.gray.600)]">
+            <h1 className="bg-sign-600 ring-sign-600 m-[6px] rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
               StreetSweeper
             </h1>
           </Link>
@@ -149,7 +149,7 @@ export default function Play() {
                     streets!
                   </div>
                   <button
-                    className="relative bottom-[4px] rounded-lg bg-sign-400 p-2 font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.800)] active:bottom-0 active:drop-shadow-none"
+                    className="relative bottom-[4px] rounded-lg bg-sign-400 p-2 font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.600)] active:bottom-0 active:drop-shadow-none"
                     onClick={playAgain}
                   >
                     Play again
@@ -202,7 +202,7 @@ export default function Play() {
               finished={finished}
             />
             {/* Score box */}
-            <div className="absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-800 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-800 ring-offset-2 ring-offset-white drop-shadow-[1px_2px_theme(colors.gray.400)]">
+            <div className="bg-sign-600 ring-sign-600 absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md px-0.5 py-2 shadow-stone-950 ring-1 ring-offset-2 ring-offset-white drop-shadow-[0_2px_theme(colors.sign.700)]">
               <div className="text-sm uppercase tracking-tighter">Miles</div>
               <div className="text-3xl font-bold leading-none">
                 {Array.from(guessedLength.toFixed(0)).map((c, i) => (
