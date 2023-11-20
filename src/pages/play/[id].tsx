@@ -25,7 +25,7 @@ export default function Play() {
    * This needs to be in an effect because placeId is not available during prerendering.
    */
   useEffect(() => {
-    if (!placeId) return;
+    if (!placeId || !data) return;
     const savedGame = localStorage.getItem(storageKey(placeId));
     if (savedGame) {
       const parsedSave: unknown = JSON.parse(savedGame);
@@ -34,10 +34,14 @@ export default function Play() {
         parsedSave.length > 0 &&
         typeof parsedSave[0] === "string"
       ) {
-        setGuessedRoads(parsedSave);
+        setGuessedRoads(
+          data.roads.features.flatMap((road) =>
+            parsedSave.includes(road.properties.id) ? [road.properties.id] : [],
+          ),
+        );
       }
     }
-  }, [placeId]);
+  }, [placeId, data]);
 
   /**
    * Save game to localStorage.
@@ -51,7 +55,6 @@ export default function Play() {
   }, [placeId, guessedRoads]);
 
   function onGuess(event: FormEvent) {
-    console.log("onGuess");
     event.preventDefault();
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
     const guess = guessBox.value.toLowerCase().trim();
@@ -83,6 +86,7 @@ export default function Play() {
     setFinished(false);
     setGuessedRoads([]);
     setLastGuess(undefined);
+    localStorage.setItem(storageKey(placeId!), JSON.stringify(Array.from([])));
   }
 
   if (status === "loading") {
