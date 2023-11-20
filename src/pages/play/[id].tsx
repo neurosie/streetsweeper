@@ -16,7 +16,7 @@ export default function Play() {
   );
   const [guessedRoads, setGuessedRoads] = useState<string[]>([]);
   const [lastGuess, setLastGuess] = useState<
-    { guess: string; state: GuessState; newMatches: number } | undefined
+    { guess: string; state: GuessState; newMatchCount: number } | undefined
   >(undefined);
 
   /**
@@ -58,22 +58,23 @@ export default function Play() {
       return;
     }
     let guessState: GuessState = "wrong";
-    let newMatches = 0;
+    let newMatchCount = 0;
     const matchedRoads = data!.roads.features
       .filter((road) => road.properties.alternateNames.includes(guess))
       .map((road) => road.properties.id);
     if (matchedRoads.length > 0) {
-      newMatches = matchedRoads.filter(
+      const newlyMatchedRoads = matchedRoads.filter(
         (road) => !guessedRoads.includes(road),
-      ).length;
-      if (newMatches === 0) {
+      );
+      newMatchCount = newlyMatchedRoads.length;
+      if (newMatchCount === 0) {
         guessState = "repeat";
       } else {
         guessState = "right";
       }
-      setGuessedRoads((guessedRoads) => guessedRoads.concat(matchedRoads));
+      setGuessedRoads((guessedRoads) => guessedRoads.concat(newlyMatchedRoads));
     }
-    setLastGuess({ guess, state: guessState, newMatches });
+    setLastGuess({ guess, state: guessState, newMatchCount });
   }
 
   if (status === "loading") {
@@ -151,7 +152,7 @@ export default function Play() {
                       right: (x: number) => `+${x} road${x === 1 ? "" : "s"}!`,
                       wrong: () => "no roads",
                       repeat: () => "already guessed",
-                    }[lastGuess.state](lastGuess.newMatches)}
+                    }[lastGuess.state](lastGuess.newMatchCount)}
                   </>
                 ) : (
                   <>&nbsp;</>
