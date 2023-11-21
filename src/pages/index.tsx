@@ -4,6 +4,7 @@ import { type PlaceResult } from "~/server/api/routers/search";
 import { api } from "~/utils/api";
 import Link from "next/link";
 import scrollIntoView from "scroll-into-view-if-needed";
+import Loader from "~/components/Loader";
 
 export default function Home() {
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
@@ -135,9 +136,19 @@ function SearchResults({
 
   let content;
   if (status === "loading") {
-    content = <span>loading...</span>;
+    content = (
+      <div className="m-4 flex justify-center">
+        <div className="sr-only">Loading...</div>
+        <Loader></Loader>
+      </div>
+    );
   } else if (status === "error") {
-    content = <span>Error: {error.message}</span>;
+    console.error(error);
+    content = (
+      <div className="m-4 flex justify-center">
+        Something went wrong fetching search results: {error.message}
+      </div>
+    );
   } else {
     const items = data.filter((entry) => entry.osm_type === "relation");
     if (items.length > 0) {
@@ -149,11 +160,15 @@ function SearchResults({
         ></SuggestionListBox>
       );
     } else {
-      content = <span>No results for &quot;{searchTerm}&quot;.</span>;
+      content = (
+        <div className="m-4 flex justify-center">
+          No results for &quot;{searchTerm}&quot;.
+        </div>
+      );
     }
   }
   return (
-    <div className="overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-700">
+    <div className="bg-infosign-800 overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-700 text-white">
       {content}
     </div>
   );
@@ -219,7 +234,7 @@ function SuggestionListBox({
           role="option"
           aria-selected={false}
           data-active={index === activeIndex}
-          className="bg-infosign-800 text-white group-focus:data-[active=true]:bg-slate-700"
+          className="group-focus:data-[active=true]:bg-slate-700"
           key={entry.osm_id}
           id={id(index)}
           onClick={() => onSelectPlace(entry)}
@@ -248,11 +263,15 @@ function PlaceCard({
       <span className="pr-4 text-blue-100">{mapIcon}</span>
       <div>
         <div>
-          {address.suburb?.concat(", ") ?? ""}
-          {address.village ??
-            address.town ??
-            address.city ??
-            address.municipality}
+          {address.suburb
+            ?.concat(", ")
+            .concat(
+              address.village ??
+                address.town ??
+                address.city ??
+                address.municipality ??
+                "",
+            ) ?? place.name}
           , <span className="font-semibold">{address.state}</span>
         </div>
         {address.county && (

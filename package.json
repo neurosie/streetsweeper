@@ -28,6 +28,7 @@
     "@uidotdev/usehooks": "^2.2.0",
     "bottleneck": "^2.19.5",
     "fast-cartesian": "^8.0.0",
+    "ldrs": "^1.0.1",
     "mapbox-gl": "^2.15.0",
     "next": "^13.4.13",
     "osmtogeojson": "^3.0.0-beta.5",
