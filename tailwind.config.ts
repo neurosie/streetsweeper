@@ -28,6 +28,29 @@ export default {
         "road-line":
           "repeating-linear-gradient(90deg, transparent, transparent 1rem, var(--tw-gradient-from) 1rem, var(--tw-gradient-from) 3rem)",
       },
+      keyframes: {
+        "car-bounce": {
+          "50%": {
+            transform: "translateY(-15%)",
+            "animation-timing-function": "cubic-bezier(0.7, 0, 1, 1)",
+          },
+          "0%, 100%": {
+            transform: "none",
+            "animation-timing-function": "cubic-bezier(0, 0, 0.3, 1)",
+          },
+        },
+        "spin-reverse": {
+          from: {
+            transform: "rotate(0deg)",
+          },
+          to: {
+            transform: "rotate(-360deg)",
+          },
+        },
+      },
+      animation: {
+        "car-bounce": "car-bounce 0.75s infinite",
+      },
     },
   },
   plugins: [require("@headlessui/tailwindcss")],
