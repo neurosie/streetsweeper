@@ -4,6 +4,10 @@
 @import "mapbox-gl/dist/mapbox-gl.css";
 
 @layer components {
+  body {
+    background-color: theme(colors.neutral.800);
+  }
+
   .paper-shadow {
     position: relative;
     filter: drop-shadow(0 1px var(--drop-shadow-blur) rgba(0, 0, 0, 0.7));

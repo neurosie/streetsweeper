@@ -22,7 +22,6 @@ export default function Play() {
 
   /**
    * Load game from localStorage.
-   * This needs to be in an effect because placeId is not available during prerendering.
    */
   useEffect(() => {
     if (!placeId || !data) return;
@@ -103,7 +102,14 @@ export default function Play() {
     );
   } else if (status === "error") {
     console.error(error);
-    return <div>Something went wrong :(</div>;
+    return (
+      <div className="flex h-screen flex-col items-center py-4">
+        <div className="bg-sign-600 ring-sign-600 m-[6px] w-[80%] rounded-xl p-4 text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
+          <p>Something went wrong :(</p>
+          <p className="font-mono">{error.message}</p>
+        </div>
+      </div>
+    );
   } else {
     const useThe = data.place.properties.name.split(" ")[1] === "of";
     const guessedLength = data.roads.features.reduce(
@@ -138,7 +144,7 @@ export default function Play() {
         <main className="grid grow gap-x-3 gap-y-3 pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
           {/* Guess box */}
           <div className="mx-4 mt-2 gap-4 sm:col-start-1 sm:col-end-1">
-            <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 p-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
+            <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 px-4 pb-2 pt-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
               <div className="flex flex-wrap items-baseline justify-center text-sm text-sky-100">
                 <span className="inline-block whitespace-pre">
                   Welcome to {useThe ? "the " : ""}
@@ -226,23 +232,29 @@ export default function Play() {
             </div>
           </div>
           {/* Guess list */}
-          <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:h-0 sm:min-h-full">
+          <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:h-0 sm:min-h-[max(150px,100%)]">
             <div className="m-[8px] flex h-[calc(100%-16px)] flex-col rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black drop-shadow-[-3px_4px_theme(colors.gray.400)] sm:col-start-1 sm:col-end-1">
               <div className="mb-2 self-center text-xl font-bold uppercase">
                 Guessed Streets
               </div>
-              <ul className="list-disc overflow-y-auto pl-8 leading-relaxed text-gray-600">
-                {guessedRoadsData.map((road) => (
-                  <li key={road.properties.id}>
-                    <span className="text-gray-900">
-                      {road.properties.name}{" "}
-                      <span className="font-light text-gray-600">
-                        - {road.properties.lengthMi.toFixed(1)} mi
+              {guessedRoadsData.length > 0 ? (
+                <ul className="list-disc overflow-y-auto pl-8 leading-relaxed text-gray-600">
+                  {guessedRoadsData.map((road) => (
+                    <li key={road.properties.id}>
+                      <span className="text-gray-900">
+                        {road.properties.name}{" "}
+                        <span className="font-light text-gray-600">
+                          - {road.properties.lengthMi.toFixed(1)} mi
+                        </span>
                       </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="self-center text-sm italic text-gray-600">
+                  none yet
+                </div>
+              )}
             </div>
           </div>
         </main>
@@ -262,7 +274,6 @@ const carIcon = (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 512 512"
     className="h-16 w-16 -scale-x-100 sm:h-24 sm:w-24"
-    // xml:space="preserve"
   >
     <g>
       <path
