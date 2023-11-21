@@ -14,18 +14,18 @@ datasource db {
 
 model Search {
     query     String   @id
-    results   Json
+    results   String
     updatedAt DateTime @updatedAt
 }
 
 model OsmResponse {
     id        String   @id
-    response  Json
+    response  String
     updatedAt DateTime @updatedAt
 }
 
 model Place {
     id        String   @id
-    response  Json
+    response  String
     updatedAt DateTime @updatedAt
 }
