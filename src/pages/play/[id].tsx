@@ -141,9 +141,9 @@ export default function Play() {
           />
         </header>
         {/* Main grid */}
-        <main className="grid grow gap-x-3 gap-y-3 pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:gap-x-4 sm:pl-3">
+        <main className="grid w-full max-w-[1800px] grow gap-x-2 gap-y-3 self-center pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:pl-3 md:gap-x-3">
           {/* Guess box */}
-          <div className="mx-4 mt-2 gap-4 sm:col-start-1 sm:col-end-1">
+          <div className="mx-4 mt-2 gap-4 sm:col-start-1 sm:col-end-1 sm:mx-2 md:mx-4">
             <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 px-4 pb-2 pt-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
               <div className="flex flex-wrap items-baseline justify-center text-sm text-sky-100">
                 <span className="inline-block whitespace-pre">
@@ -176,10 +176,14 @@ export default function Play() {
                 </>
               ) : (
                 <>
-                  <form onSubmit={onGuess} className="flex w-full gap-4">
+                  <form
+                    onSubmit={onGuess}
+                    className="flex w-full gap-4 sm:gap-3 lg:gap-4"
+                  >
                     <input
                       className="min-w-0 flex-1 rounded-lg border-2 border-gray-400 p-2 text-black"
                       placeholder="e.g. 'main st' or '1st'"
+                      size={15}
                     ></input>
                     <button
                       className="relative bottom-[4px] rounded-lg bg-gray-700 px-2 text-white drop-shadow-[0px_4px_theme(colors.gray.600)] active:bottom-0 active:drop-shadow-none"
@@ -232,7 +236,7 @@ export default function Play() {
             </div>
           </div>
           {/* Guess list */}
-          <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:h-0 sm:min-h-[max(150px,100%)]">
+          <div className="mx-4 pb-4 sm:col-start-1 sm:col-end-1 sm:mx-2 sm:h-0 sm:min-h-[max(150px,100%)] md:mx-4">
             <div className="m-[8px] flex h-[calc(100%-16px)] flex-col rounded-md bg-white p-4 text-black shadow-stone-950 ring-4 ring-white ring-offset-4 ring-offset-black drop-shadow-[-3px_4px_theme(colors.gray.400)] sm:col-start-1 sm:col-end-1">
               <div className="mb-2 self-center text-xl font-bold uppercase">
                 Guessed Streets
