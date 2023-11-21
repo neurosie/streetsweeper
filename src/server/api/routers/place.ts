@@ -7,13 +7,14 @@ export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
-      // Turning off transformed data caching while I work on the transform
-      // const place = await ctx.prisma.place.findUnique({
-      //   where: { id },
-      // });
-      // if (place) {
-      //   return JSON.parse(place.response) as PlaceResponse;
-      // }
+      if (process.env.NODE_ENV !== "development") {
+        const place = await ctx.prisma.place.findUnique({
+          where: { id },
+        });
+        if (place) {
+          return JSON.parse(place.response) as PlaceResponse;
+        }
+      }
 
       let osmText = (
         await ctx.prisma.osmResponse.findUnique({
@@ -40,9 +41,11 @@ export const placeRouter = createTRPCRouter({
 
       const finalPlace = transformGeodata(JSON.parse(osmText));
 
-      // await ctx.prisma.place.create({
-      //   data: { id, response: JSON.stringify(finalPlace) },
-      // });
+      if (process.env.NODE_ENV !== "development") {
+        await ctx.prisma.place.create({
+          data: { id, response: JSON.stringify(finalPlace) },
+        });
+      }
 
       return finalPlace;
     }),
