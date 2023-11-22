@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
@@ -19,6 +20,8 @@ export default function Play() {
     { guess: string; state: GuessState; newMatchCount: number } | undefined
   >(undefined);
   const [hasLoadedSave, setHasLoadedSave] = useState(false);
+  const [isConfirmFinishDialogOpen, setIsConfirmFinishDialogOpen] =
+    useState(false);
   const [finished, setFinished] = useState(false);
 
   /**
@@ -171,7 +174,7 @@ export default function Play() {
                     streets!
                   </div>
                   <button
-                    className="relative bottom-[4px] rounded-lg bg-sign-400 p-2 font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.600)] active:bottom-0 active:drop-shadow-none"
+                    className="relative bottom-[4px] rounded-lg bg-sign-400 p-2 font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.500)] active:bottom-0 active:drop-shadow-none"
                     onClick={playAgain}
                   >
                     Play again
@@ -189,8 +192,8 @@ export default function Play() {
                       size={15}
                     ></input>
                     <button
-                      className="relative bottom-[4px] rounded-lg bg-gray-700 px-2 text-white drop-shadow-[0px_4px_theme(colors.gray.600)] active:bottom-0 active:drop-shadow-none"
-                      onClick={() => setFinished(true)}
+                      className="relative bottom-[4px] rounded-lg bg-gray-500 px-2 text-white drop-shadow-[0px_4px_theme(colors.gray.700)] active:bottom-0 active:drop-shadow-none"
+                      onClick={() => setIsConfirmFinishDialogOpen(true)}
                       type="button"
                     >
                       Finish
@@ -265,6 +268,39 @@ export default function Play() {
             </div>
           </div>
         </main>
+        <Dialog open={isConfirmFinishDialogOpen} onClose={() => null}>
+          <div
+            className="pointer-events-none fixed inset-0 z-10 bg-black/50"
+            aria-hidden="true"
+          />
+          <div
+            className="fixed inset-0 z-20 flex w-screen items-center justify-center p-4"
+            onClick={() => setIsConfirmFinishDialogOpen(false)}
+          >
+            <Dialog.Panel className="m-[4px] flex w-full max-w-md flex-col items-center gap-4 rounded-lg bg-warningsign-500 p-4 font-sans text-gray-900 ring-2 ring-warningsign-500 ring-offset-2 ring-offset-gray-900 drop-shadow-[-3px_4px_theme(colors.amber.800)]">
+              <p className="text-lg">Are you sure you&apos;re all done?</p>
+              <div className="flex gap-6">
+                <button
+                  className="relative bottom-[4px] rounded-lg bg-gray-500 p-2 text-white drop-shadow-[0px_4px_theme(colors.gray.700)] active:bottom-0 active:drop-shadow-none"
+                  onClick={() => setIsConfirmFinishDialogOpen(false)}
+                  type="button"
+                >
+                  Keep playing
+                </button>
+                <button
+                  className="relative bottom-[4px] rounded-lg bg-red-600 p-2 font-semibold text-gray-100 drop-shadow-[0px_4px_theme(colors.red.900)] active:bottom-0 active:drop-shadow-none"
+                  onClick={() => {
+                    setIsConfirmFinishDialogOpen(false);
+                    setFinished(true);
+                  }}
+                  type="button"
+                >
+                  I&apos;m done
+                </button>
+              </div>
+            </Dialog.Panel>
+          </div>
+        </Dialog>
       </div>
     );
   }

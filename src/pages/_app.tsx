@@ -23,6 +23,12 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <div
       className={`${overpass.variable} ${sail.variable} min-h-screen bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
     >
+      <style jsx global>{`
+        :root {
+          --font-overpass: ${overpass.style.fontFamily};
+          --font-sail: ${sail.style.fontFamily};
+        }
+      `}</style>
       <Component {...pageProps} />
     </div>
   );
