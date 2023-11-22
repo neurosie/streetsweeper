@@ -153,11 +153,20 @@ function SearchResults({
     const items = data.filter((entry) => entry.osm_type === "relation");
     if (items.length > 0) {
       content = (
-        <SuggestionListBox
-          items={items}
-          key={searchTerm}
-          onSelectPlace={onSelectPlace}
-        ></SuggestionListBox>
+        <>
+          <SuggestionListBox
+            items={items}
+            key={searchTerm}
+            onSelectPlace={onSelectPlace}
+          ></SuggestionListBox>
+          <div className="w-full p-1 text-center text-sm text-blue-100">
+            Search data ©{" "}
+            <a className="text-white underline" href="http://osm.org/copyright">
+              OpenStreetMap
+            </a>
+            .
+          </div>
+        </>
       );
     } else {
       content = (
