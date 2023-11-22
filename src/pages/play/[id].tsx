@@ -18,13 +18,13 @@ export default function Play() {
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatchCount: number } | undefined
   >(undefined);
+  const [hasLoadedSave, setHasLoadedSave] = useState(false);
   const [finished, setFinished] = useState(false);
 
   /**
    * Load game from localStorage.
    */
-  useEffect(() => {
-    if (!placeId || !data) return;
+  if (placeId && data && !hasLoadedSave) {
     const savedGame = localStorage.getItem(storageKey(placeId));
     if (savedGame) {
       const parsedSave: unknown = JSON.parse(savedGame);
@@ -40,7 +40,8 @@ export default function Play() {
         );
       }
     }
-  }, [placeId, data]);
+    setHasLoadedSave(true);
+  }
 
   /**
    * Save game to localStorage.
@@ -75,8 +76,10 @@ export default function Play() {
         guessState = "repeat";
       } else {
         guessState = "right";
+        setGuessedRoads((guessedRoads) =>
+          guessedRoads.concat(newlyMatchedRoads),
+        );
       }
-      setGuessedRoads((guessedRoads) => guessedRoads.concat(newlyMatchedRoads));
     }
     setLastGuess({ guess, state: guessState, newMatchCount });
   }
@@ -216,7 +219,7 @@ export default function Play() {
             </div>
           </div>
           {/* Map */}
-          <div className="relative h-[400px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
+          <div className="relative h-[350px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
             <MapboxMap
               className="relative h-full"
               place={data}
