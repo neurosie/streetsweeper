@@ -96,12 +96,15 @@ export default function Play() {
 
   if (status === "loading") {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="sr-only">Loading...</div>
-        <div className="relative flex h-32 w-32 items-baseline justify-center sm:h-48 sm:w-48">
-          <div className="h-full w-full animate-[spin-reverse_20s_infinite] rounded-full border-2 border-dashed border-amber-300"></div>
-          <div className="absolute bottom-16 mx-auto origin-bottom animate-[spin_4s_linear_infinite] pb-[50px] sm:bottom-24 sm:pb-[74px]">
-            <div className="animate-car-bounce text-sign-500">{carIcon}</div>
+      <div className="flex h-screen w-full flex-col gap-6">
+        {Header}
+        <div className="flex flex-1 items-center justify-center">
+          <div className="sr-only">Loading...</div>
+          <div className="relative flex h-32 w-32 items-baseline justify-center sm:h-48 sm:w-48">
+            <div className="h-full w-full animate-[spin-reverse_20s_infinite] rounded-full border-2 border-dashed border-amber-300"></div>
+            <div className="absolute bottom-16 mx-auto origin-bottom animate-[spin_4s_linear_infinite] pb-[50px] sm:bottom-24 sm:pb-[74px]">
+              <div className="animate-car-bounce text-sign-500">{carIcon}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -109,7 +112,8 @@ export default function Play() {
   } else if (status === "error") {
     console.error(error);
     return (
-      <div className="flex h-screen flex-col items-center py-4">
+      <div className="flex h-screen flex-col items-center gap-6">
+        {Header}
         <div className="bg-sign-600 ring-sign-600 m-[6px] w-[80%] rounded-xl p-4 text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
           <p>Something went wrong :(</p>
           <p className="font-mono">{error.message}</p>
@@ -135,17 +139,7 @@ export default function Play() {
     return (
       <div className="flex min-h-screen flex-col sm:max-h-screen">
         {/* Header */}
-        <header className="flex flex-col items-center gap-3 pt-3">
-          <Link href="/">
-            <h1 className="bg-sign-600 ring-sign-600 m-[6px] rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
-              StreetSweeper
-            </h1>
-          </Link>
-          <hr
-            role="presentation"
-            className="h-2 w-full border-y-2 border-amber-300"
-          />
-        </header>
+        {Header}
         {/* Main grid */}
         <main className="grid w-full max-w-[1800px] grow gap-x-2 gap-y-3 self-center pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:pl-3 md:gap-x-3">
           {/* Guess box */}
@@ -305,6 +299,20 @@ export default function Play() {
     );
   }
 }
+
+const Header = (
+  <header className="flex w-full flex-col items-center gap-3 pt-3">
+    <Link href="/">
+      <h1 className="bg-sign-600 ring-sign-600 m-[6px] rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
+        StreetSweeper
+      </h1>
+    </Link>
+    <hr
+      role="presentation"
+      className="h-2 w-full border-y-2 border-amber-300"
+    />
+  </header>
+);
 
 function storageKey(placeId: string) {
   return `game-${placeId}`;
