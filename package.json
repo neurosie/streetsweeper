@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.456.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
     "@prisma/client": "^5.1.1",

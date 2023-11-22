@@ -17,15 +17,3 @@ model Search {
     results   String
     updatedAt DateTime @updatedAt
 }
-
-model OsmResponse {
-    id        String   @id
-    response  String
-    updatedAt DateTime @updatedAt
-}
-
-model Place {
-    id        String   @id
-    response  String
-    updatedAt DateTime @updatedAt
-}

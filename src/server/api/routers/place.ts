@@ -8,25 +8,19 @@ export const placeRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
       if (process.env.NODE_ENV !== "development") {
-        const place = await ctx.prisma.place.findUnique({
-          where: { id },
-        });
+        const place = await ctx.s3.getObject(`place/${id}`);
         if (place) {
-          return JSON.parse(place.response) as PlaceResponse;
+          return JSON.parse(place) as PlaceResponse;
         }
       }
 
-      let osmText = (
-        await ctx.prisma.osmResponse.findUnique({
-          where: { id },
-        })
-      )?.response;
+      let osmText = await ctx.s3.getObject(`osmResponse/${id}`);
       if (!osmText) {
         const osmResponse = await fetchWithUA(
           "https://overpass-api.de/api/interpreter",
           {
             method: "POST",
-            body: "data=" + encodeURIComponent(OSMQuery(id)),
+            body: "data=" + encodeURIComponent(openStreetMapQuery(id)),
           },
         );
         if (!osmResponse.ok) {
@@ -34,24 +28,20 @@ export const placeRouter = createTRPCRouter({
         }
 
         osmText = await osmResponse.text();
-        await ctx.prisma.osmResponse.create({
-          data: { id, response: osmText },
-        });
+        await ctx.s3.putObject(`osmResponse/${id}`, osmText);
       }
 
       const finalPlace = transformGeodata(JSON.parse(osmText));
 
       if (process.env.NODE_ENV !== "development") {
-        await ctx.prisma.place.create({
-          data: { id, response: JSON.stringify(finalPlace) },
-        });
+        await ctx.s3.putObject(`place/${id}`, JSON.stringify(finalPlace));
       }
 
       return finalPlace;
     }),
 });
 
-function OSMQuery(relationId: string) {
+function openStreetMapQuery(relationId: string) {
   return `[out:json];
     relation(${relationId})->.orig;
     .orig out geom;

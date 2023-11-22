@@ -12,6 +12,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { prisma } from "~/server/db";
+import { s3 } from "~/server/s3";
 
 /**
  * 1. CONTEXT
@@ -36,6 +37,7 @@ type CreateContextOptions = Record<string, never>;
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
     prisma,
+    s3,
   };
 };
 
