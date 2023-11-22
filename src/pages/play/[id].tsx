@@ -208,7 +208,7 @@ export default function Play() {
                         }[lastGuess.state](lastGuess.newMatchCount)}
                       </>
                     ) : (
-                      <>&nbsp;</>
+                      <>Enter a street name!</>
                     )}
                   </div>
                 </>
