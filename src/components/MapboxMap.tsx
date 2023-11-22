@@ -118,16 +118,23 @@ export default function MapboxMap({
       setMap(map);
     });
 
-    return () => map.remove();
+    if (process.env.NODE_ENV !== "development") {
+      return () => map.remove();
+    }
   }, [place]);
 
   useEffect(() => {
     if (!map) {
       return;
     }
-    for (const roadId of guessedRoads) {
-      map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
-    }
+    // This is really stupid but there's some kind of race condition where if
+    // setFeatureState is called too close to the first render it just doesn't
+    // work. God.
+    setTimeout(() => {
+      for (const roadId of guessedRoads) {
+        map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
+      }
+    }, 0);
   }, [map, guessedRoads]);
 
   useEffect(() => {
