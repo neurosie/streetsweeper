@@ -218,7 +218,7 @@ export default function Play() {
           {/* Map */}
           <div className="relative h-[350px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
             <Map
-              className="relative h-full"
+              className="relative h-full text-black"
               place={data}
               guessedRoads={guessedRoads}
               finished={finished}

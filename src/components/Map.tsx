@@ -26,6 +26,8 @@ export default function Map({
       container: mapContainer.current!,
       style: "mapbox://styles/neurosie/clnorauph008x01p3db1a6tuf",
       bounds: place.place.bbox,
+      customAttribution:
+        'Street data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     });
 
     map.on("load", () => {
