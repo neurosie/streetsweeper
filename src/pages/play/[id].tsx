@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
-import MapboxMap from "~/components/MapboxMap";
+import Map from "~/components/Map";
 import { type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
 
@@ -220,7 +220,7 @@ export default function Play() {
           </div>
           {/* Map */}
           <div className="relative h-[350px] sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-3 sm:h-full">
-            <MapboxMap
+            <Map
               className="relative h-full"
               place={data}
               guessedRoads={guessedRoads}

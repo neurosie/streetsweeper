@@ -2,7 +2,7 @@ import mapboxgl from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
 import { type PlaceResponse } from "~/server/geo/geojson";
 
-export default function MapboxMap({
+export default function Map({
   place,
   guessedRoads,
   finished,
