@@ -99,6 +99,33 @@ Today I got going on something I've been excited about: a visual redesign focusi
 It's a really distinctive and fun look (not to mention high contrast), but I'll have to be careful to make sure it stays clean and usable as an interface. I couldn't find a good SVG of a one-way sign for the "PLAY" button, so I created that one in Inkscape.
 
 For the game page, it didn't make sense to me to have the map on a sign. After some thought, I landed on a cute solution: a paper map!
+
 <img src="202310312.png" alt="A map with a white border, curled edges and a drop shadow creating the effect of a physical piece of paper."/>
 
 I really like how this turned out. This was my first time using [`filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/filter) and [`clip-path`](https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path), and it's really astonishing what you can accomplish with modern CSS. I took inspiration from CSS demos by [Saman Rohanizade](https://codepen.io/SamanRohanizade/pen/opgdKZ) and [Martin Wolf](https://codepen.io/martinwolf/pen/GRaWPy), as well as Temani Afif's [CSS custom corner generator](https://css-generators.com/custom-corners/).
+
+# 2023-11-28
+
+Wow, I did a lot in the last month without updating the log.
+
+## Design
+
+I've iterated on the visual design a few times since, and this is what the desktop home and game pages look like today:
+
+<img src="november_redesign_desktop_home.png" alt="StreetSweeper landing page. A large logo at the top, a yellow dotted road line divider, and a large blue box with the main content that looks like an informational road sign." width="600"/>
+
+<img src="november_redesign_desktop_game.png" alt="StreetSweeper game page. On the left, a card saying 'Welcome to the City of Troy', with a text input for entering street names, and a card with a list of the guessed streets. On the right, a large map with some streets highlighted in blue." width="600"/>
+
+I'm really happy with the sign cards and the typography. Still not 100% satisfied with the overall look. I decided not to go with the paper map effect even though I was so endeared to it. It doesn't mesh with the other elements I'm using, and takes attention away from the map contents, especially on mobile. Ah well, I have [the code](https://github.com/neurosie/streetsweeper/blob/1cb5e1b0c823fcd7991d80b9fab1d29e03f0d437/src/styles/globals.css#L11) for it now. Someday I'll find a use.
+
+## A database tale
+
+I started with SQLite as a database for development, knowing I'd need to change to a different DBMS later. Well, it's later. I set a goal for myself to have an alpha playtest by Thanksgiving, and that meant setting up hosting. I went with Vercel, and at first I decided to use their managed Postgres integration. I switched over my DB config, pushed and it worked seamlessly. Great!
+
+Except, the next day, I had a problem:  
+<img src="too_much_data.png" alt="Data transfer - 120 MB / 256 MB"/>  
+I used up half my monthly data transfer limit in a day, with just a single player (me). Obviously not sustainable. And I had a pretty good idea why.
+
+I had three tables, `Search`, `OsmResponse`, and `Place`. Each of these are essentially caching JSON objects. `Search` stores cached search result responses from Nominatin, a few KB each. `OsmResponse` caches raw GeoJSON data from the OpenStreetMap API, and `Place` caches my API responses after I've done my transforms on that same data. (I decided to cache them both so I could update my transforms without refetching the initial data, minimizing load on OSM.) These are really big objects, serialized and stored in a string field. For San Francisco, the `Place` entry is 2MB, and the `OSMResponse` entry is **11MB**. Yup, that's where my data transfer is going.
+
+Storing JSON blobs in my database was convenient for prototyping, but it was now time for a more practical solution. This is a job for AWS S3. I set up a bucket, [hooked everything up](https://github.com/neurosie/streetsweeper/commit/1cb5e1b0c823fcd7991d80b9fab1d29e03f0d437), and voilà! My playtest went great, without bumping into any free tier quotas. 🙂
