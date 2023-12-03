@@ -1,4 +1,9 @@
-import mapboxgl from "mapbox-gl";
+import bbox from "@turf/bbox";
+import bboxPolygon from "@turf/bbox-polygon";
+import { type BBox2d } from "@turf/helpers/dist/js/lib/geojson";
+import square from "@turf/square";
+import transformScale from "@turf/transform-scale";
+import mapboxgl, { type IControl } from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
 import { type PlaceResponse } from "~/server/geo/geojson";
 
@@ -24,13 +29,27 @@ export default function Map({
     if (!place) {
       return;
     }
+
+    const initialBounds = bbox(
+      transformScale(bboxPolygon(place.place.bbox), 1.05),
+    ) as BBox2d;
+
     const map = new mapboxgl.Map({
       container: mapContainer.current!,
       style: "mapbox://styles/neurosie/clnorauph008x01p3db1a6tuf",
-      bounds: place.place.bbox,
+      bounds: initialBounds,
       customAttribution:
         'Street data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxPitch: 0,
+      dragRotate: false,
+      maxBounds: bbox(
+        transformScale(bboxPolygon(square(place.place.bbox)), 1.5),
+      ) as BBox2d,
     });
+
+    map.touchZoomRotate.disableRotation();
+    map.keyboard.disableRotation();
+    map.addControl(new RecenterControl(initialBounds), "bottom-right");
 
     map.on("load", () => {
       // Get the first layer with text, so other layers can be placed below it
@@ -227,3 +246,47 @@ const usePrevious = <T,>(value: T): T | undefined => {
   });
   return ref.current;
 };
+
+class RecenterControl implements IControl {
+  private initialBounds: BBox2d;
+  private container: HTMLElement | undefined;
+
+  constructor(initialBounds: BBox2d) {
+    this.initialBounds = initialBounds;
+  }
+
+  onAdd(map: mapboxgl.Map): HTMLElement {
+    this.container = document.createElement("div");
+    this.container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+    const button = document.createElement("button");
+    button.className = "mapboxgl-ctrl-icon";
+    button.title = "Recenter";
+    button.ariaLabel = "Recenter";
+    button.innerHTML = crosshair;
+    button.onclick = () => {
+      map.fitBounds(this.initialBounds);
+    };
+    this.container.appendChild(button);
+    return this.container;
+  }
+
+  onRemove(_map: mapboxgl.Map): void {
+    this.container?.parentNode!.removeChild(this.container);
+  }
+}
+
+const crosshair = `
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 3V7M12 17V21M3 12H7M17 12H21M12 12H12.01M19 12C19 15.866 15.866 19 12 19C8.13401 19 5 15.866 5 12C5 8.13401 8.13401 5 12 5C15.866 5 19 8.13401 19 12Z"
+      stroke="#000000"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`;
