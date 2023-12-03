@@ -7,11 +7,9 @@ export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
-      if (process.env.NODE_ENV !== "development") {
-        const place = await ctx.s3.getObject(`place/${id}`);
-        if (place) {
-          return JSON.parse(place) as PlaceResponse;
-        }
+      const place = await ctx.s3.getObject(`place/${id}`);
+      if (place) {
+        return JSON.parse(place) as PlaceResponse;
       }
 
       let osmText = await ctx.s3.getObject(`osmResponse/${id}`);
