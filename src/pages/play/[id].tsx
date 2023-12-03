@@ -17,7 +17,7 @@ export default function Play() {
   );
   const [guessedRoads, setGuessedRoads] = useState<string[]>([]);
   const [lastGuess, setLastGuess] = useState<
-    { guess: string; state: GuessState; newMatchCount: number } | undefined
+    { guess: string; state: GuessState; newMatches: string[] } | undefined
   >(undefined);
   const [hasLoadedSave, setHasLoadedSave] = useState(false);
   const [isConfirmFinishDialogOpen, setIsConfirmFinishDialogOpen] =
@@ -66,16 +66,15 @@ export default function Play() {
       return;
     }
     let guessState: GuessState = "wrong";
-    let newMatchCount = 0;
+    let newlyMatchedRoads: string[] = [];
     const matchedRoads = data!.roads.features
       .filter((road) => road.properties.alternateNames.includes(guess))
       .map((road) => road.properties.id);
     if (matchedRoads.length > 0) {
-      const newlyMatchedRoads = matchedRoads.filter(
+      newlyMatchedRoads = matchedRoads.filter(
         (road) => !guessedRoads.includes(road),
       );
-      newMatchCount = newlyMatchedRoads.length;
-      if (newMatchCount === 0) {
+      if (newlyMatchedRoads.length === 0) {
         guessState = "repeat";
       } else {
         guessState = "right";
@@ -84,7 +83,7 @@ export default function Play() {
         );
       }
     }
-    setLastGuess({ guess, state: guessState, newMatchCount });
+    setLastGuess({ guess, state: guessState, newMatches: newlyMatchedRoads });
   }
 
   function playAgain() {
@@ -114,7 +113,7 @@ export default function Play() {
     return (
       <div className="flex h-screen flex-col items-center gap-6">
         {Header}
-        <div className="bg-sign-600 ring-sign-600 m-[6px] w-[80%] rounded-xl p-4 text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
+        <div className="m-[6px] w-[80%] rounded-xl bg-sign-600 p-4 text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
           <p>Something went wrong :(</p>
           <p className="font-mono">{error.message}</p>
         </div>
@@ -205,7 +204,7 @@ export default function Play() {
                             `+${x} road${x === 1 ? "" : "s"}!`,
                           wrong: () => "no roads",
                           repeat: () => "already guessed",
-                        }[lastGuess.state](lastGuess.newMatchCount)}
+                        }[lastGuess.state](lastGuess.newMatches.length)}
                       </>
                     ) : (
                       <>Enter a street name!</>
@@ -222,9 +221,10 @@ export default function Play() {
               place={data}
               guessedRoads={guessedRoads}
               finished={finished}
+              newMatches={lastGuess?.newMatches ?? []}
             />
             {/* Score box */}
-            <div className="bg-sign-600 ring-sign-600 absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md px-0.5 py-2 shadow-stone-950 ring-1 ring-offset-2 ring-offset-white drop-shadow-[0_2px_theme(colors.sign.700)]">
+            <div className="absolute right-4 top-4 m-[3px] flex flex-col items-center self-stretch rounded-md bg-sign-600 px-0.5 py-2 shadow-stone-950 ring-1 ring-sign-600 ring-offset-2 ring-offset-white drop-shadow-[0_2px_theme(colors.sign.700)]">
               <div className="text-sm uppercase tracking-tighter">Miles</div>
               <div className="text-3xl font-bold leading-none">
                 {Array.from(guessedLength.toFixed(0)).map((c, i) => (
@@ -242,14 +242,21 @@ export default function Play() {
                 Guessed Streets
               </div>
               {guessedRoadsData.length > 0 ? (
-                <ul className="list-disc overflow-y-auto pl-8 leading-relaxed text-gray-600">
+                <ul className="list-disc overflow-y-auto pl-8 pr-2 leading-relaxed text-gray-600">
                   {guessedRoadsData.map((road) => (
                     <li key={road.properties.id}>
-                      <span className="text-gray-900">
-                        {road.properties.name}{" "}
-                        <span className="font-light text-gray-600">
-                          - {road.properties.lengthMi.toFixed(1)} mi
-                        </span>
+                      <span
+                        className={
+                          "text-gray-900" +
+                          (lastGuess?.newMatches.includes(road.properties.id)
+                            ? " [text-shadow:0_0_8px_theme(colors.warningsign.500)]"
+                            : "")
+                        }
+                      >
+                        {road.properties.name}
+                      </span>{" "}
+                      <span className="font-light text-gray-600">
+                        - {road.properties.lengthMi.toFixed(1)} mi
                       </span>
                     </li>
                   ))}
@@ -303,7 +310,7 @@ export default function Play() {
 const Header = (
   <header className="flex w-full flex-col items-center gap-3 pt-3">
     <Link href="/">
-      <h1 className="bg-sign-600 ring-sign-600 m-[6px] rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
+      <h1 className="m-[6px] rounded-xl bg-sign-600 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
         StreetSweeper
       </h1>
     </Link>

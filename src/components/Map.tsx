@@ -7,11 +7,13 @@ export default function Map({
   guessedRoads,
   finished,
   className,
+  newMatches,
 }: {
   place: PlaceResponse;
   guessedRoads: string[];
   className: string | undefined;
   finished: boolean;
+  newMatches: string[];
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();
   const mapContainer = useRef(null);
@@ -73,6 +75,45 @@ export default function Map({
       });
       map.addLayer(
         {
+          id: "roads-halo",
+          type: "line",
+          source: "roads",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-opacity": [
+              "case",
+              ["boolean", ["feature-state", "glow"], false],
+              0.8,
+              0,
+            ],
+            "line-blur": [
+              "interpolate",
+              ["exponential", 2],
+              ["zoom"],
+              10,
+              2,
+              15,
+              16,
+            ],
+            "line-color": "hsl(58, 91%, 41%)",
+            "line-width": [
+              "interpolate",
+              ["exponential", 2],
+              ["zoom"],
+              10,
+              6,
+              15,
+              48,
+            ],
+          },
+        },
+        "boundary",
+      );
+      map.addLayer(
+        {
           id: "roads",
           type: "line",
           source: "roads",
@@ -98,7 +139,7 @@ export default function Map({
             ],
           },
         },
-        "boundary",
+        "roads-halo",
       );
 
       map.addLayer({
@@ -125,13 +166,11 @@ export default function Map({
     }
   }, [place]);
 
+  // Turned guessed roads blue
   useEffect(() => {
-    if (!map) {
-      return;
-    }
-    // This is really stupid but there's some kind of race condition where if
-    // setFeatureState is called too close to the first render it just doesn't
-    // work. God.
+    if (!map) return;
+    // There's some race condition where if setFeatureState is called too close to the
+    // first render it just doesn't work. 1ms delay resolves it.
     setTimeout(() => {
       for (const roadId of guessedRoads) {
         map.setFeatureState({ source: "roads", id: roadId }, { guessed: true });
@@ -139,6 +178,21 @@ export default function Map({
     }, 0);
   }, [map, guessedRoads]);
 
+  // Highlight the last guessed roads
+  const previousMatches = usePrevious(newMatches);
+  useEffect(() => {
+    if (!map) return;
+    if (previousMatches) {
+      for (const roadId of previousMatches) {
+        map.setFeatureState({ source: "roads", id: roadId }, { glow: false });
+      }
+    }
+    for (const roadId of newMatches) {
+      map.setFeatureState({ source: "roads", id: roadId }, { glow: true });
+    }
+  }, [map, newMatches, previousMatches]);
+
+  // Reveal all roads when the game is over
   useEffect(() => {
     if (!map) {
       return;
@@ -165,3 +219,11 @@ const labelOpacityExpression: mapboxgl.Expression = [
   1,
   0,
 ];
+
+const usePrevious = <T,>(value: T): T | undefined => {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
