@@ -31,7 +31,7 @@ export default function Map({
     }
 
     const initialBounds = bbox(
-      transformScale(bboxPolygon(place.place.bbox), 1.05),
+      transformScale(bboxPolygon(place.place.bbox), 1.1),
     ) as BBox2d;
 
     const map = new mapboxgl.Map({
@@ -43,7 +43,7 @@ export default function Map({
       maxPitch: 0,
       dragRotate: false,
       maxBounds: bbox(
-        transformScale(bboxPolygon(square(place.place.bbox)), 1.5),
+        transformScale(bboxPolygon(square(place.place.bbox)), 2),
       ) as BBox2d,
     });
 
@@ -79,8 +79,8 @@ export default function Map({
               ["zoom"],
               10,
               2,
-              15,
-              24,
+              12,
+              8,
             ],
           },
         },

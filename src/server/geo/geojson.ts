@@ -16,6 +16,7 @@ import {
 import osmtogeojson from "osmtogeojson";
 import { generateAbbreviations } from "./abbreviations";
 import { z } from "zod";
+import booleanIntersects from "@turf/boolean-intersects";
 
 /**
  * Top-level geodata for a city or town.
@@ -54,7 +55,7 @@ export interface TypedCollection<T extends Feature>
   features: Array<T>;
 }
 
-const PlaceProperties = z.object({
+const OsmPlaceProperties = z.object({
   name: z.string(),
   population: z.string().optional(),
 });
@@ -160,56 +161,83 @@ export function transformGeodata(response: unknown): PlaceResponse {
   // - finalize the geometry
   // - synthesize an ID from the segment IDs
   // - generate acceptable short names for guessing
-  const finalRoads: Road[] = Array.from(
-    roadSegmentMap,
-    ([name, { segments, alternateNames, ids }]) => {
-      const unifiedSegments = unifySegments(segments);
-      let geometry: LineString | MultiLineString;
-      if (unifiedSegments.length === 1) {
-        geometry = { type: "LineString", coordinates: unifiedSegments[0]! };
-      } else {
-        geometry = { type: "MultiLineString", coordinates: unifiedSegments };
-      }
+  const finalRoads: PlaceResponse["roads"] = {
+    type: "FeatureCollection",
+    features: Array.from(
+      roadSegmentMap,
+      ([name, { segments, alternateNames, ids }]) => {
+        const unifiedSegments = unifySegments(segments);
+        let geometry: LineString | MultiLineString;
+        if (unifiedSegments.length === 1) {
+          geometry = { type: "LineString", coordinates: unifiedSegments[0]! };
+        } else {
+          geometry = { type: "MultiLineString", coordinates: unifiedSegments };
+        }
 
-      const sortedIds = Array.from(ids).sort();
+        const sortedIds = Array.from(ids).sort();
 
-      return {
-        type: "Feature",
-        geometry,
-        properties: {
-          name,
-          id: sortedIds.join("-"),
-          alternateNames: Array.from(
-            new Set(
-              Array.from(alternateNames).flatMap((name) =>
-                generateAbbreviations(name, "easy"),
+        return {
+          type: "Feature",
+          geometry,
+          properties: {
+            name,
+            id: sortedIds.join("-"),
+            alternateNames: Array.from(
+              new Set(
+                Array.from(alternateNames).flatMap((name) =>
+                  generateAbbreviations(name, "easy"),
+                ),
               ),
             ),
-          ),
-          lengthMi: length(
-            { type: "Feature", geometry, properties: {} },
-            { units: "miles" },
-          ),
-        },
-      };
-    },
-  );
+            lengthMi: length(
+              { type: "Feature", geometry, properties: {} },
+              { units: "miles" },
+            ),
+          },
+        };
+      },
+    ),
+  };
 
-  const placeProperties = PlaceProperties.parse(place.properties);
+  // For the place boundary, exclude any polygons that don't have roads in them.
+  let placeGeometry = place.geometry;
+  if (place.geometry.type === "MultiPolygon") {
+    const polysWithRoads: MultiPolygon["coordinates"] = [];
+    for (const poly of place.geometry.coordinates) {
+      if (
+        finalRoads.features.some((road) =>
+          booleanIntersects({ type: "Polygon", coordinates: poly }, road),
+        )
+      ) {
+        polysWithRoads.push(poly);
+      }
+    }
+    if (polysWithRoads.length === 0) {
+      throw "No boundary polygons contained roads.";
+    } else if (polysWithRoads.length === 1) {
+      placeGeometry = { type: "Polygon", coordinates: polysWithRoads[0]! };
+    } else {
+      placeGeometry = { type: "MultiPolygon", coordinates: polysWithRoads };
+    }
+  }
+
+  const placeProperties = OsmPlaceProperties.parse(place.properties);
 
   return {
     place: {
-      ...place,
-      bbox: (place.bbox ?? bbox(place)) as BBox2d,
+      type: "Feature",
+      geometry: placeGeometry,
+      id: place.id,
+      bbox: bbox(finalRoads) as BBox2d,
       properties: {
         name: placeProperties.name,
-        totalLengthMi: finalRoads.reduce(
+        totalLengthMi: finalRoads.features.reduce(
           (sum, road) => sum + road.properties.lengthMi,
           0,
         ),
       },
     },
-    roads: { type: "FeatureCollection", features: finalRoads },
+    roads: finalRoads,
   };
 }
 
