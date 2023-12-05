@@ -1,7 +1,6 @@
 import bbox from "@turf/bbox";
 import bboxPolygon from "@turf/bbox-polygon";
 import { type BBox2d } from "@turf/helpers/dist/js/lib/geojson";
-import square from "@turf/square";
 import transformScale from "@turf/transform-scale";
 import mapboxgl, { type IControl } from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
@@ -37,14 +36,11 @@ export default function Map({
     const map = new mapboxgl.Map({
       container: mapContainer.current!,
       style: "mapbox://styles/neurosie/clnorauph008x01p3db1a6tuf",
-      bounds: initialBounds,
       customAttribution:
         'Street data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxPitch: 0,
       dragRotate: false,
-      maxBounds: bbox(
-        transformScale(bboxPolygon(square(place.place.bbox)), 2),
-      ) as BBox2d,
+      bounds: initialBounds,
     });
 
     map.touchZoomRotate.disableRotation();
@@ -52,6 +48,8 @@ export default function Map({
     map.addControl(new RecenterControl(initialBounds), "bottom-right");
 
     map.on("load", () => {
+      map.setMaxBounds(map.getBounds());
+
       // Get the first layer with text, so other layers can be placed below it
       let firstSymbolId;
       for (const layer of map.getStyle().layers) {
