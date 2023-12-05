@@ -129,3 +129,19 @@ I used up half my monthly data transfer limit in a day, with just a single playe
 I had three tables, `Search`, `OsmResponse`, and `Place`. Each of these are essentially caching JSON objects. `Search` stores cached search result responses from Nominatin, a few KB each. `OsmResponse` caches raw GeoJSON data from the OpenStreetMap API, and `Place` caches my API responses after I've done my transforms on that same data. (I decided to cache them both so I could update my transforms without refetching the initial data, minimizing load on OSM.) These are really big objects, serialized and stored in a string field. For San Francisco, the `Place` entry is 2MB, and the `OSMResponse` entry is **11MB**. Yup, that's where my data transfer is going.
 
 Storing JSON blobs in my database was convenient for prototyping, but it was now time for a more practical solution. This is a job for AWS S3. I set up a bucket, [hooked everything up](https://github.com/neurosie/streetsweeper/commit/1cb5e1b0c823fcd7991d80b9fab1d29e03f0d437), and voilà! My playtest went great, without bumping into any free tier quotas. 🙂
+
+# 2023-12-04
+
+On the heels of my playtest I've been knocking out some quality of life improvements. On Saturday, I added highlighting of the last guessed street on the map, and a button to recenter the map if you've panned away (a great suggestion from a playtester). Today I handled a strange case that's been on my radar for awhile: San Francisco.
+
+<img src="sf_bad.png" alt="A map with two large outlines: one around the top of the San Francisco peninsula outlining the city, and another to the left out in the ocean circling some islands." width="600"/>
+
+San Francisco is a consolidated city-county, and it includes some outlying islands. The outline on the left contains the [Farallon Islands](https://en.wikipedia.org/wiki/Farallon_Islands), which are protected and just home to some research stations. The pointy spur on the right outline reaches up to [Red Rock Island](https://en.wikipedia.org/wiki/Red_Rock_Island), a tiny uninhabited rock used to delineate the borders of SF county with two of its neighbors. These are some neat geography facts (_are they really?_), but all these islands lack the one thing I care about: public roads.
+
+The area of the map we care about is way small! I made two changes to improve this experience. First, I now drop any city boundary polygons that don't have roads of interest. Second, the initial bounding box is now calculated from the roads, not the city border, so big empty areas won't stretch out the viewport.
+
+Here's the centered view of SF now:
+
+<img src="sf_good.png" alt="A map of San Francisco, centered on the main city. The city outline extends off the screen into the water in multiple directions." width="600"/>
+
+Great!
