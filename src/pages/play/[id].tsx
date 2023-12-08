@@ -1,9 +1,11 @@
 import { Dialog } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
+import assert from "assert";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect } from "react";
 import Map from "~/components/Map";
-import { type Road } from "~/server/geo/geojson";
+import { type PlaceResponse, type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
 
 type GuessState = "right" | "wrong" | "repeat";
@@ -11,10 +13,45 @@ type GuessState = "right" | "wrong" | "repeat";
 export default function Play() {
   const router = useRouter();
   const placeId = router.query.id as string | undefined;
-  const { status, data, error } = api.place.getById.useQuery(
-    { id: placeId ?? "" },
-    { enabled: !!placeId },
-  );
+
+  // Data fetching
+  const {
+    data: placeDataUrl,
+    status: apiStatus,
+    error: apiError,
+  } = api.place.getById.useQuery({ id: placeId ?? "" }, { enabled: !!placeId });
+  const {
+    data,
+    status: dataStatus,
+    error: dataError,
+  } = useQuery<PlaceResponse, Error>({
+    queryKey: ["place", placeId],
+    enabled: !!placeDataUrl,
+    queryFn: async () => {
+      const response = await fetch(placeDataUrl!);
+      if (!response.ok) {
+        throw new Error("Data response had an error: " + response.statusText);
+      }
+      return (await response.json()) as PlaceResponse;
+    },
+  });
+  let status: "apiLoading" | "dataLoading" | "error" | "success",
+    errorMessage: string | undefined;
+  if (apiStatus === "loading") {
+    status = "apiLoading";
+  } else if (apiStatus === "error") {
+    status = "error";
+    errorMessage = apiError.message;
+  } else if (dataStatus === "loading") {
+    status = "dataLoading";
+  } else if (dataStatus === "error") {
+    status = "error";
+    errorMessage = dataError.message;
+  } else {
+    status = "success";
+  }
+
+  // State
   const [guessedRoads, setGuessedRoads] = useState<string[]>([]);
   const [lastGuess, setLastGuess] = useState<
     { guess: string; state: GuessState; newMatches: string[] } | undefined
@@ -93,7 +130,7 @@ export default function Play() {
     localStorage.setItem(storageKey(placeId!), JSON.stringify(Array.from([])));
   }
 
-  if (status === "loading") {
+  if (status === "apiLoading" || status === "dataLoading") {
     return (
       <div className="flex h-screen w-full flex-col gap-6">
         {Header}
@@ -109,17 +146,19 @@ export default function Play() {
       </div>
     );
   } else if (status === "error") {
-    console.error(error);
     return (
       <div className="flex h-screen flex-col items-center gap-6">
         {Header}
         <div className="m-[6px] w-[80%] rounded-xl bg-sign-600 p-4 text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
           <p>Something went wrong :(</p>
-          <p className="font-mono">{error.message}</p>
+          <p className="font-mono">{errorMessage}</p>
         </div>
       </div>
     );
   } else {
+    // Data fetching was successful, data is guaranteed to be defined
+    assert(data);
+
     const useThe = data.place.properties.name.split(" ")[1] === "of";
     const guessedLength = data.roads.features.reduce(
       (sum, road) =>

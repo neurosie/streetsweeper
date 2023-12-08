@@ -1,7 +1,8 @@
 import { type AppType } from "next/app";
 import { Overpass, Sail } from "next/font/google";
+import { QueryClientProvider } from "@tanstack/react-query";
 
-import { api } from "~/utils/api";
+import { api, queryClient } from "~/utils/api";
 
 import "~/styles/globals.css";
 
@@ -29,7 +30,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           --font-sail: ${sail.style.fontFamily};
         }
       `}</style>
-      <Component {...pageProps} />
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+      </QueryClientProvider>
     </div>
   );
 };

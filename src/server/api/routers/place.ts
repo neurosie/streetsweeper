@@ -1,15 +1,14 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fetchWithUA } from "~/utils/fetch";
-import { transformGeodata, type PlaceResponse } from "~/server/geo/geojson";
+import { transformGeodata } from "~/server/geo/geojson";
 
 export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input: { id } }): Promise<PlaceResponse> => {
-      const place = await ctx.s3.getObject(`place/${id}`);
-      if (place) {
-        return JSON.parse(place) as PlaceResponse;
+    .query(async ({ ctx, input: { id } }): Promise<string> => {
+      if (await ctx.s3.doesObjectExist(`place/${id}`)) {
+        return ctx.s3.getObjectUrl(`place/${id}`);
       }
 
       let osmText = await ctx.s3.getObject(`osmResponse/${id}`);
@@ -31,11 +30,9 @@ export const placeRouter = createTRPCRouter({
 
       const finalPlace = transformGeodata(JSON.parse(osmText));
 
-      if (process.env.NODE_ENV !== "development") {
-        await ctx.s3.putObject(`place/${id}`, JSON.stringify(finalPlace));
-      }
+      await ctx.s3.putObject(`place/${id}`, JSON.stringify(finalPlace));
 
-      return finalPlace;
+      return ctx.s3.getObjectUrl(`place/${id}`);
     }),
 });
 
