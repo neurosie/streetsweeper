@@ -19,6 +19,21 @@ import { z } from "zod";
 import booleanIntersects from "@turf/boolean-intersects";
 
 /**
+ * The current version number of the transform code.
+ *
+ * Bump whenever making an algo change that needs to be in sync with a frontend change.
+ */
+export const ALGORITHM_VERSION = 1;
+
+/**
+ * API response for a Place and all its contained roads.
+ */
+export type PlaceResponse = {
+  place: Place;
+  roads: TypedCollection<Road>;
+};
+
+/**
  * Top-level geodata for a city or town.
  */
 export interface Place
@@ -37,29 +52,28 @@ export type Road = Feature<LineString | MultiLineString, RoadProperties>;
 type RoadProperties = {
   name: string;
   id: string;
-  // osmIds: string[];
   alternateNames: string[];
   lengthMi: number;
 };
 
 /**
- * API response for a Place and all its contained roads.
+ * Zod parser for GeoJSON properties on the place feature returned from OpenStreetMap.
  */
-export type PlaceResponse = {
-  place: Place;
-  roads: TypedCollection<Road>;
-};
-
-export interface TypedCollection<T extends Feature>
-  extends FeatureCollection<T["geometry"], T["properties"]> {
-  features: Array<T>;
-}
-
 const OsmPlaceProperties = z.object({
   name: z.string(),
   population: z.string().optional(),
 });
 
+/**
+ * Performs all transforms from OpenStreetMap GeoJSON to my format.
+ * * Group road segments together by name and trim them to the place border
+ * * Drop place border polygons that don't contain roads
+ * * Drop all unused fields
+ * etc.
+ *
+ * @param response GeoJSON from OpenStreetMap Overpass API
+ * @returns GeoJSON for API response
+ */
 export function transformGeodata(response: unknown): PlaceResponse {
   const [place, ...roads] = osmtogeojson(response).features;
 
@@ -241,6 +255,15 @@ export function transformGeodata(response: unknown): PlaceResponse {
   };
 }
 
+/**
+ * Utility type for a GeoJSON FeatureCollection with features all of one type.
+ */
+export interface TypedCollection<T extends Feature>
+  extends FeatureCollection<T["geometry"], T["properties"]> {
+  features: Array<T>;
+}
+
+// Type guards for GeoJSON feature types
 function isFeature<T extends Feature["geometry"]["type"]>(
   feature: Feature,
   type: T,
@@ -254,7 +277,11 @@ function isPolygonOrMultiPolygon(
   return isFeature(feature, "Polygon") || isFeature(feature, "MultiPolygon");
 }
 
-// Takes a MultiLineString geometry and joins segments that meet at their endpoints.
+/**
+ * Takes a MultiLineString geometry and joins segments that meet at their endpoints.
+ * @param segments internal geometry of a MultiLineString
+ * @returns `segments` simplified
+ */
 export function unifySegments(
   segments: MultiLineString["coordinates"],
 ): typeof segments {

@@ -1,17 +1,17 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fetchWithUA } from "~/utils/fetch";
-import { transformGeodata } from "~/server/geo/geojson";
+import { ALGORITHM_VERSION, transformGeodata } from "~/server/geo/geojson";
 
 export const placeRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input: { id } }): Promise<string> => {
-      if (await ctx.s3.doesObjectExist(`place/${id}`)) {
-        return ctx.s3.getObjectUrl(`place/${id}`);
+      if (await ctx.s3.doesObjectExist(placeKey(id))) {
+        return ctx.s3.getObjectUrl(placeKey(id));
       }
 
-      let osmText = await ctx.s3.getObject(`osmResponse/${id}`);
+      let osmText = await ctx.s3.getObject(osmKey(id));
       if (!osmText) {
         const osmResponse = await fetchWithUA(
           "https://overpass-api.de/api/interpreter",
@@ -25,16 +25,24 @@ export const placeRouter = createTRPCRouter({
         }
 
         osmText = await osmResponse.text();
-        await ctx.s3.putObject(`osmResponse/${id}`, osmText);
+        await ctx.s3.putObject(osmKey(id), osmText);
       }
 
       const finalPlace = transformGeodata(JSON.parse(osmText));
 
-      await ctx.s3.putObject(`place/${id}`, JSON.stringify(finalPlace));
+      await ctx.s3.putObject(placeKey(id), JSON.stringify(finalPlace));
 
-      return ctx.s3.getObjectUrl(`place/${id}`);
+      return ctx.s3.getObjectUrl(placeKey(id));
     }),
 });
+
+function osmKey(id: string) {
+  return `osmResponse/${id}`;
+}
+
+function placeKey(id: string) {
+  return `place/${ALGORITHM_VERSION}/${id}`;
+}
 
 function openStreetMapQuery(relationId: string) {
   return `[out:json];
