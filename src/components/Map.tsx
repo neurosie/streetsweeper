@@ -220,7 +220,7 @@ export default function Map({
       map.setPaintProperty("roadNames", "text-opacity", labelOpacityExpression);
       for (const road of place.roads.features) {
         map.setFeatureState(
-          { source: "roads", id: road.properties.id },
+          { source: "roads", id: road.properties.name },
           { guessed: false },
         );
       }
