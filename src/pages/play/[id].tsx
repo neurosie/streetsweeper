@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import assert from "assert";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type FormEvent, useState, useEffect } from "react";
+import { type FormEvent, useState, useEffect, useCallback } from "react";
 import Map from "~/components/Map";
 import { type PlaceResponse, type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
@@ -61,26 +61,52 @@ export default function Play() {
     useState(false);
   const [finished, setFinished] = useState(false);
 
+  // Save management
+  const setSave = useCallback(
+    (save: string[]) => {
+      if (!placeId) return;
+      localStorage.setItem(storageKey(placeId), JSON.stringify(save));
+    },
+    [placeId],
+  );
+
   /**
    * Load game from localStorage.
    */
   if (placeId && data && !hasLoadedSave) {
     const savedGame = localStorage.getItem(storageKey(placeId));
+    setHasLoadedSave(true);
     if (savedGame) {
-      const parsedSave: unknown = JSON.parse(savedGame);
+      let maybeParsedSave: unknown;
+      try {
+        maybeParsedSave = JSON.parse(savedGame);
+      } catch (_) {
+        // Malformed save, clear it.
+        setSave([]);
+      }
+      // Needs to be const for type inference below
+      const parsedSave = maybeParsedSave;
       if (
         Array.isArray(parsedSave) &&
         parsedSave.length > 0 &&
         typeof parsedSave[0] === "string"
       ) {
-        setGuessedRoads(
-          data.roads.features.flatMap((road) =>
-            parsedSave.includes(road.properties.id) ? [road.properties.id] : [],
-          ),
-        );
+        if (parsedSave[0].startsWith("way/")) {
+          alert(
+            "You have a saved game from an older version of StreetSweeper. It couldn't be loaded in the current version, my apologies. Thanks for being an OG fan!",
+          );
+          setSave([]);
+        } else {
+          setGuessedRoads(
+            data.roads.features.flatMap((road) =>
+              parsedSave.includes(road.properties.name)
+                ? [road.properties.name]
+                : [],
+            ),
+          );
+        }
       }
     }
-    setHasLoadedSave(true);
   }
 
   /**
@@ -88,12 +114,10 @@ export default function Play() {
    */
   useEffect(() => {
     if (!placeId || guessedRoads.length === 0) return;
-    localStorage.setItem(
-      storageKey(placeId),
-      JSON.stringify(Array.from(guessedRoads)),
-    );
-  }, [placeId, guessedRoads]);
+    setSave(Array.from(guessedRoads));
+  }, [placeId, guessedRoads, setSave]);
 
+  // Event handlers
   function onGuess(event: FormEvent) {
     event.preventDefault();
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
@@ -106,7 +130,7 @@ export default function Play() {
     let newlyMatchedRoads: string[] = [];
     const matchedRoads = data!.roads.features
       .filter((road) => road.properties.alternateNames.includes(guess))
-      .map((road) => road.properties.id);
+      .map((road) => road.properties.name);
     if (matchedRoads.length > 0) {
       newlyMatchedRoads = matchedRoads.filter(
         (road) => !guessedRoads.includes(road),
@@ -130,6 +154,7 @@ export default function Play() {
     localStorage.setItem(storageKey(placeId!), JSON.stringify(Array.from([])));
   }
 
+  // Rendering
   if (status === "apiLoading" || status === "dataLoading") {
     return (
       <div className="flex h-screen w-full flex-col gap-6">
@@ -163,7 +188,7 @@ export default function Play() {
     const guessedLength = data.roads.features.reduce(
       (sum, road) =>
         sum +
-        (guessedRoads.includes(road.properties.id)
+        (guessedRoads.includes(road.properties.name)
           ? road.properties.lengthMi
           : 0),
       0,
@@ -171,7 +196,7 @@ export default function Play() {
     const guessedRoadsData = guessedRoads
       .toReversed()
       .map((roadId) =>
-        data.roads.features.find((road) => road.properties.id === roadId),
+        data.roads.features.find((road) => road.properties.name === roadId),
       )
       .filter((road): road is Road => road !== null);
     return (
@@ -283,11 +308,11 @@ export default function Play() {
               {guessedRoadsData.length > 0 ? (
                 <ul className="list-disc overflow-y-auto pl-8 pr-2 leading-relaxed text-gray-600">
                   {guessedRoadsData.map((road) => (
-                    <li key={road.properties.id}>
+                    <li key={road.properties.name}>
                       <span
                         className={
                           "text-gray-900" +
-                          (lastGuess?.newMatches.includes(road.properties.id)
+                          (lastGuess?.newMatches.includes(road.properties.name)
                             ? " [text-shadow:0_0_8px_theme(colors.warningsign.500)]"
                             : "")
                         }

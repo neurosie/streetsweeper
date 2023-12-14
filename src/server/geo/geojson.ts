@@ -51,7 +51,6 @@ type PlaceProperties = {
 export type Road = Feature<LineString | MultiLineString, RoadProperties>;
 type RoadProperties = {
   name: string;
-  id: string;
   alternateNames: string[];
   lengthMi: number;
 };
@@ -87,7 +86,6 @@ export function transformGeodata(response: unknown): PlaceResponse {
     {
       segments: MultiLineString["coordinates"];
       alternateNames: Set<string>;
-      ids: Set<string>;
     }
   >();
 
@@ -160,26 +158,23 @@ export function transformGeodata(response: unknown): PlaceResponse {
           ...savedRoad.alternateNames,
           ...alternateNames,
         ]),
-        ids: new Set([...savedRoad.ids, id]),
       });
     } else {
       roadSegmentMap.set(displayName, {
         segments,
         alternateNames: new Set(alternateNames),
-        ids: new Set([id]),
       });
     }
   }
 
   // For each logical road (potentially many segments that share a name)
   // - finalize the geometry
-  // - synthesize an ID from the segment IDs
   // - generate acceptable short names for guessing
   const finalRoads: PlaceResponse["roads"] = {
     type: "FeatureCollection",
     features: Array.from(
       roadSegmentMap,
-      ([name, { segments, alternateNames, ids }]) => {
+      ([name, { segments, alternateNames }]) => {
         const unifiedSegments = unifySegments(segments);
         let geometry: LineString | MultiLineString;
         if (unifiedSegments.length === 1) {
@@ -188,14 +183,11 @@ export function transformGeodata(response: unknown): PlaceResponse {
           geometry = { type: "MultiLineString", coordinates: unifiedSegments };
         }
 
-        const sortedIds = Array.from(ids).sort();
-
         return {
           type: "Feature",
           geometry,
           properties: {
             name,
-            id: sortedIds.join("-"),
             alternateNames: Array.from(
               new Set(
                 Array.from(alternateNames).flatMap((name) =>
