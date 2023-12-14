@@ -98,10 +98,8 @@ export default function Play() {
           setSave([]);
         } else {
           setGuessedRoads(
-            data.roads.features.flatMap((road) =>
-              parsedSave.includes(road.properties.name)
-                ? [road.properties.name]
-                : [],
+            parsedSave.filter((name) =>
+              data.roads.features.some((road) => road.properties.name === name),
             ),
           );
         }
