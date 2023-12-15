@@ -157,13 +157,17 @@ export default function Play() {
     return (
       <div className="flex h-screen w-full flex-col gap-6">
         {Header}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="sr-only">Loading...</div>
-          <div className="relative flex h-32 w-32 items-baseline justify-center sm:h-48 sm:w-48">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <div className="relative my-16 flex h-32 w-32 items-baseline justify-center sm:my-24 sm:h-48 sm:w-48">
             <div className="h-full w-full animate-[spin-reverse_20s_infinite] rounded-full border-2 border-dashed border-amber-300"></div>
             <div className="absolute bottom-16 mx-auto origin-bottom animate-[spin_4s_linear_infinite] pb-[50px] sm:bottom-24 sm:pb-[74px]">
               <div className="animate-car-bounce text-sign-500">{carIcon}</div>
             </div>
+          </div>
+          <div className="sm:text-lg">
+            {status === "apiLoading"
+              ? "Generating map..."
+              : "Loading streets..."}
           </div>
         </div>
       </div>
