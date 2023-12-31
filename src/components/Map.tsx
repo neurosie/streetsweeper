@@ -88,7 +88,7 @@ export default function Map({
       map.addSource("roads", {
         type: "geojson",
         data: place.roads,
-        promoteId: "id",
+        promoteId: "name",
       });
       map.addLayer(
         {
