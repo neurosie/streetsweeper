@@ -1,0 +1,193 @@
+# ==============================================================================
+# Docker Compose Configuration for Streetsweeper
+# ==============================================================================
+# This file defines three services that work together:
+# 1. postgres: PostgreSQL database
+# 2. app: Next.js application
+# 3. nginx: Reverse proxy for SSL and routing
+#
+# Usage:
+#   Start: docker compose up -d
+#   Stop: docker compose down
+#   View logs: docker compose logs -f [service-name]
+#   Rebuild: docker compose up -d --build
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # PostgreSQL Database
+  # ============================================================================
+  # This is your database. Data persists in the 'postgres_data' volume below.
+  postgres:
+    # Using Alpine version for smaller size
+    image: postgres:16-alpine
+
+    container_name: streetsweeper-db
+
+    # Restart policy: always restart unless explicitly stopped
+    # This ensures your DB comes back up after server reboots
+    restart: unless-stopped
+
+    # Load environment variables from .env file
+    # This file is NOT committed to git (it contains secrets)
+    # Create it from .env.example
+    env_file:
+      - .env
+
+    # Environment variables for database configuration
+    environment:
+      # Performance tuning for smaller droplets
+      # shared_buffers: RAM allocated for caching (256MB for 1GB droplet)
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_MAX_CONNECTIONS: 100
+
+    # Volume mapping - THIS IS CRITICAL FOR DATA PERSISTENCE
+    # The named volume 'postgres_data' stores your database files
+    # Even if you delete the container, this data remains safe
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    # Health check - Docker will monitor if postgres is ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    # Internal network - postgres is not exposed to the internet
+    # Only accessible by other containers in this compose file
+    networks:
+      - app-network
+
+  # ============================================================================
+  # Next.js Application
+  # ============================================================================
+  app:
+    # Build from the Dockerfile in the current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: streetsweeper-app
+
+    restart: unless-stopped
+
+    # Wait for postgres to be healthy before starting
+    # This prevents connection errors on startup
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # Load environment variables from .env file
+    # This file is NOT committed to git (it contains secrets)
+    # Create it from .env.example
+    env_file:
+      - .env
+
+    # Expose port 3000 internally (not to the internet)
+    # Nginx will handle external traffic
+    expose:
+      - "3000"
+
+    # Override the default CMD to run migrations before starting the app
+    # This ensures your database schema is always up to date
+    command: >
+      sh -c "
+        echo 'Running database migrations...' &&
+        npx prisma migrate deploy &&
+        echo 'Starting application...' &&
+        node server.js
+      "
+
+    networks:
+      - app-network
+
+  # ============================================================================
+  # Nginx Reverse Proxy
+  # ============================================================================
+  # Nginx sits in front of your app and handles:
+  # - SSL/TLS termination (HTTPS)
+  # - Request routing
+  # - Static file serving (optional)
+  # - Rate limiting and security headers
+  nginx:
+    image: nginx:alpine
+
+    container_name: streetsweeper-nginx
+
+    restart: unless-stopped
+
+    depends_on:
+      - app
+
+    # Port mapping - THIS EXPOSES YOUR APP TO THE INTERNET
+    # 80: HTTP (will redirect to HTTPS)
+    # 443: HTTPS (encrypted traffic)
+    ports:
+      - "80:80"
+      - "443:443"
+
+    # Mount configuration and SSL certificate directories
+    volumes:
+      # Nginx configuration file (controlled by NGINX_CONFIG_FILE in .env.docker)
+      # Local dev: nginx.local.conf (no SSL)
+      # Production: nginx.conf (with SSL)
+      - ./${NGINX_CONFIG_FILE:-nginx.local.conf}:/etc/nginx/nginx.conf:ro
+
+      # Let's Encrypt SSL certificates (only needed for production)
+      # These directories will be created by certbot
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+
+      # Optional: nginx cache directory
+      - nginx_cache:/var/cache/nginx
+
+    networks:
+      - app-network
+
+  # ============================================================================
+  # Certbot (SSL Certificate Management)
+  # ============================================================================
+  # Certbot obtains and renews SSL certificates from Let's Encrypt
+  # This service runs once and exits - not continuously running
+  certbot:
+    image: certbot/certbot:latest
+
+    container_name: streetsweeper-certbot
+
+    # This service doesn't restart automatically
+    restart: "no"
+
+    # Mount directories for certificates and challenges
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+    # This container doesn't run continuously - you'll run it manually
+    # See DEPLOYMENT.md for instructions
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew; done;'"
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+# Creates an isolated network for our services to communicate
+# External traffic only reaches nginx
+networks:
+  app-network:
+    driver: bridge
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+# Named volumes persist data even when containers are destroyed
+# IMPORTANT: Don't delete these volumes or you'll lose your data!
+volumes:
+  # Database files - THIS IS YOUR DATA!
+  # Location on host: /var/lib/docker/volumes/
+  # To backup: docker run --rm -v postgres_data:/data -v $(pwd):/backup ubuntu tar czf /backup/db-backup.tar.gz /data
+  postgres_data:
+    driver: local
+
+  # Nginx cache (optional, improves performance)
+  nginx_cache:
+    driver: local

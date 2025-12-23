@@ -17,6 +17,12 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+
+  /**
+   * Standalone output mode for Docker deployments
+   * This creates a minimal server.js and copies only necessary files
+   */
+  output: "standalone",
 };
 
 export default config;

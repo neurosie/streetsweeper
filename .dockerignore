@@ -1,0 +1,79 @@
+# This file tells Docker which files to ignore when building the image
+# Excluding these files makes builds faster and images smaller
+
+# Dependencies (we install these fresh in the Dockerfile)
+node_modules
+npm-debug.log*
+
+# Build output (we create this during the Docker build)
+.next
+out
+dist
+build
+
+# Testing
+coverage
+.nyc_output
+
+# Local environment files (we provide these via docker-compose)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git
+.git
+.gitignore
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Debug
+.pnpm-debug.log*
+.yarn-debug.log*
+.yarn-error.log*
+
+# Vercel (we're not using Vercel anymore)
+.vercel
+
+# Misc development files
+README.md
+DEPLOYMENT.md
+.prettierrc
+.eslintrc.cjs
+.husky
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Docker files (no need to copy these into the image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# SSH keys and sensitive files
+*.pem
+*.key
+
+# Development tools
+devlog
+
+# Beads (issue tracker - not needed in production)
+.beads
+
+# Claude Code
+.claude
