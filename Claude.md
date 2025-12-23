@@ -6,6 +6,46 @@ StreetSweeper is a local geography guessing game where users pick a town or city
 
 **Live Site**: https://streetsweeper.vercel.app/
 
+## Issue tracking
+
+This project uses **bd** (beads) for issue tracking. Run `bd onboard` to get started.
+
+### Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --status in_progress  # Claim work
+bd close <id>         # Complete work
+bd sync               # Sync with git
+```
+
+### Landing the Plane (Session Completion)
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+   bd sync
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
+
 ## Tech Stack
 
 Built with the [T3 Stack](https://create.t3.gg/):
@@ -78,17 +118,20 @@ streetsweeper/
 ### Database (Prisma)
 
 **prisma/schema.prisma** - Defines the database schema:
+
 - `Search` model - Caches search query results with updatedAt timestamp
 
 ### Server-Side Code
 
 **src/server/api/** - tRPC API definition
+
 - `routers/place.ts` - Handles place/location data and game logic
 - `routers/search.ts` - Handles location search queries via Nominatim
 - `root.ts` - Combines all routers
 - `trpc.ts` - tRPC configuration and middleware
 
 **src/server/geo/** - Geographic data processing
+
 - `geojson.ts` - GeoJSON manipulation and processing
 - `abbreviations.ts` - Street name abbreviation handling (St., Ave., Rd., etc.)
 
@@ -117,12 +160,14 @@ streetsweeper/
 ## Development Workflow
 
 ### Setup
+
 ```bash
 npm install
 npm run dev  # Start development server
 ```
 
 ### Available Scripts
+
 - `npm run dev` - Start Next.js dev server
 - `npm run build` - Build for production
 - `npm run start` - Start production server
@@ -131,12 +176,16 @@ npm run dev  # Start development server
 - `npm run prepare` - Install Husky git hooks
 
 ### Git Hooks
+
 The project uses Husky for git hooks:
+
 - Pre-commit hooks are configured in `.husky/`
 - Type checking is run on pre-commit (added in commit 81ad3e7)
 
 ### Environment Variables
+
 Required environment variables (see `.env.example`):
+
 - `POSTGRES_PRISMA_URL` - PostgreSQL connection string (pooled)
 - `POSTGRES_URL_NON_POOLING` - PostgreSQL direct connection
 - `NEXT_PUBLIC_MAPBOX_TOKEN` - MapBox API token
@@ -145,11 +194,13 @@ Required environment variables (see `.env.example`):
 ## Important Patterns
 
 ### tRPC Usage
+
 - All API calls go through tRPC routers
 - Type-safe client-server communication
 - Located in `src/server/api/routers/`
 
 ### Geographic Data Flow
+
 1. User searches for a location (Nominatim API)
 2. Location data fetched from OpenStreetMap Overpass API
 3. Data converted to GeoJSON using osmtogeojson
@@ -158,12 +209,14 @@ Required environment variables (see `.env.example`):
 6. Rendered on MapBox GL map
 
 ### Street Name Normalization
+
 - Street names are normalized using abbreviations (src/server/geo/abbreviations.ts)
 - This allows flexible matching (e.g., "Main Street" matches "Main St")
 
 ## Recent Changes
 
 From git history:
+
 - Fixed roads not changing visual state (id change bug) - commit a029c85
 - Improved loading messages on game page - commit 493c469
 - Fixed guess list order changing on reload - commit 2fef32f
@@ -173,6 +226,7 @@ From git history:
 ## Testing
 
 Tests are written using Vitest:
+
 - `src/server/geo/geojson.test.ts` - GeoJSON processing tests
 - `src/server/geo/abbreviations.test.ts` - Street abbreviation tests
 
