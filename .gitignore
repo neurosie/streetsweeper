@@ -40,10 +40,6 @@ yarn-error.log*
 
 # docker secrets and generated files
 certbot/
-*.sql
-*.sql.gz
-backup-*.sql
-backup-*.sql.gz
 
 # typescript
 *.tsbuildinfo
