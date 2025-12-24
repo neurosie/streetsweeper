@@ -13,7 +13,9 @@ Geo data comes from the OpenStreetMap [Overpass API](https://overpass-turbo.eu/)
 
 ---
 
-## Local Development with Docker
+## Local Development
+
+### Option 1: Full Docker Stack (App + DB)
 
 ```bash
 # 1. Create environment file
@@ -25,11 +27,30 @@ nano .env
 # 3. Start all services
 docker compose up -d
 
-# 4. View logs
-docker compose logs -f app
+# 4. Access the app at http://localhost
+```
 
-# 5. Access the app
-# http://localhost
+### Option 2: Local App + Docker DB (Faster Iteration)
+
+```bash
+# 1. Create environment file
+cp .env.example .env
+
+# 2. Edit .env
+#  - Change POSTGRES_HOST to "localhost"
+#  - Uncomment POSTGRES_PORT line
+nano .env
+
+# 3. Start only the database
+docker compose up -d postgres
+
+# 4. Run migrations
+npx prisma migrate dev
+
+# 5. Start Next.js locally
+npm run dev
+
+# 6. Access the app at http://localhost:3000
 ```
 
 **Stop services:**

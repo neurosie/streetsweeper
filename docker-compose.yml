@@ -41,6 +41,10 @@ services:
       POSTGRES_SHARED_BUFFERS: 256MB
       POSTGRES_MAX_CONNECTIONS: 100
 
+    # Optionally expose this port on the host machine for local dev
+    ports:
+      - "${POSTGRES_PORT:-}:5432"
+
     # Volume mapping - THIS IS CRITICAL FOR DATA PERSISTENCE
     # The named volume 'postgres_data' stores your database files
     # Even if you delete the container, this data remains safe
