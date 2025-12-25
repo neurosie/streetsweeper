@@ -46,3 +46,7 @@ certbot/
 
 # vscode workspace settings
 .vscode
+
+# data files
+scripts/data/
+*.csv
