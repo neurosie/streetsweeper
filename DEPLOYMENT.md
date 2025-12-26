@@ -21,11 +21,13 @@ This guide walks you through deploying your Next.js app to a Digital Ocean dropl
 ### What You Need
 
 1. **Digital Ocean Droplet**
+
    - Minimum: 1GB RAM, 25GB SSD (Basic droplet ~$6/month)
    - Recommended: 2GB RAM, 50GB SSD (Regular droplet ~$12/month)
    - Ubuntu 22.04 LTS
 
 2. **Domain Name**
+
    - Any domain provider (Namecheap, Google Domains, etc.)
    - You'll point it to your droplet's IP address
 
@@ -116,6 +118,7 @@ In your Digital Ocean dashboard, copy your droplet's IP address.
 In your domain provider's dashboard:
 
 1. **Create an A record:**
+
    - Host: `@` (or your subdomain)
    - Value: `your-droplet-ip`
    - TTL: 3600 (1 hour)
@@ -126,6 +129,7 @@ In your domain provider's dashboard:
    - TTL: 3600
 
 **Wait 5-60 minutes** for DNS to propagate. Check with:
+
 ```bash
 dig yourdomain.com
 ```
@@ -183,9 +187,10 @@ NODE_ENV=production
 
 **Save and exit** (Ctrl+X, then Y, then Enter)
 
-**Important**: This `.env` file stays on the server and won't be overwritten by `git pull` (it's gitignored).
+**Important**: This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
 
 **For production, also change the nginx config:**
+
 ```bash
 # In .env, change:
 NGINX_CONFIG_FILE=nginx.local.conf
@@ -217,17 +222,22 @@ ssl_certificate /etc/letsencrypt/live/myactualsite.com/fullchain.pem;
 
 ### 4. Initial Start (Without SSL)
 
-First, we'll start without SSL to get a certificate:
+First, we'll start with HTTP-only to test everything works, then add SSL.
+
+**Backup the full nginx.conf and temporarily replace it with an HTTP-only version:**
 
 ```bash
-# Comment out SSL lines in nginx.conf temporarily
-nano nginx.conf
-```
+# Backup the full config (you'll restore this after getting SSL)
+cp nginx.conf nginx.conf.full
 
-**Comment out the HTTPS server block** (lines ~75-180) by adding `#` at the start of each line, OR temporarily use this simplified config:
+# Create temporary HTTP-only config
+cat > nginx.conf << 'EOF'
+# Temporary HTTP-only configuration for initial setup
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
 
-```nginx
-# Temporary HTTP-only configuration
 events {
     worker_connections 1024;
 }
@@ -236,14 +246,37 @@ http {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml text/javascript
+               application/json application/javascript application/xml+rss;
+
     server {
         listen 80;
+        listen [::]:80;
+
+        # REPLACE WITH YOUR DOMAIN
         server_name yourdomain.com www.yourdomain.com;
 
+        # Let's Encrypt challenge location
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
         }
 
+        # Proxy to Next.js app
         location / {
             proxy_pass http://app:3000;
             proxy_set_header Host $host;
@@ -253,9 +286,10 @@ http {
         }
     }
 }
+EOF
 ```
 
-**Save and start the services:**
+**Start the services:**
 
 ```bash
 # Start postgres and app (not nginx yet)
@@ -273,6 +307,7 @@ docker compose logs -f app
 ```
 
 **Start nginx:**
+
 ```bash
 docker compose up -d nginx
 ```
@@ -304,13 +339,22 @@ docker compose run --rm certbot certonly --webroot \
 
 ### 2. Enable HTTPS in Nginx
 
+Now that you have an SSL certificate, restore the full nginx configuration:
+
 ```bash
-# Restore the full nginx.conf (undo the temporary changes)
-nano nginx.conf
-# Make sure all SSL lines are uncommented and domains are correct
+# Restore the full nginx.conf from backup
+cp nginx.conf.full nginx.conf
+
+# Verify your domain is correct in the config
+grep "server_name" nginx.conf
+# Should show: server_name yourdomain.com www.yourdomain.com
+
+# If it still says "yourdomain.com", replace it with your actual domain
+sed -i 's/yourdomain.com/streetsweeper.xyz/g' nginx.conf
 ```
 
 **Reload nginx to apply SSL:**
+
 ```bash
 docker compose restart nginx
 
@@ -335,6 +379,7 @@ crontab -e
 ```
 
 **Add this line** (runs twice daily):
+
 ```cron
 0 0,12 * * * cd ~/apps/streetsweeper && docker compose run --rm certbot renew && docker compose restart nginx
 ```
@@ -509,6 +554,7 @@ nano ~/backup-db.sh
 ```
 
 **Add:**
+
 ```bash
 #!/bin/bash
 cd ~/apps/streetsweeper
@@ -529,6 +575,7 @@ crontab -e
 ```
 
 **Add:**
+
 ```cron
 0 2 * * * ~/backup-db.sh
 ```

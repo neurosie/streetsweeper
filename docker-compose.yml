@@ -167,10 +167,6 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
 
-    # This container doesn't run continuously - you'll run it manually
-    # See DEPLOYMENT.md for instructions
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew; done;'"
-
 # ==============================================================================
 # Networks
 # ==============================================================================
