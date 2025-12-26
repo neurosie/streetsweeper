@@ -22,20 +22,32 @@ async function seedCities() {
     fuzzyMatches: 0,
     noMatches: 0,
     errors: 0,
+    statesSkipped: 0,
   };
 
   for (const state of US_STATES) {
     console.log(`\n📍 Processing ${state.name} (${state.id})...`);
 
     try {
+      // Check if cities already exist for this state
+      const existingCount = await prisma.city.count({
+        where: { stateId: state.id },
+      });
+
+      if (existingCount > 0) {
+        console.log(
+          `   ⏭️  Skipping - ${existingCount} cities already exist for this state`,
+        );
+        stats.statesSkipped++;
+        continue;
+      }
+
       // Fetch OSM places for this state
       const data: unknown = await queryOverpass(
         buildMunicipalitiesQuery(state.id),
       );
       const parsed = OverpassResponseSchema.parse(data);
-      const osmPlaces = parsed.elements.filter(
-        (el) => el.type === "relation",
-      );
+      const osmPlaces = parsed.elements.filter((el) => el.type === "relation");
 
       console.log(`   Found ${osmPlaces.length} OSM places`);
 
@@ -45,12 +57,30 @@ async function seedCities() {
       }
 
       // Get SimpleMaps cities for this state
-      const stateCities = citiesByState.get(state.id) || [];
+      const stateCities = citiesByState.get(state.id) ?? [];
       console.log(`   Found ${stateCities.length} SimpleMaps cities`);
 
       // Match and insert
       for (const place of osmPlaces) {
         try {
+          // Skip places without names
+          if (!place.tags.name) {
+            console.log(`   ⏭️  Skipping unnamed place - OSM ID ${place.id}`);
+            continue;
+          }
+
+          // Check if this OSM ID already exists (handle duplicates)
+          const existing = await prisma.city.findUnique({
+            where: { osmId: place.id },
+          });
+
+          if (existing) {
+            console.log(
+              `   ⏭️  Skipping ${place.tags.name} - OSM ID ${place.id} already exists`,
+            );
+            continue;
+          }
+
           const { population, source, match } = findPopulation(
             place,
             stateCities,
@@ -68,7 +98,7 @@ async function seedCities() {
               name: place.tags.name,
               state: state.name,
               stateId: state.id,
-              county: place.tags["addr:county"] || match?.county_name || null,
+              county: place.tags["addr:county"] ?? match?.county_name ?? null,
               population: population,
               lat: match?.lat ?? place.center?.lat ?? null,
               lng: match?.lng ?? place.center?.lon ?? null,
@@ -96,20 +126,21 @@ async function seedCities() {
 
   console.log("\n✨ Seeding complete!\n");
   console.log("📊 Statistics:");
+  console.log(`   States skipped: ${stats.statesSkipped}`);
   console.log(`   Total processed: ${stats.totalProcessed}`);
   console.log(`   Exact matches: ${stats.exactMatches}`);
   console.log(`   Fuzzy matches: ${stats.fuzzyMatches}`);
   console.log(`   No matches: ${stats.noMatches}`);
   console.log(`   Errors: ${stats.errors}`);
 
-  const matchRate =
-    ((stats.exactMatches + stats.fuzzyMatches) / stats.totalProcessed) * 100;
-  console.log(`\n   Match rate: ${matchRate.toFixed(1)}%`);
+  if (stats.totalProcessed > 0) {
+    const matchRate =
+      ((stats.exactMatches + stats.fuzzyMatches) / stats.totalProcessed) * 100;
+    console.log(`\n   Match rate: ${matchRate.toFixed(1)}%`);
+  }
 }
 
-seedCities()
-  .catch((error) => {
-    console.error("Fatal error:", error);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+seedCities().catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
+});

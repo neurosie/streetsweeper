@@ -2,15 +2,15 @@ import Fuse from "fuse.js";
 import {
   PopulationSource,
   type PopulationMatch,
-  type OSMElement,
+  type OsmElement,
   type SimpleMapsRow,
 } from "./types";
 
 export function findPopulation(
-  osmPlace: OSMElement,
+  osmPlace: OsmElement,
   stateCities: SimpleMapsRow[],
 ): PopulationMatch {
-  const osmName = osmPlace.tags.name;
+  const osmName = osmPlace.tags.name!;
 
   // Try exact match first (case-insensitive)
   const exactMatch = stateCities.find(
@@ -34,7 +34,7 @@ export function findPopulation(
 
   const results = fuse.search(osmName);
 
-  if (results.length > 0 && results[0].score! < 0.2) {
+  if (results[0] && results[0].score! < 0.2) {
     return {
       population: results[0].item.population,
       source: PopulationSource.FUZZY_MATCH,

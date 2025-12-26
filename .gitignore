@@ -49,4 +49,3 @@ certbot/
 
 # data files
 scripts/data/
-*.csv

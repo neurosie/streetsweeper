@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 // OSM Overpass API response types
-export const OSMTagsSchema = z
+export const OsmTagsSchema = z
   .object({
-    name: z.string(),
+    name: z.string().optional(),
     admin_level: z.string().optional(),
     boundary: z.string().optional(),
     "addr:county": z.string().optional(),
@@ -12,7 +12,7 @@ export const OSMTagsSchema = z
   })
   .passthrough(); // Allow other properties
 
-export const OSMElementSchema = z.object({
+export const OsmElementSchema = z.object({
   type: z.enum(["node", "way", "relation"]),
   id: z.number(),
   center: z
@@ -23,14 +23,14 @@ export const OSMElementSchema = z.object({
     .optional(),
   lat: z.number().optional(),
   lon: z.number().optional(),
-  tags: OSMTagsSchema,
+  tags: OsmTagsSchema,
 });
 
 export const OverpassResponseSchema = z.object({
-  elements: z.array(OSMElementSchema),
+  elements: z.array(OsmElementSchema),
 });
 
-export type OSMElement = z.infer<typeof OSMElementSchema>;
+export type OsmElement = z.infer<typeof OsmElementSchema>;
 
 // SimpleMaps CSV types
 export const SimpleMapsRowSchema = z.object({

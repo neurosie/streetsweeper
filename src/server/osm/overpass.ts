@@ -1,24 +1,29 @@
 import { fetchWithUA } from "~/utils/fetch";
+import { retryWithBackoff, RATE_LIMIT_BACKOFF_OPTIONS } from "~/utils/backoff";
 
 /**
- * Execute an Overpass API query
+ * Execute an Overpass API query with retry and exponential backoff
  * @param query - Overpass QL query string
  * @returns Parsed JSON response
  */
 export async function queryOverpass<T = unknown>(query: string): Promise<T> {
-  const response = await fetchWithUA(
-    "https://overpass-api.de/api/interpreter",
-    {
-      method: "POST",
-      body: "data=" + encodeURIComponent(query),
-    },
-  );
+  return retryWithBackoff(async () => {
+    const response = await fetchWithUA(
+      "	https://overpass.private.coffee/api/interpreter",
+      {
+        method: "POST",
+        body: "data=" + encodeURIComponent(query),
+      },
+    );
 
-  if (!response.ok) {
-    throw new Error(`Overpass API error: ${response.statusText}`);
-  }
+    if (!response.ok) {
+      throw new Error(
+        `Overpass API error: ${response.status} ${response.statusText}`,
+      );
+    }
 
-  return (await response.json()) as T;
+    return (await response.json()) as T;
+  }, RATE_LIMIT_BACKOFF_OPTIONS);
 }
 
 /**
@@ -45,7 +50,7 @@ export function buildStreetsQuery(relationId: string): string {
  * @param stateISO - Two-letter state code (e.g., "RI", "MA")
  */
 export function buildMunicipalitiesQuery(stateISO: string): string {
-  return `[out:json][timeout:60];
+  return `[out:json];
 area["ISO3166-2"="US-${stateISO}"]->.state;
 (
   relation["boundary"="administrative"]["admin_level"="8"](area.state);

@@ -21,7 +21,7 @@ export function loadSimpleMaps(): SimpleMapsRow[] {
   const rows = parse(fileContent, {
     columns: true,
     skip_empty_lines: true,
-  }) as unknown[];
+  });
 
   // Validate with Zod
   return rows.map((row) => SimpleMapsRowSchema.parse(row));
