@@ -16,3 +16,24 @@ model Search {
     results   String
     updatedAt DateTime @updatedAt
 }
+
+model City {
+    id               Int      @id @default(autoincrement())
+    name             String
+    state            String
+    stateId          String
+    county           String?
+    population       Int?
+    lat              Float?
+    lng              Float?
+    osmId            BigInt   @unique
+    osmType          String   @default("relation")
+    displayName      String
+    populationSource String?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    @@index([name, stateId])
+    @@index([population])
+    @@index([stateId])
+}
