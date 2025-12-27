@@ -1,65 +1,114 @@
-import Bottleneck from "bottleneck";
+import Fuse from "fuse.js";
 import { z } from "zod";
-
 import { publicProcedure } from "~/server/api/trpc";
-import { fetchWithUA } from "~/utils/fetch";
+import type { PrismaClient, City } from "@prisma/client";
+import { calculateFinalScore } from "./searchUtils";
 
 export type PlaceResult = {
-  osm_type: string;
-  osm_id: number;
+  osmType: string;
+  osmId: number;
   name: string;
-  display_name: string;
-  address: Record<
-    | "state"
-    | "county"
-    | "municipality"
-    | "city"
-    | "town"
-    | "village"
-    | "suburb",
-    string
-  >;
+  state: string;
+  stateId: string;
+  county?: string;
+  displayName: string;
 };
 
-const limiter = new Bottleneck({
-  maxConcurrent: 1,
-  minTime: 1500, // ms
-});
+// Module-level cache: loaded once, reused for all searches
+let citySearchIndex: Fuse<City> | null = null;
+let citiesData: City[] = [];
 
+/**
+ * Initialize city search index (runs once on first search)
+ */
+async function getCitySearchIndex(prisma: PrismaClient): Promise<Fuse<City>> {
+  if (!citySearchIndex) {
+    console.log("Loading cities into memory...");
+
+    citiesData = await prisma.city.findMany({
+      orderBy: { population: "desc" },
+    });
+
+    citySearchIndex = new Fuse(citiesData, {
+      keys: ["name"],
+      threshold: 0.4, // Allow moderate fuzziness
+      includeScore: true,
+      shouldSort: true,
+    });
+
+    console.log(`Loaded ${citiesData.length} cities into memory`);
+  }
+
+  return citySearchIndex;
+}
+
+/**
+ * City search using in-memory fuzzy matching.
+ * No database queries after initial load.
+ */
 export const searchRouter = publicProcedure
   .input(z.object({ query: z.string() }))
-  .query(async ({ input, ctx }) => {
+  .query(async ({ input, ctx }): Promise<PlaceResult[]> => {
     const { query } = input;
+
     if (query === "") {
-      return Promise.resolve([]);
+      return [];
     }
 
-    const queryParams = new URLSearchParams({
-      format: "json",
-      addressdetails: "1",
-      country: "United States",
-      city: query,
-    }).toString();
+    // Get cached index (loads once on first search)
+    const fuse = await getCitySearchIndex(ctx.prisma);
 
-    const response = await ctx.prisma.search.findUnique({
-      where: { query: queryParams },
-    });
-    let results;
-    if (response === null) {
-      const externalResponse = await limiter.schedule(() =>
-        fetchWithUA(
-          `https://nominatim.openstreetmap.org/search?${queryParams}`,
-        ),
-      );
-      if (!externalResponse.ok) {
-        throw new Error("Search suggest response was not ok");
-      }
-      results = await externalResponse.text();
-      await ctx.prisma.search.create({
-        data: { query: queryParams, results },
-      });
-    } else {
-      results = response.results!;
+    // For very short queries, fall back to prefix matching + population ranking
+    if (query.length <= 2) {
+      const normalized = query.toLowerCase();
+      const prefixMatches = citiesData
+        .filter(
+          (city) =>
+            city.population && city.name.toLowerCase().startsWith(normalized),
+        )
+        .slice(0, 10);
+
+      return prefixMatches.map((city) => ({
+        osmType: city.osmType,
+        osmId: Number(city.osmId),
+        name: city.name,
+        state: city.state,
+        stateId: city.stateId,
+        county: city.county ?? undefined,
+        displayName: city.displayName,
+      }));
     }
-    return JSON.parse(results) as [PlaceResult];
+
+    // Fuzzy search all cities (pure in-memory, no DB query)
+    const fuzzyResults = fuse.search(query);
+
+    // Rank by combination of fuzzy match score and population
+    const rankedResults = fuzzyResults
+      .map((result) => {
+        const city = result.item;
+        const matchScore = 1 - (result.score ?? 1); // Convert to 0-1 where 1 is perfect match
+        const finalScore = calculateFinalScore(
+          matchScore,
+          city.population,
+          query.length,
+        );
+
+        return {
+          city,
+          finalScore,
+        };
+      })
+      .sort((a, b) => b.finalScore - a.finalScore)
+      .slice(0, 10); // Return top 10 results
+
+    // Convert to PlaceResult format for frontend compatibility
+    return rankedResults.map(({ city }) => ({
+      osmType: city.osmType,
+      osmId: Number(city.osmId),
+      name: city.name,
+      state: city.state,
+      stateId: city.stateId,
+      county: city.county ?? undefined,
+      displayName: city.displayName,
+    }));
   });

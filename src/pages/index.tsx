@@ -19,7 +19,7 @@ export default function Home() {
       <div className="flex flex-col items-center">
         {/* header */}
         <div className="flex w-full flex-col items-center gap-4 py-4 text-white sm:pt-8">
-          <h1 className="bg-sign-600 ring-sign-600 mb-1 rounded-xl px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-offset-4 ring-offset-white drop-shadow-[-2px_3px_theme(colors.sign.700)] sm:text-6xl">
+          <h1 className="mb-1 rounded-xl bg-sign-600 px-4 pb-1 pt-2 text-4xl font-semibold text-white shadow-md ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_3px_theme(colors.sign.700)] sm:text-6xl">
             StreetSweeper
           </h1>
           <p className="italic">A local geography trivia game</p>
@@ -43,7 +43,7 @@ export default function Home() {
             />
 
             {selectedPlace && (
-              <Link href={`play/${selectedPlace.osm_id}`}>
+              <Link href={`play/${selectedPlace.osmId}`}>
                 <div className="relative m-[3px] rounded-lg bg-black p-1 text-black ring-2 ring-white drop-shadow-[-4px_6px_theme(colors.neutral.900)] active:-left-[4px] active:top-[6px] active:drop-shadow-none">
                   <div className="w-full">{oneWayPlay}</div>
                 </div>
@@ -82,7 +82,7 @@ function PlaceSelector({
 
   if (selectedPlace) {
     return (
-      <div className="bg-infosign-800 flex w-full overflow-hidden rounded-lg border-2 border-gray-700">
+      <div className="flex w-full overflow-hidden rounded-lg border-2 border-gray-700 bg-infosign-800">
         <PlaceCard place={selectedPlace} isStandalone={true}></PlaceCard>
 
         <button
@@ -150,7 +150,7 @@ function SearchResults({
       </div>
     );
   } else {
-    const items = data.filter((entry) => entry.osm_type === "relation");
+    const items = data.filter((entry) => entry.osmType === "relation");
     if (items.length > 0) {
       content = (
         <>
@@ -177,7 +177,7 @@ function SearchResults({
     }
   }
   return (
-    <div className="bg-infosign-800 overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-700 text-white">
+    <div className="overflow-hidden rounded-b-2xl border-2 border-t-0 border-gray-700 bg-infosign-800 text-white">
       {content}
     </div>
   );
@@ -194,7 +194,7 @@ function SuggestionListBox({
   const [activeIndex, setActiveIndex] = useState(0);
 
   const id = useCallback(
-    (index: number) => `option-${items[index]!.osm_id}`,
+    (index: number) => `option-${items[index]!.osmId}`,
     [items],
   );
 
@@ -244,7 +244,7 @@ function SuggestionListBox({
           aria-selected={false}
           data-active={index === activeIndex}
           className="group-focus:data-[active=true]:bg-slate-700"
-          key={entry.osm_id}
+          key={entry.osmId}
           id={id(index)}
           onClick={() => onSelectPlace(entry)}
         >
@@ -262,7 +262,6 @@ function PlaceCard({
   place: PlaceResult;
   isStandalone?: boolean;
 }) {
-  const { address } = place;
   return (
     <div
       className={`flex items-center p-3 ${
@@ -272,19 +271,10 @@ function PlaceCard({
       <span className="pr-4 text-blue-100">{mapIcon}</span>
       <div>
         <div>
-          {address.suburb
-            ?.concat(", ")
-            .concat(
-              address.village ??
-                address.town ??
-                address.city ??
-                address.municipality ??
-                "",
-            ) ?? place.name}
-          , <span className="font-semibold">{address.state}</span>
+          {place.name}, <span className="font-semibold">{place.state}</span>
         </div>
-        {address.county && (
-          <div className="text-sm text-blue-100">{address.county}</div>
+        {place.county && (
+          <div className="text-sm text-blue-100">{place.county}</div>
         )}
       </div>
     </div>
