@@ -428,7 +428,7 @@ docker compose logs -f app
 - **MUST rebuild**: `docker compose up -d --build app`
 
 **Adding a new NEXT_PUBLIC_* variable**:
-1. Add it to `.env`
+1. Add it to `.env` and `.env.example`
 2. Add it to `docker-compose.yml` build args section
 3. Add ARG and ENV to `Dockerfile`
 4. Rebuild: `docker compose up -d --build app`
