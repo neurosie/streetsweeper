@@ -35,10 +35,18 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy all source files
 COPY . .
 
-# Set environment variables for build
-# SKIP_ENV_VALIDATION allows the build to proceed without checking env vars
-# (we'll provide them at runtime via docker-compose)
-ENV SKIP_ENV_VALIDATION=1
+# ==============================================================================
+# NEXT_PUBLIC_* Environment Variables (Build-time)
+# ==============================================================================
+# These variables are embedded into the Next.js JavaScript bundle at build time.
+# To add a new NEXT_PUBLIC_* variable:
+#   1. Add it to .env and .env.example
+#   2. Add ARG and ENV lines here (copy the pattern below)
+#   3. Add it to docker-compose.yml's build.args section
+# ==============================================================================
+ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Generate Prisma Client

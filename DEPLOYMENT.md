@@ -179,6 +179,7 @@ POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@post
 OWNER_EMAIL=your-actual-email@example.com
 
 # Your Mapbox token
+# NOTE: This should be set before building. Next.js embeds it at build time.
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_actual_mapbox_token_here
 
 # Node environment
@@ -187,7 +188,9 @@ NODE_ENV=production
 
 **Save and exit** (Ctrl+X, then Y, then Enter)
 
-**Important**: This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
+**Important**:
+- This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
+- **Note**: `NEXT_PUBLIC_*` variables must be set before building. They're embedded into the JavaScript bundle at build time, not runtime. If you add or change them later, you must rebuild with `docker compose up -d --build app`.
 
 **For production, also change the nginx config:**
 
@@ -412,7 +415,23 @@ docker compose logs -f app
 
 **That's it!** Your app is updated and running.
 
-**Note**: Your `.env` file with secrets stays untouched by `git pull` because it's in `.gitignore`. If you need to update secrets, edit `.env` and restart: `docker compose restart app`
+**Note**: Your `.env` file with secrets stays untouched by `git pull` because it's in `.gitignore`.
+
+### Managing Environment Variables
+
+**Runtime-only variables** (server-side, like `POSTGRES_PASSWORD`, `OWNER_EMAIL`):
+- Just edit `.env` and restart: `docker compose restart app`
+- No rebuild needed!
+
+**Build-time variables** (`NEXT_PUBLIC_*` - client-side):
+- Edit `.env` with the new value
+- **MUST rebuild**: `docker compose up -d --build app`
+
+**Adding a new NEXT_PUBLIC_* variable**:
+1. Add it to `.env` and `.env.example`
+2. Add it to `docker-compose.yml` build args section
+3. Add ARG and ENV to `Dockerfile`
+4. Rebuild: `docker compose up -d --build app`
 
 ---
 
@@ -436,6 +455,27 @@ docker compose logs -f nginx
 # Last 100 lines
 docker compose logs --tail=100 app
 ```
+
+### Mapbox Token Error / Map Not Loading
+
+**Problem**: Game page shows error about Mapbox token, or map doesn't load.
+
+**Cause**: In Next.js, `NEXT_PUBLIC_*` environment variables are embedded at **build time**, not runtime. If you added/changed the Mapbox token in `.env` after building, it won't be in the JavaScript bundle.
+
+**Solution**: Rebuild the Docker image to embed the token:
+
+```bash
+# Make sure NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is set in .env
+cat .env | grep MAPBOX
+
+# Rebuild the app container (this re-embeds the token)
+docker compose up -d --build app
+
+# Check logs to ensure it started correctly
+docker compose logs -f app
+```
+
+**Prevention**: Always set `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` in `.env` BEFORE the first build.
 
 ### App Won't Start
 

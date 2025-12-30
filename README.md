@@ -59,4 +59,6 @@ npm run dev
 docker compose down
 ```
 
+---
+
 **See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment instructions.**
