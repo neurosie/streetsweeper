@@ -40,7 +40,7 @@ COPY . .
 # ==============================================================================
 # These variables are embedded into the Next.js JavaScript bundle at build time.
 # To add a new NEXT_PUBLIC_* variable:
-#   1. Add it to .env (see .env.example)
+#   1. Add it to .env and .env.example
 #   2. Add ARG and ENV lines here (copy the pattern below)
 #   3. Add it to docker-compose.yml's build.args section
 # ==============================================================================
