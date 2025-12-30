@@ -61,37 +61,4 @@ docker compose down
 
 ---
 
-## Environment Variables
-
-This project uses two types of environment variables:
-
-**Server-side variables** (e.g., `POSTGRES_PASSWORD`, `OWNER_EMAIL`):
-- Only available on the server
-- Can be changed at runtime by editing `.env` and restarting
-- Not exposed to the browser
-
-**Client-side variables** (`NEXT_PUBLIC_*` prefix):
-- Embedded into the JavaScript bundle at **build time**
-- Sent to and visible in the browser
-- Changes require rebuilding: `docker compose up -d --build app`
-
-### Adding a New NEXT_PUBLIC_* Variable
-
-```bash
-# 1. Add to .env
-echo "NEXT_PUBLIC_MY_VAR=value" >> .env
-
-# 2. Add to docker-compose.yml build.args section
-# NEXT_PUBLIC_MY_VAR: ${NEXT_PUBLIC_MY_VAR}
-
-# 3. Add ARG and ENV to Dockerfile
-# ARG NEXT_PUBLIC_MY_VAR
-# ENV NEXT_PUBLIC_MY_VAR=$NEXT_PUBLIC_MY_VAR
-
-# 4. Rebuild
-docker compose up -d --build
-```
-
----
-
 **See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment instructions.**

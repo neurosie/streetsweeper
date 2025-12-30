@@ -179,7 +179,7 @@ POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@post
 OWNER_EMAIL=your-actual-email@example.com
 
 # Your Mapbox token
-# CRITICAL: This MUST be set BEFORE building! Next.js embeds it at build time.
+# NOTE: This should be set before building. Next.js embeds it at build time.
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_actual_mapbox_token_here
 
 # Node environment
@@ -190,7 +190,7 @@ NODE_ENV=production
 
 **Important**:
 - This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
-- ⚠️ **CRITICAL**: `NEXT_PUBLIC_*` variables must be set BEFORE building. They're embedded into the JavaScript bundle at build time, not runtime. If you add or change them later, you must rebuild with `docker compose up -d --build app`.
+- **Note**: `NEXT_PUBLIC_*` variables must be set before building. They're embedded into the JavaScript bundle at build time, not runtime. If you add or change them later, you must rebuild with `docker compose up -d --build app`.
 
 **For production, also change the nginx config:**
 
