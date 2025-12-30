@@ -71,6 +71,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Pass environment variables to the build process
+      # CRITICAL: NEXT_PUBLIC_* vars must be available at build time!
+      args:
+        NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: ${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
 
     container_name: streetsweeper-app
 

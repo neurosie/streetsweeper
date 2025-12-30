@@ -179,6 +179,7 @@ POSTGRES_URL_NON_POOLING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@post
 OWNER_EMAIL=your-actual-email@example.com
 
 # Your Mapbox token
+# CRITICAL: This MUST be set BEFORE building! Next.js embeds it at build time.
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_actual_mapbox_token_here
 
 # Node environment
@@ -187,7 +188,9 @@ NODE_ENV=production
 
 **Save and exit** (Ctrl+X, then Y, then Enter)
 
-**Important**: This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
+**Important**:
+- This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
+- ⚠️ **CRITICAL**: `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` must be set BEFORE running `docker compose up -d --build`. It's embedded into the JavaScript bundle at build time. If you add it later, you must rebuild with `docker compose up -d --build app`.
 
 **For production, also change the nginx config:**
 
@@ -436,6 +439,27 @@ docker compose logs -f nginx
 # Last 100 lines
 docker compose logs --tail=100 app
 ```
+
+### Mapbox Token Error / Map Not Loading
+
+**Problem**: Game page shows error about Mapbox token, or map doesn't load.
+
+**Cause**: In Next.js, `NEXT_PUBLIC_*` environment variables are embedded at **build time**, not runtime. If you added/changed the Mapbox token in `.env` after building, it won't be in the JavaScript bundle.
+
+**Solution**: Rebuild the Docker image to embed the token:
+
+```bash
+# Make sure NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN is set in .env
+cat .env | grep MAPBOX
+
+# Rebuild the app container (this re-embeds the token)
+docker compose up -d --build app
+
+# Check logs to ensure it started correctly
+docker compose logs -f app
+```
+
+**Prevention**: Always set `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` in `.env` BEFORE the first build.
 
 ### App Won't Start
 
