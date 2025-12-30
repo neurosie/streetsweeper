@@ -77,28 +77,20 @@ This project uses two types of environment variables:
 
 ### Adding a New NEXT_PUBLIC_* Variable
 
-**Option 1: Automatic (Recommended)**
-```bash
-# 1. Add your variable to .env
-echo "NEXT_PUBLIC_MY_VAR=value" >> .env
-
-# 2. Build using the helper script (automatically extracts all NEXT_PUBLIC_* vars)
-./docker-compose-build.sh up -d --build
-```
-
-**Option 2: Manual**
 ```bash
 # 1. Add to .env
 echo "NEXT_PUBLIC_MY_VAR=value" >> .env
 
 # 2. Add to docker-compose.yml build.args section
-# 3. Add ARG and ENV to Dockerfile
+# NEXT_PUBLIC_MY_VAR: ${NEXT_PUBLIC_MY_VAR}
 
-# 4. Build normally
+# 3. Add ARG and ENV to Dockerfile
+# ARG NEXT_PUBLIC_MY_VAR
+# ENV NEXT_PUBLIC_MY_VAR=$NEXT_PUBLIC_MY_VAR
+
+# 4. Rebuild
 docker compose up -d --build
 ```
-
-The helper scripts (`build.sh` and `docker-compose-build.sh`) automatically extract all `NEXT_PUBLIC_*` variables from `.env` and pass them to the Docker build, so you don't need to manually update the Dockerfile or docker-compose.yml each time.
 
 ---
 

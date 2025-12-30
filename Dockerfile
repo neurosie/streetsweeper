@@ -43,7 +43,6 @@ COPY . .
 #   1. Add it to .env
 #   2. Add ARG and ENV lines here (copy the pattern below)
 #   3. Add it to docker-compose.yml's build.args section
-# OR use the ./docker-compose-build.sh script which does this automatically!
 # ==============================================================================
 ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN

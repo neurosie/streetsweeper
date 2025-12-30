@@ -81,7 +81,6 @@ services:
       #   1. Add it to .env
       #   2. Add it to the args list below (copy the pattern)
       #   3. Add ARG and ENV to Dockerfile
-      # OR use ./docker-compose-build.sh which handles this automatically!
       # ========================================================================
       args:
         NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: ${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}

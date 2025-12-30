@@ -190,7 +190,7 @@ NODE_ENV=production
 
 **Important**:
 - This file stays on the server. When you `git pull`, it won't be overwritten. See [SECRETS.md](./SECRETS.md) for more details.
-- ⚠️ **CRITICAL**: `NEXT_PUBLIC_*` variables must be set BEFORE building. They're embedded into the JavaScript bundle at build time, not runtime. If you add or change them later, you must rebuild with `docker compose up -d --build app` (or use `./docker-compose-build.sh up -d --build` for automatic handling).
+- ⚠️ **CRITICAL**: `NEXT_PUBLIC_*` variables must be set BEFORE building. They're embedded into the JavaScript bundle at build time, not runtime. If you add or change them later, you must rebuild with `docker compose up -d --build app`.
 
 **For production, also change the nginx config:**
 
@@ -405,11 +405,7 @@ cd ~/apps/streetsweeper
 git pull
 
 # Rebuild and restart (this handles migrations automatically)
-# OPTION 1: Using docker-compose directly
 docker compose up -d --build
-
-# OPTION 2: Using the helper script (automatically loads NEXT_PUBLIC_* vars)
-./docker-compose-build.sh up -d --build
 
 # Watch the logs to ensure everything starts correctly
 docker compose logs -f app
@@ -430,12 +426,12 @@ docker compose logs -f app
 **Build-time variables** (`NEXT_PUBLIC_*` - client-side):
 - Edit `.env` with the new value
 - **MUST rebuild**: `docker compose up -d --build app`
-- Or use: `./docker-compose-build.sh up -d --build app`
 
 **Adding a new NEXT_PUBLIC_* variable**:
-- Add it to `.env`
-- If using manual docker-compose: also add it to `docker-compose.yml` build args and `Dockerfile`
-- If using `./docker-compose-build.sh`: it's handled automatically! Just rebuild.
+1. Add it to `.env`
+2. Add it to `docker-compose.yml` build args section
+3. Add ARG and ENV to `Dockerfile`
+4. Rebuild: `docker compose up -d --build app`
 
 ---
 
