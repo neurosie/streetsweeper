@@ -35,13 +35,23 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy all source files
 COPY . .
 
-# Accept environment variables as build arguments
-# These MUST be provided during docker build for client-side env vars to work
+# ==============================================================================
+# NEXT_PUBLIC_* Environment Variables (Build-time)
+# ==============================================================================
+# These variables are embedded into the Next.js JavaScript bundle at build time.
+# To add a new NEXT_PUBLIC_* variable:
+#   1. Add it to .env
+#   2. Add ARG and ENV lines here (copy the pattern below)
+#   3. Add it to docker-compose.yml's build.args section
+# OR use the ./docker-compose-build.sh script which does this automatically!
+# ==============================================================================
 ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-
-# Set environment variables for build
-# Client-side env vars (NEXT_PUBLIC_*) must be set here to be embedded in the bundle
 ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+
+# Add more NEXT_PUBLIC_* variables here following the same pattern:
+# ARG NEXT_PUBLIC_YOUR_VAR
+# ENV NEXT_PUBLIC_YOUR_VAR=$NEXT_PUBLIC_YOUR_VAR
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Generate Prisma Client

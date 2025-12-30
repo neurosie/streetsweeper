@@ -71,10 +71,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # Pass environment variables to the build process
-      # CRITICAL: NEXT_PUBLIC_* vars must be available at build time!
+      # ========================================================================
+      # Build Arguments - NEXT_PUBLIC_* Environment Variables
+      # ========================================================================
+      # CRITICAL: NEXT_PUBLIC_* vars must be passed at BUILD TIME (not runtime)
+      # They get embedded into the JavaScript bundle.
+      #
+      # To add a new NEXT_PUBLIC_* variable:
+      #   1. Add it to .env
+      #   2. Add it to the args list below (copy the pattern)
+      #   3. Add ARG and ENV to Dockerfile
+      # OR use ./docker-compose-build.sh which handles this automatically!
+      # ========================================================================
       args:
         NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: ${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        # Add more NEXT_PUBLIC_* variables here following the same pattern:
+        # NEXT_PUBLIC_YOUR_VAR: ${NEXT_PUBLIC_YOUR_VAR}
 
     container_name: streetsweeper-app
 
