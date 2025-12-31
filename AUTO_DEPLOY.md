@@ -37,10 +37,10 @@ Copy the public key to your server:
 # Copy the public key to your clipboard
 cat ~/.ssh/streetsweeper-deploy.pub
 
-# SSH into your server
-ssh deploy@your-server-ip
+# SSH into your server as root
+ssh root@your-server-ip
 
-# Add the public key to authorized_keys
+# Add the public key to root's authorized_keys
 mkdir -p ~/.ssh
 echo "YOUR_PUBLIC_KEY_HERE" >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
@@ -49,16 +49,18 @@ chmod 600 ~/.ssh/authorized_keys
 Or use `ssh-copy-id` (easier):
 
 ```bash
-ssh-copy-id -i ~/.ssh/streetsweeper-deploy.pub deploy@your-server-ip
+ssh-copy-id -i ~/.ssh/streetsweeper-deploy.pub root@your-server-ip
 ```
 
 **Test the connection:**
 
 ```bash
-ssh -i ~/.ssh/streetsweeper-deploy deploy@your-server-ip
+ssh -i ~/.ssh/streetsweeper-deploy root@your-server-ip
 ```
 
 If you can log in without a password, you're good!
+
+**Note:** The workflow will SSH as root and then switch to the `deploy` user to run commands.
 
 ### Step 3: Configure GitHub Secrets
 
@@ -70,7 +72,7 @@ If you can log in without a password, you're good!
 | Secret Name | Value | How to Get It |
 |-------------|-------|---------------|
 | `DEPLOY_HOST` | Your server IP or domain | Your Digital Ocean droplet IP (e.g., `123.45.67.89`) |
-| `DEPLOY_USER` | SSH username | Usually `deploy` (the user you created in DEPLOYMENT.md) |
+| `DEPLOY_USER` | SSH username | `root` (since you SSH as root then su to deploy) |
 | `DEPLOY_KEY` | SSH private key | Run `cat ~/.ssh/streetsweeper-deploy` and copy the entire output |
 | `DEPLOY_PORT` | SSH port (optional) | `22` (default, can omit if using default) |
 
@@ -180,15 +182,15 @@ docker compose logs -f app
 **Problem**: GitHub can't connect to your server.
 
 **Solutions**:
-1. Verify `DEPLOY_HOST`, `DEPLOY_USER`, and `DEPLOY_KEY` secrets are set correctly
-2. Make sure the public key is in `~/.ssh/authorized_keys` on the server
+1. Verify `DEPLOY_HOST`, `DEPLOY_USER` (should be `root`), and `DEPLOY_KEY` secrets are set correctly
+2. Make sure the public key is in `/root/.ssh/authorized_keys` on the server
 3. Test SSH connection manually:
    ```bash
-   ssh -i ~/.ssh/streetsweeper-deploy deploy@your-server-ip
+   ssh -i ~/.ssh/streetsweeper-deploy root@your-server-ip
    ```
 4. Check server SSH logs:
    ```bash
-   sudo tail -f /var/log/auth.log
+   tail -f /var/log/auth.log
    ```
 
 ### Deployment Fails: "./deploy.sh: No such file or directory"
@@ -205,6 +207,13 @@ docker compose logs -f app
    chmod +x ~/apps/streetsweeper/deploy.sh
    ```
 3. Update the workflow if your app is in a different directory
+4. Verify the deploy user has permissions:
+   ```bash
+   ssh root@your-server-ip
+   su - deploy
+   cd ~/apps/streetsweeper
+   ls -la deploy.sh
+   ```
 
 ### Deployment Hangs or Times Out
 
