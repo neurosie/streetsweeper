@@ -10,6 +10,7 @@ This guide walks you through deploying your Next.js app to a Digital Ocean dropl
 - [First-Time Deployment](#first-time-deployment)
 - [SSL Certificate Setup](#ssl-certificate-setup)
 - [Update and Redeploy](#update-and-redeploy)
+- [Automatic Deployments](#automatic-deployments)
 - [Troubleshooting](#troubleshooting)
 - [Backup and Restore](#backup-and-restore)
 - [Useful Commands](#useful-commands)
@@ -432,6 +433,33 @@ docker compose logs -f app
 2. Add it to `docker-compose.yml` build args section
 3. Add ARG and ENV to `Dockerfile`
 4. Rebuild: `docker compose up -d --build app`
+
+---
+
+## Automatic Deployments
+
+**Tired of manually deploying?** Set up automatic deployments with GitHub Actions!
+
+When you push to the `main` branch, GitHub will automatically:
+- Connect to your server via SSH
+- Pull the latest code
+- Rebuild and restart your Docker containers
+- Run database migrations
+
+**📖 Full setup guide:** See [AUTO_DEPLOY.md](./AUTO_DEPLOY.md)
+
+**Quick overview:**
+1. Create an SSH key for GitHub Actions
+2. Add the public key to your server
+3. Configure GitHub secrets (server IP, username, private key)
+4. Push to `main` and watch it deploy automatically!
+
+**Benefits:**
+- ✅ No more manual SSH + git pull + docker compose
+- ✅ Consistent, repeatable deployments
+- ✅ Deploy history and logs in GitHub Actions
+- ✅ Can add automated tests before deployment
+- ✅ Roll back easily by reverting commits
 
 ---
 
