@@ -77,3 +77,6 @@ devlog
 
 # Claude Code
 .claude
+
+# SSL certificates (mounted as volumes, not copied into image)
+certbot
