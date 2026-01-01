@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { loadSimpleMaps, groupByState } from "./simplemaps";
-import { US_STATES } from "./states";
+import { US_STATES, SPECIAL_OSM_CITY_IDS } from "./states";
 import { findPopulation, shouldExclude } from "./matcher";
 import {
   PopulationSource,
@@ -18,11 +18,11 @@ const prisma = new PrismaClient();
 // Parse command line arguments
 const args = process.argv.slice(2);
 const isRematch = args.includes("--rematch");
+const shouldClear = args.includes("--clear");
 
 type Stats = {
   totalProcessed: number;
   exactMatches: number;
-  fuzzyMatches: number;
   noMatches: number;
   errors: number;
   statesSkipped: number;
@@ -75,7 +75,6 @@ async function processPlace(
   // Track stats
   stats.totalProcessed++;
   if (source === PopulationSource.EXACT_MATCH) stats.exactMatches++;
-  else if (source === PopulationSource.FUZZY_MATCH) stats.fuzzyMatches++;
   else stats.noMatches++;
 
   if (mode === "seed") {
@@ -155,6 +154,13 @@ async function seedCities() {
   const citiesByState = groupByState(simpleMapsData);
   console.log(`✅ Loaded ${simpleMapsData.length} cities from SimpleMaps\n`);
 
+  if (shouldClear) {
+    console.log("🗑️  Clearing city table...");
+    const count = await prisma.city.count();
+    await prisma.city.deleteMany({});
+    console.log(`✅ Deleted ${count} cities\n`);
+  }
+
   if (isRematch) {
     console.log("🔄 Rematch mode - re-running matching on existing cities\n");
     console.log("🗑️  Clearing existing population data...");
@@ -166,7 +172,6 @@ async function seedCities() {
   const stats: Stats = {
     totalProcessed: 0,
     exactMatches: 0,
-    fuzzyMatches: 0,
     noMatches: 0,
     errors: 0,
     statesSkipped: 0,
@@ -244,6 +249,68 @@ async function seedCities() {
     }
   }
 
+  // Process special OSM cities (miscategorized or non-standard)
+  if (mode === "seed") {
+    console.log("\n📍 Processing special OSM cities...");
+    for (const { osmId, stateId, name } of SPECIAL_OSM_CITY_IDS) {
+      try {
+        // Check if already exists
+        const existing = await prisma.city.findFirst({
+          where: { osmId: BigInt(osmId) },
+        });
+        if (existing) {
+          console.log(`   ⏭️  Skipping ${name}, ${stateId} - already exists`);
+          continue;
+        }
+
+        // Find state (may not exist for special cases like DC)
+        const state = US_STATES.find((s) => s.id === stateId);
+        const stateName = state?.name ?? stateId;
+
+        // Get SimpleMaps cities for matching
+        const stateCities = citiesByState.get(stateId) ?? [];
+
+        // Create minimal OSM element for matching
+        const osmElement: OsmElement = {
+          type: "relation",
+          id: osmId,
+          tags: { name },
+        };
+
+        const { population, source, match } = findPopulation(
+          osmElement,
+          stateCities,
+        );
+
+        // Track stats
+        stats.totalProcessed++;
+        if (source === PopulationSource.EXACT_MATCH) stats.exactMatches++;
+        else stats.noMatches++;
+
+        await prisma.city.create({
+          data: {
+            name,
+            state: stateName,
+            stateId,
+            county: match?.county_name ?? null,
+            population,
+            lat: match?.lat ?? null,
+            lng: match?.lng ?? null,
+            osmId: BigInt(osmId),
+            osmType: "relation",
+            displayName: `${name}, ${stateId}`,
+            populationSource: source,
+          },
+        });
+
+        console.log(`   ✅ Added ${name}, ${stateId}`);
+      } catch (error) {
+        console.error(`   ❌ Error processing ${name}, ${stateId}:`, error);
+        stats.errors++;
+      }
+    }
+  }
+
   printStats(stats);
 }
 
@@ -255,7 +322,6 @@ function printStats(stats: Stats) {
   }
   console.log(`   Total processed: ${stats.totalProcessed}`);
   console.log(`   Exact matches: ${stats.exactMatches}`);
-  console.log(`   Fuzzy matches: ${stats.fuzzyMatches}`);
   console.log(`   No matches: ${stats.noMatches}`);
   if (stats.excluded > 0) {
     console.log(`   Excluded: ${stats.excluded}`);
@@ -263,8 +329,7 @@ function printStats(stats: Stats) {
   console.log(`   Errors: ${stats.errors}`);
 
   if (stats.totalProcessed > 0) {
-    const matchRate =
-      ((stats.exactMatches + stats.fuzzyMatches) / stats.totalProcessed) * 100;
+    const matchRate = (stats.exactMatches / stats.totalProcessed) * 100;
     console.log(`\n   Match rate: ${matchRate.toFixed(1)}%`);
   }
 }

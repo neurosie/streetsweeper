@@ -7,7 +7,6 @@ export const US_STATES = [
   { name: "Colorado", id: "CO" },
   { name: "Connecticut", id: "CT" },
   { name: "Delaware", id: "DE" },
-  { name: "District of Columbia", id: "DC" },
   { name: "Florida", id: "FL" },
   { name: "Georgia", id: "GA" },
   { name: "Hawaii", id: "HI" },
@@ -51,3 +50,14 @@ export const US_STATES = [
   { name: "Wisconsin", id: "WI" },
   { name: "Wyoming", id: "WY" },
 ] as const;
+
+export const SPECIAL_OSM_CITY_IDS: Array<{
+  osmId: number;
+  stateId: string;
+  name: string;
+}> = [
+  // Troy, NY (miscategorized as admin level 8)
+  { osmId: 174387, stateId: "NY", name: "Troy" },
+  // Washington, D.C. (boundary="place" instead of "administrative")
+  { osmId: 5396194, stateId: "DC", name: "Washington" },
+];

@@ -45,11 +45,6 @@ function getNameVariants(name: string): string[] {
     variants.push(name.replace(/^St\. /, "Saint "));
   }
 
-  // Handle "X Township" -> "X" (for matching)
-  if (name.endsWith(" Township")) {
-    variants.push(name.replace(/ Township$/, ""));
-  }
-
   // Handle compound names with hyphens
   if (name.includes("-")) {
     // Try without the hyphen
@@ -66,7 +61,7 @@ function getNameVariants(name: string): string[] {
 
   // Handle lowercase "city" suffix (e.g., "Aniak city" -> "Aniak")
   if (/ city$/i.test(name)) {
-    variants.push(name.replace(/ city$/i, ""));
+    variants.push(name.replace(/ city$/, ""));
   }
 
   // Handle parenthetical aliases - try both the full name and just the first part
