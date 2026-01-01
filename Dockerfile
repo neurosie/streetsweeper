@@ -46,6 +46,7 @@ COPY . .
 # ==============================================================================
 ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
 ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+ENV SKIP_ENV_VALIDATION=true
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -96,7 +97,6 @@ EXPOSE 3000
 
 ENV PORT=3000
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
 
 # Start the application
 # server.js is created by Next.js standalone build
