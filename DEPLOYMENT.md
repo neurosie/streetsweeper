@@ -652,6 +652,16 @@ crontab -e
 
 ## Useful Commands
 
+### Running Scripts
+
+```bash
+# Run the city seeding script on production
+docker compose run --rm seed
+
+# Run other scripts from package.json
+docker compose run --rm seed npm run <script-name>
+```
+
 ### Docker Compose
 
 ```bash

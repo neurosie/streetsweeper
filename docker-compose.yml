@@ -120,6 +120,41 @@ services:
       - app-network
 
   # ============================================================================
+  # Seed Service (for running scripts like seed:cities)
+  # ============================================================================
+  # This service uses the builder stage which has tsx and source scripts
+  # Use: docker compose run --rm seed
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Use builder stage which has all dependencies and scripts
+      args:
+        NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: ${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+
+    container_name: streetsweeper-seed
+
+    # Wait for postgres to be healthy before starting
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # Load environment variables from .env file
+    env_file:
+      - .env
+
+    # Only run when explicitly requested with: docker compose run --rm seed
+    profiles:
+      - tools
+
+    networks:
+      - app-network
+
+    # Default command runs the city seeding script
+    # You can override this with: docker compose run --rm seed npm run <other-script>
+    command: npm run seed:cities
+
+  # ============================================================================
   # Nginx Reverse Proxy
   # ============================================================================
   # Nginx sits in front of your app and handles:
