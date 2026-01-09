@@ -4,6 +4,7 @@ import assert from "assert";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type FormEvent, useState, useEffect, useCallback } from "react";
+import { carIcon } from "~/components/carIcon";
 import Map from "~/components/Map";
 import { type PlaceResponse, type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
@@ -60,6 +61,9 @@ export default function Play() {
   const [isConfirmFinishDialogOpen, setIsConfirmFinishDialogOpen] =
     useState(false);
   const [finished, setFinished] = useState(false);
+  const [viewMode, setViewMode] = useState<"guessing" | "reviewing">(
+    "guessing",
+  );
 
   // Save management
   const setSave = useCallback(
@@ -202,11 +206,160 @@ export default function Play() {
       )
       .filter((road): road is Road => road !== null);
     return (
-      <div className="flex min-h-screen flex-col sm:max-h-screen">
+      <div className="flex h-screen flex-col sm:max-h-screen sm:min-h-screen">
         {/* Header */}
         {Header}
-        {/* Main grid */}
-        <main className="grid w-full max-w-[1800px] grow gap-x-2 gap-y-3 self-center pt-1 sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:pl-3 md:gap-x-3">
+
+        {/* Mobile layout: flexbox column */}
+        <div className="flex min-h-0 flex-1 flex-col sm:hidden">
+          {/* Map - fills remaining space */}
+          <div className="relative flex-1">
+            <Map
+              className="relative h-full text-black"
+              place={data}
+              guessedRoads={guessedRoads}
+              finished={finished}
+              newMatches={lastGuess?.newMatches ?? []}
+            />
+            {/* Streets counter button */}
+            <button
+              onClick={() =>
+                setViewMode(viewMode === "guessing" ? "reviewing" : "guessing")
+              }
+              className="absolute right-2 top-2 m-[2px] flex flex-col items-center rounded-md bg-sign-600 px-2 py-1.5 text-white ring-1 ring-sign-600 ring-offset-2 ring-offset-white drop-shadow-[0_3px_theme(colors.sign.700)] active:translate-y-[2px] active:drop-shadow-none motion-safe:transition-transform"
+            >
+              <div className="text-xs uppercase tracking-tighter">Streets</div>
+              <div className="text-2xl font-bold leading-none">
+                {guessedRoadsData.length}
+              </div>
+              <div className="mt-0.5 text-[10px] text-gray-300">
+                {viewMode === "guessing" ? "▼" : "▲"} View
+              </div>
+            </button>
+          </div>
+
+          {/* Fixed bottom input bar - always visible */}
+          <div className="shrink-0 pb-2 pl-1 pt-2">
+            {finished ? (
+              <div className="mx-2 flex flex-col items-center gap-2 rounded-lg bg-infosign-500 px-3 py-2.5 text-center text-sm text-white ring-2 ring-infosign-500 ring-offset-2 ring-offset-white drop-shadow-[-2px_3px_theme(colors.blue.900)]">
+                <div>
+                  You guessed{" "}
+                  <span className="font-bold">{guessedRoadsData.length}</span> /{" "}
+                  <span className="font-bold">
+                    {data.roads.features.length}
+                  </span>{" "}
+                  streets!
+                </div>
+                <button
+                  className="relative bottom-[3px] rounded-lg bg-sign-400 px-3 py-1.5 font-semibold text-gray-900 drop-shadow-[0px_3px_theme(colors.sign.500)] active:bottom-0 active:drop-shadow-none"
+                  onClick={playAgain}
+                >
+                  Play again
+                </button>
+              </div>
+            ) : (
+              <div className="mx-2 rounded-lg bg-infosign-500 px-2 py-2 ring-2 ring-infosign-500 ring-offset-2 ring-offset-white drop-shadow-[-2px_3px_theme(colors.blue.900)]">
+                <form onSubmit={onGuess} className="flex gap-2">
+                  <input
+                    className="min-w-0 flex-1 rounded-md border-2 border-gray-400 px-2 py-1.5 text-sm text-black placeholder:text-gray-500"
+                    placeholder="e.g. 'main st' or '1st'"
+                    size={15}
+                  ></input>
+                  <button
+                    type="submit"
+                    className="relative bottom-[2px] rounded-md bg-sign-400 px-3 py-1.5 text-sm font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.500)] active:bottom-0 active:drop-shadow-none"
+                  >
+                    Guess
+                  </button>
+                </form>
+                {/* Feedback row */}
+                <div className="mt-1.5 min-h-[20px] text-center text-xs font-medium text-white">
+                  {lastGuess ? (
+                    <div>
+                      {lastGuess.state === "right" && (
+                        <span>
+                          <span className="text-green-300">✓</span> &ldquo;
+                          {lastGuess.guess}&rdquo; +
+                          {lastGuess.newMatches.length} road
+                          {lastGuess.newMatches.length === 1 ? "" : "s"}!
+                        </span>
+                      )}
+                      {lastGuess.state === "wrong" && (
+                        <span>
+                          <span className="text-red-300">✗</span> &ldquo;
+                          {lastGuess.guess}&rdquo; no match
+                        </span>
+                      )}
+                      {lastGuess.state === "repeat" && (
+                        <span>
+                          <span className="text-yellow-300">↻</span> &ldquo;
+                          {lastGuess.guess}&rdquo; already guessed
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div>Enter a street name!</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom drawer - streets list */}
+          <div
+            className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[60vh] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
+              viewMode === "reviewing"
+                ? "motion-safe:translate-y-0"
+                : "motion-safe:translate-y-full"
+            }`}
+          >
+            {/* Back button header */}
+            <div className="flex shrink-0 items-center border-b border-gray-200 px-3 py-2">
+              <button
+                onClick={() => setViewMode("guessing")}
+                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-gray-900 active:text-gray-600"
+              >
+                <span>←</span>
+                <span>Back to Guessing</span>
+              </button>
+            </div>
+
+            {/* Progress header */}
+            <div className="shrink-0 border-b border-gray-200 px-3 py-2 text-center">
+              <div className="text-lg font-bold text-gray-900">
+                {guessedRoadsData.length} / {data.roads.features.length} Streets
+              </div>
+            </div>
+
+            {/* Streets list */}
+            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
+              {guessedRoadsData.length > 0 ? (
+                <ul className="space-y-2 pb-4">
+                  {guessedRoadsData.map((road) => (
+                    <li
+                      key={road.properties.name}
+                      className="flex items-baseline justify-between border-b border-gray-100 pb-2 last:border-b-0"
+                    >
+                      <span className="text-sm font-medium text-gray-900">
+                        {road.properties.name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {road.properties.lengthMi.toFixed(1)} mi
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm italic text-gray-500">
+                  No streets yet
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop layout: grid */}
+        <main className="hidden w-full max-w-[1800px] grow gap-x-2 gap-y-3 self-center pt-1 sm:grid sm:grid-cols-[1fr_2fr] sm:grid-rows-[auto_minmax(0,1fr)] sm:pl-3 md:gap-x-3">
           {/* Guess box */}
           <div className="mx-4 mt-2 gap-4 sm:col-start-1 sm:col-end-1 sm:mx-2 md:mx-4">
             <div className="m-[8px] flex flex-1 flex-col items-center justify-center gap-3 rounded-md bg-infosign-500 px-4 pb-2 pt-3 ring-4 ring-infosign-500 ring-offset-4 ring-offset-white drop-shadow-[-3px_4px_theme(colors.blue.900)]">
@@ -335,6 +488,8 @@ export default function Play() {
             </div>
           </div>
         </main>
+
+        {/* Confirm finish dialog */}
         <Dialog open={isConfirmFinishDialogOpen} onClose={() => null}>
           <div
             className="pointer-events-none fixed inset-0 z-10 bg-black/50"
@@ -374,15 +529,15 @@ export default function Play() {
 }
 
 const Header = (
-  <header className="flex w-full flex-col items-center gap-3 pt-3">
+  <header className="flex w-full shrink-0 items-center justify-center py-1.5 sm:flex-col sm:gap-3 sm:py-3">
     <Link href="/">
-      <h1 className="m-[6px] rounded-xl bg-sign-600 px-4 pb-1 pt-2 text-4xl font-semibold text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)]">
+      <h1 className="m-[3px] rounded-lg bg-sign-600 px-3 pt-1 text-xl font-semibold text-white ring-1 ring-sign-600 ring-offset-2 ring-offset-white drop-shadow-[-1px_1px_theme(colors.sign.700)] sm:m-[6px] sm:rounded-xl sm:px-4 sm:pb-1 sm:pt-2 sm:text-4xl sm:ring-2 sm:ring-offset-4 sm:drop-shadow-[-2px_2px_theme(colors.sign.700)]">
         StreetSweeper
       </h1>
     </Link>
     <hr
       role="presentation"
-      className="h-2 w-full border-y-2 border-amber-300"
+      className="hidden h-2 w-full border-y-2 border-amber-300 sm:block"
     />
   </header>
 );
@@ -390,34 +545,3 @@ const Header = (
 function storageKey(placeId: string) {
   return `game-${placeId}`;
 }
-
-const carIcon = (
-  <svg
-    version="1.1"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 512 512"
-    className="h-16 w-16 -scale-x-100 sm:h-24 sm:w-24"
-  >
-    <g>
-      <path
-        d="M495.144,222.319h-23.666l-57.053-99.424H202.691l-79.664,99.424H25.062
- c-15.469,0-27.236,13.815-24.722,29.086l15.072,91.822c0,0.726,0.594,1.388,1.322,1.388h64.387
- c3.305-28.757,27.764-51.166,57.379-51.166s54.076,22.409,57.381,51.166H343.43c3.305-28.757,27.766-51.166,57.381-51.166
- s54.074,22.409,57.381,51.166h36.953c9.32,0,16.856-7.537,16.856-16.858v-88.583C512,229.855,504.465,222.319,495.144,222.319z
-  M327.894,162.559h57.906l35.898,59.76l1.254,3.709l0.268,0.984h-95.326V162.559z M179.853,226.923l1.879-4.604l47.799-59.76
- h53.016v64.454h-74.61L179.853,226.923z"
-      />
-      <path
-        d="M138.5,313.282c-18.707,0-34.242,13.552-37.348,31.334c-0.398,2.114-0.598,4.362-0.598,6.611
- c0,20.889,16.99,37.878,37.945,37.878c20.957,0,37.946-16.99,37.946-37.878c0-2.248-0.198-4.496-0.594-6.611
- C172.744,326.833,157.209,313.282,138.5,313.282z"
-      />
-      <path
-        d="M400.81,313.282c-18.709,0-34.244,13.552-37.35,31.334c-0.398,2.114-0.596,4.362-0.596,6.611
- c0,20.889,16.988,37.878,37.945,37.878c20.955,0,37.944-16.99,37.944-37.878c0-2.248-0.198-4.496-0.594-6.611
- C435.053,326.833,419.518,313.282,400.81,313.282z"
-      />
-    </g>
-  </svg>
-);
