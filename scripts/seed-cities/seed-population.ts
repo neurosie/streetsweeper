@@ -35,6 +35,10 @@ type WikidataEntity = {
 
 type WikidataResponse = {
   entities: Record<string, WikidataEntity>;
+  error?: {
+    code: string;
+    info: string;
+  };
 };
 
 /**
@@ -47,6 +51,14 @@ function extractWikidataId(osmData: OsmElement): string | null {
 /**
  * Fetch population data from Wikidata for multiple entities
  * Uses the Wikibase API to batch fetch up to 50 entities at once
+ *
+ * Conforms to Wikimedia API Etiquette:
+ * - Requests made serially (not parallel) to avoid overwhelming servers
+ * - Batches multiple entities per request using pipe separator (|)
+ * - Uses descriptive User-Agent with contact info
+ * - Enables GZip compression to reduce bandwidth
+ * - Uses maxlag parameter for non-interactive batch processing
+ * - Handles maxlag errors with retry logic
  */
 async function fetchWikidataPopulations(
   wikidataIds: string[],
@@ -54,26 +66,45 @@ async function fetchWikidataPopulations(
   const results = new Map<string, number>();
 
   // Process in batches of 50 (Wikidata API limit)
+  // Serial processing (one batch at a time) per API etiquette
   const batchSize = 50;
   for (let i = 0; i < wikidataIds.length; i += batchSize) {
     const batch = wikidataIds.slice(i, i + batchSize);
     const ids = batch.join("|");
 
-    const url = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids}&props=claims&format=json`;
+    // Add maxlag parameter for non-interactive batch processing (per Wikimedia API etiquette)
+    const url = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids}&props=claims&format=json&maxlag=5`;
 
     try {
       const response = await fetch(url, {
         headers: {
-          "User-Agent": "StreetSweeper/1.0 (Population data fetcher)",
+          // Follow Wikimedia API etiquette: descriptive User-Agent with contact info
+          "User-Agent": "StreetSweeper/1.0 (https://github.com/neurosie/streetsweeper) Node.js/fetch",
+          // Use GZip compression to reduce bandwidth (per API etiquette)
+          "Accept-Encoding": "gzip",
         },
       });
 
       if (!response.ok) {
-        console.error(`   ❌ Wikidata API error: ${response.status}`);
+        console.error(`   ❌ Wikidata API HTTP error: ${response.status}`);
         continue;
       }
 
       const data = (await response.json()) as WikidataResponse;
+
+      // Handle API errors (e.g., maxlag - server too busy)
+      if (data.error) {
+        if (data.error.code === "maxlag") {
+          console.log(`   ⏳ Server busy (maxlag), waiting 5 seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          // Retry this batch by decrementing the loop counter
+          i -= batchSize;
+          continue;
+        } else {
+          console.error(`   ❌ Wikidata API error: ${data.error.code} - ${data.error.info}`);
+          continue;
+        }
+      }
 
       // Extract population from each entity
       for (const [wikidataId, entity] of Object.entries(data.entities)) {

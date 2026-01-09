@@ -49,7 +49,13 @@ Example:
 npm run seed:population -- --state=NY --limit=50
 ```
 
-**Rate limiting:** The script is configured to be polite to Wikidata (1 request/second, batch fetching up to 50 entities per request).
+**Rate limiting:** The script conforms to [Wikimedia API Etiquette](https://www.mediawiki.org/wiki/API:Etiquette):
+- Serial requests (1 request/second, no parallel requests)
+- Batch fetching (50 entities per request using pipe separator)
+- Descriptive User-Agent with contact info
+- GZip compression enabled
+- maxlag parameter for non-interactive processing
+- Automatic retry on server busy errors
 
 ## Output
 
