@@ -52,6 +52,16 @@ export default {
             transform: "rotate(-360deg)",
           },
         },
+        slideUp: {
+          from: {
+            transform: "translateY(20px)",
+            opacity: "0",
+          },
+          to: {
+            transform: "translateY(0)",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "car-bounce": "car-bounce 0.75s infinite",
