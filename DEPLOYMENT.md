@@ -650,6 +650,120 @@ crontab -e
 
 ---
 
+## Syncing Seeded Data
+
+If you've already seeded your local database with cities (which takes 10-15 minutes querying OSM APIs), you can sync that data to production instead of re-running the seed scripts.
+
+**Why do this?**
+- Avoid rate limiting on OSM Overpass API
+- Much faster than reseeding (seconds vs. 10-15 minutes)
+- Ensures production has the same data as your local environment
+
+### Export City Data from Local
+
+```bash
+# On your local machine
+# Export just the City table (not the entire database)
+docker compose exec -T postgres pg_dump \
+  -U streetsweeper \
+  -d streetsweeper \
+  --table=City \
+  --data-only \
+  > cities-data.sql
+
+# Alternatively, export with INSERT statements (more portable but larger):
+docker compose exec -T postgres pg_dump \
+  -U streetsweeper \
+  -d streetsweeper \
+  --table=City \
+  --data-only \
+  --column-inserts \
+  > cities-data.sql
+```
+
+**Explanation:**
+- `--table=City` - Export only the City table
+- `--data-only` - Skip schema, only export data (assumes table already exists on production)
+- `--column-inserts` - (Optional) Use INSERT statements instead of COPY (slower but more compatible)
+
+### Copy the Dump to Production
+
+```bash
+# Copy the file to your production server via SSH
+scp cities-data.sql deploy@your-droplet-ip:~/cities-data.sql
+
+# Or if you're using a specific SSH key:
+scp -i ~/.ssh/your-key.pem cities-data.sql deploy@your-droplet-ip:~/cities-data.sql
+```
+
+**Alternative: Using rsync** (better for large files, resumes on failure):
+```bash
+rsync -avz --progress cities-data.sql deploy@your-droplet-ip:~/cities-data.sql
+```
+
+### Import on Production
+
+```bash
+# SSH into your production server
+ssh deploy@your-droplet-ip
+
+# Navigate to your app directory
+cd ~/apps/streetsweeper
+
+# Import the data into your production database
+cat ~/cities-data.sql | docker compose exec -T postgres psql -U streetsweeper -d streetsweeper
+
+# Verify the import
+docker compose exec postgres psql -U streetsweeper -d streetsweeper -c "SELECT COUNT(*) FROM \"City\";"
+```
+
+**Expected output:** Should show ~19,000 cities (exact number depends on what you seeded locally)
+
+### Clean Up
+
+```bash
+# On production: remove the SQL file after successful import
+rm ~/cities-data.sql
+
+# On local: remove the export file
+rm cities-data.sql
+```
+
+### Troubleshooting
+
+**Problem:** Import fails with "duplicate key value violates unique constraint"
+
+**Solution:** The table already has data. Either:
+
+1. **Clear existing data first** (CAREFUL: destroys existing city data):
+   ```bash
+   docker compose exec postgres psql -U streetsweeper -d streetsweeper -c "TRUNCATE \"City\" CASCADE;"
+   cat ~/cities-data.sql | docker compose exec -T postgres psql -U streetsweeper -d streetsweeper
+   ```
+
+2. **Use upsert instead** (updates existing, inserts new):
+   ```bash
+   # Export with conflict handling
+   docker compose exec -T postgres pg_dump \
+     -U streetsweeper \
+     -d streetsweeper \
+     --table=City \
+     --data-only \
+     --column-inserts \
+     --on-conflict-do-nothing \
+     > cities-data.sql
+   ```
+
+**Problem:** Permission denied when copying file
+
+**Solution:** Ensure your SSH key is added to the server and you have write permissions:
+```bash
+# On your local machine, test SSH connection first
+ssh deploy@your-droplet-ip "echo 'Connected successfully'"
+```
+
+---
+
 ## Useful Commands
 
 ### Running Scripts
