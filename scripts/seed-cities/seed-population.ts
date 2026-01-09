@@ -1,0 +1,228 @@
+import { PrismaClient } from "@prisma/client";
+import { PopulationSource, type OsmElement } from "./types";
+
+const prisma = new PrismaClient();
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const stateFilter = args.find((arg) => arg.startsWith("--state="))?.split("=")[1];
+const limitArg = args.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
+const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+
+type WikidataEntity = {
+  id: string;
+  claims?: {
+    P1082?: Array<{
+      mainsnak: {
+        datavalue?: {
+          value?: {
+            amount?: string;
+          };
+        };
+      };
+      qualifiers?: {
+        P585?: Array<{
+          datavalue?: {
+            value?: {
+              time?: string;
+            };
+          };
+        }>;
+      };
+    }>;
+  };
+};
+
+type WikidataResponse = {
+  entities: Record<string, WikidataEntity>;
+};
+
+/**
+ * Extract Wikidata ID from OSM data
+ */
+function extractWikidataId(osmData: OsmElement): string | null {
+  return osmData.tags.wikidata ?? null;
+}
+
+/**
+ * Fetch population data from Wikidata for multiple entities
+ * Uses the Wikibase API to batch fetch up to 50 entities at once
+ */
+async function fetchWikidataPopulations(
+  wikidataIds: string[],
+): Promise<Map<string, number>> {
+  const results = new Map<string, number>();
+
+  // Process in batches of 50 (Wikidata API limit)
+  const batchSize = 50;
+  for (let i = 0; i < wikidataIds.length; i += batchSize) {
+    const batch = wikidataIds.slice(i, i + batchSize);
+    const ids = batch.join("|");
+
+    const url = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${ids}&props=claims&format=json`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": "StreetSweeper/1.0 (Population data fetcher)",
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`   ❌ Wikidata API error: ${response.status}`);
+        continue;
+      }
+
+      const data = (await response.json()) as WikidataResponse;
+
+      // Extract population from each entity
+      for (const [wikidataId, entity] of Object.entries(data.entities)) {
+        if (!entity.claims?.P1082) continue;
+
+        // P1082 is the population property
+        // Get the most recent population value
+        let latestPopulation: number | null = null;
+        let latestDate: string | null = null;
+
+        for (const claim of entity.claims.P1082) {
+          const amount = claim.mainsnak.datavalue?.value?.amount;
+          if (!amount) continue;
+
+          // Parse the amount (format: "+12345" or "12345")
+          const population = parseInt(amount.replace(/^\+/, ""), 10);
+          if (isNaN(population)) continue;
+
+          // Get the date qualifier (P585 = point in time)
+          const date =
+            claim.qualifiers?.P585?.[0]?.datavalue?.value?.time ?? null;
+
+          // Keep the most recent one, or if no date, just use it
+          if (!latestDate || (date && date > latestDate)) {
+            latestPopulation = population;
+            latestDate = date;
+          } else if (!date && !latestPopulation) {
+            latestPopulation = population;
+          }
+        }
+
+        if (latestPopulation !== null) {
+          results.set(wikidataId, latestPopulation);
+        }
+      }
+
+      // Rate limiting - be polite to Wikidata
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error(`   ❌ Error fetching batch:`, error);
+    }
+  }
+
+  return results;
+}
+
+type CityToProcess = {
+  id: number;
+  name: string;
+  stateId: string;
+  wikidataId: string;
+};
+
+async function seedPopulation() {
+  console.log("🌍 Fetching population data from Wikidata...\n");
+
+  // Build query conditions
+  const whereConditions: any = {
+    osmData: { not: null },
+  };
+
+  if (stateFilter) {
+    whereConditions.stateId = stateFilter;
+    console.log(`📍 Filtering to state: ${stateFilter}\n`);
+  }
+
+  // Get all cities that have OSM data with Wikidata IDs
+  const cities = await prisma.city.findMany({
+    where: whereConditions,
+    select: {
+      id: true,
+      name: true,
+      stateId: true,
+      osmData: true,
+      populationSource: true,
+    },
+    take: limit,
+  });
+
+  console.log(`📊 Found ${cities.length} cities to process\n`);
+
+  // Extract Wikidata IDs
+  const citiesToProcess: CityToProcess[] = [];
+  for (const city of cities) {
+    const osmData = city.osmData as OsmElement | null;
+    if (!osmData) continue;
+
+    const wikidataId = extractWikidataId(osmData);
+    if (!wikidataId) continue;
+
+    citiesToProcess.push({
+      id: city.id,
+      name: city.name,
+      stateId: city.stateId,
+      wikidataId,
+    });
+  }
+
+  console.log(
+    `🔍 Found ${citiesToProcess.length} cities with Wikidata IDs\n`,
+  );
+
+  if (citiesToProcess.length === 0) {
+    console.log("✅ No cities to process\n");
+    return;
+  }
+
+  // Fetch populations in batches
+  const wikidataIds = citiesToProcess.map((c) => c.wikidataId);
+  console.log(`📡 Fetching population data from Wikidata...`);
+  const populations = await fetchWikidataPopulations(wikidataIds);
+  console.log(`✅ Retrieved ${populations.size} population values\n`);
+
+  // Update cities
+  let updated = 0;
+  let notFound = 0;
+
+  for (const city of citiesToProcess) {
+    const population = populations.get(city.wikidataId);
+
+    if (population !== undefined) {
+      await prisma.city.update({
+        where: { id: city.id },
+        data: {
+          population,
+          populationSource: PopulationSource.WIKIDATA,
+        },
+      });
+      console.log(
+        `   ✅ ${city.name}, ${city.stateId}: ${population.toLocaleString()}`,
+      );
+      updated++;
+    } else {
+      console.log(`   ⚠️  ${city.name}, ${city.stateId}: No population found`);
+      notFound++;
+    }
+  }
+
+  console.log("\n✨ Complete!\n");
+  console.log("📊 Statistics:");
+  console.log(`   Cities processed: ${citiesToProcess.length}`);
+  console.log(`   Updated with population: ${updated}`);
+  console.log(`   No population found: ${notFound}`);
+  console.log(
+    `   Success rate: ${((updated / citiesToProcess.length) * 100).toFixed(1)}%`,
+  );
+}
+
+seedPopulation().catch((error) => {
+  console.error("Fatal error:", error);
+  process.exit(1);
+});

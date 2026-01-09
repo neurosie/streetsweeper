@@ -1,24 +1,17 @@
 # City Database Seeding Script
 
-This script populates the `City` table with US municipalities from OpenStreetMap, enriched with population data from SimpleMaps.
+This script populates the `City` table with US municipalities from OpenStreetMap, with population data fetched from Wikidata.
 
 ## How It Works
 
 1. **Downloads OSM data** - Queries Overpass API state-by-state for administrative boundaries (admin_level=8)
-2. **Matches population data** - Fuzzy matches OSM cities to SimpleMaps dataset to get population
-3. **Seeds database** - Inserts cities into PostgreSQL with OSM IDs and population rankings
+2. **Stores full OSM JSON** - Saves complete OSM relation data including all tags (population, wikidata ID, etc.)
+3. **Uses OSM population if available** - Some cities have population directly in OSM
+4. **Fetches from Wikidata** - For cities without OSM population, run the separate population script to fetch from Wikidata
 
 ## Setup
 
-### 1. Download SimpleMaps Data
-
-1. Go to https://simplemaps.com/data/us-cities
-2. Download the **Basic (free)** dataset
-3. Extract and save the file as: `scripts/data/uscities.csv`
-
-The script will error with instructions if this file is missing.
-
-### 2. Run Database Migration
+### 1. Run Database Migration
 
 ```bash
 npx prisma migrate dev --name add_city_model
@@ -26,39 +19,84 @@ npx prisma migrate dev --name add_city_model
 
 This creates the `City` table in your database.
 
-### 3. Run the Seed Script
+### 2. Run the City Seed Script
 
 ```bash
 npm run seed:cities
 ```
 
+This fetches all municipalities from OpenStreetMap and stores them with:
+- Full OSM relation JSON (all tags preserved)
+- Population data if available directly in OSM
+- Wikidata IDs for later population fetching
+
 **Expected runtime:** 10-15 minutes (processes all 50 states + DC)
+
+### 3. Fetch Population from Wikidata
+
+```bash
+npm run seed:population
+```
+
+This fetches population data from Wikidata for cities that have a Wikidata ID.
+
+**Options:**
+- `--state=NY` - Only process cities in a specific state
+- `--limit=100` - Only process first N cities (for testing)
+
+Example:
+```bash
+npm run seed:population -- --state=NY --limit=50
+```
+
+**Rate limiting:** The script is configured to be polite to Wikidata (1 request/second, batch fetching up to 50 entities per request).
 
 ## Output
 
+### City Seed Output
+
 The script processes each state sequentially and displays:
 - Number of OSM places found
-- Number of SimpleMaps cities for matching
-- Match statistics (exact/fuzzy/no match)
-- Final summary with total match rate
+- Match statistics
 
 Example:
 ```
 📍 Processing Massachusetts (MA)...
-   Found 351 OSM places
-   Found 568 SimpleMaps cities
-   ✅ Inserted 351 places
+   Found 351 places
+   ✅ Processed 351 places
 
-✨ Seeding complete!
+✨ Complete!
 
 📊 Statistics:
    Total processed: 19624
-   Exact matches: 15234
-   Fuzzy matches: 2845
-   No matches: 1545
+   Exact matches: 2450 (from OSM population)
+   No matches: 17174
    Errors: 0
+```
 
-   Match rate: 92.1%
+### Population Fetch Output
+
+```
+🌍 Fetching population data from Wikidata...
+
+📊 Found 19624 cities to process
+
+🔍 Found 18500 cities with Wikidata IDs
+
+📡 Fetching population data from Wikidata...
+✅ Retrieved 17200 population values
+
+   ✅ Boston, MA: 675,647
+   ✅ Cambridge, MA: 118,927
+   ⚠️  Small Town, MA: No population found
+
+✨ Complete!
+
+📊 Statistics:
+   Cities processed: 18500
+   Updated with population: 17200
+   No population found: 1300
+   Success rate: 93.0%
 ```
 
 ## Schema
@@ -70,15 +108,45 @@ Cities are stored with:
 - `population` - Population count (null if unknown)
 - `lat` / `lng` - Coordinates
 - `osmId` - OpenStreetMap relation ID
-- `populationSource` - How population was matched (exact-match, fuzzy-match, no-match)
+- `osmData` - Full OSM relation JSON with all tags (wikidata, population, official_name, etc.)
+- `populationSource` - How population was obtained:
+  - `osm` - From OSM population tag
+  - `wikidata` - From Wikidata API
+  - `no-match` - No population data found
 
 ## Re-running
 
-To update data:
+### Re-running city seed (OSM data)
+
+To update city data from OSM:
+```bash
+npm run seed:cities -- --clear  # Clears and reseeds all cities
+```
+
+Or use rematch mode to update existing cities' OSM data:
+```bash
+npm run seed:cities -- --rematch  # Updates OSM data for existing cities
+```
+
+### Re-running population fetch
+
+To update population data from Wikidata:
+```bash
+npm run seed:population  # Updates all cities with Wikidata IDs
+npm run seed:population -- --state=NY  # Just one state
+```
+
+### Full reset
+
+To start completely fresh:
 1. Drop and recreate the table: `npx prisma migrate reset`
 2. Re-run the seed: `npm run seed:cities`
+3. Fetch populations: `npm run seed:population`
 
-Or delete all cities and re-seed:
-```sql
-DELETE FROM "City";
-```
+## Benefits of this Approach
+
+1. **Better data quality** - OSM metadata (like "official_name" for Rome, NY) is preserved
+2. **Consistent IDs** - Wikidata IDs are available on most OSM entities, even small towns
+3. **No external CSV dependency** - No need to download and match SimpleMaps data
+4. **More complete coverage** - Wikidata has population for more places than SimpleMaps
+5. **Flexible re-fetching** - Can re-run population fetch without re-downloading OSM data

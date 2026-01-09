@@ -48,7 +48,8 @@ export type SimpleMapsRow = z.infer<typeof SimpleMapsRowSchema>;
 
 // Population match result
 export enum PopulationSource {
-  EXACT_MATCH = "exact-match",
+  OSM = "osm",
+  WIKIDATA = "wikidata",
   NO_MATCH = "no-match",
 }
 

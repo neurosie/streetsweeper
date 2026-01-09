@@ -28,6 +28,7 @@ model City {
     lng              Float?
     osmId            BigInt   @unique
     osmType          String   @default("relation")
+    osmData          Json?
     displayName      String
     populationSource String?
     createdAt        DateTime @default(now())

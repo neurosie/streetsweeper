@@ -10,7 +10,8 @@
     "start": "next start",
     "prepare": "husky install",
     "test": "vitest",
-    "seed:cities": "tsx scripts/seed-cities/index.ts"
+    "seed:cities": "tsx scripts/seed-cities/index.ts",
+    "seed:population": "tsx scripts/seed-cities/seed-population.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.456.0",

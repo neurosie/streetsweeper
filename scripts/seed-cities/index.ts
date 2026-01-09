@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import { loadSimpleMaps, groupByState } from "./simplemaps";
 import { US_STATES, SPECIAL_OSM_CITY_IDS } from "./states";
-import { findPopulation, shouldExclude } from "./matcher";
+import { shouldExclude } from "./matcher";
 import {
   PopulationSource,
   OverpassResponseSchema,
   type OsmElement,
-  type SimpleMapsRow,
 } from "./types";
 import {
   queryOverpass,
@@ -30,15 +28,27 @@ type Stats = {
 };
 
 type PlaceToProcess = {
-  osmId: number;
-  name: string;
-  osmType: string;
-  lat: number | null;
-  lng: number | null;
-  county: string | null;
+  osmElement: OsmElement;
   // For rematch mode - existing DB record ID
   dbId?: number;
 };
+
+/**
+ * Extract population from OSM tags
+ */
+function extractPopulation(osmElement: OsmElement): {
+  population: number | null;
+  source: PopulationSource;
+} {
+  const populationTag = osmElement.tags.population;
+  if (populationTag) {
+    const parsed = parseInt(populationTag, 10);
+    if (!isNaN(parsed)) {
+      return { population: parsed, source: PopulationSource.OSM };
+    }
+  }
+  return { population: null, source: PopulationSource.NO_MATCH };
+}
 
 /**
  * Process a single place - either insert (seed) or update (rematch)
@@ -46,50 +56,51 @@ type PlaceToProcess = {
 async function processPlace(
   place: PlaceToProcess,
   state: { id: string; name: string },
-  stateCities: SimpleMapsRow[],
   stats: Stats,
   mode: "seed" | "rematch",
 ): Promise<void> {
+  const osmElement = place.osmElement;
+  const name = osmElement.tags.name!;
+
   // Skip places that should be excluded
-  if (shouldExclude(place.name)) {
+  if (shouldExclude(name)) {
     if (mode === "rematch" && place.dbId) {
-      console.log(`   🗑️  Deleting excluded place: ${place.name}`);
+      console.log(`   🗑️  Deleting excluded place: ${name}`);
       await prisma.city.delete({ where: { id: place.dbId } });
     } else {
-      console.log(`   🗑️  Excluding: ${place.name}`);
+      console.log(`   🗑️  Excluding: ${name}`);
     }
     stats.excluded++;
     return;
   }
 
-  // Create OSM element for matching
-  const osmElement: OsmElement = {
-    type: "relation",
-    id: place.osmId,
-    tags: { name: place.name },
-    center: place.lat && place.lng ? { lat: place.lat, lon: place.lng } : undefined,
-  };
+  // Extract population from OSM if available
+  const { population, source } = extractPopulation(osmElement);
 
-  const { population, source, match } = findPopulation(osmElement, stateCities);
+  // Get coordinates
+  const lat = osmElement.center?.lat ?? osmElement.lat ?? null;
+  const lng = osmElement.center?.lon ?? osmElement.lon ?? null;
+  const county = osmElement.tags["addr:county"] ?? null;
 
   // Track stats
   stats.totalProcessed++;
-  if (source === PopulationSource.EXACT_MATCH) stats.exactMatches++;
+  if (source === PopulationSource.OSM) stats.exactMatches++;
   else stats.noMatches++;
 
   if (mode === "seed") {
     await prisma.city.create({
       data: {
-        name: place.name,
+        name,
         state: state.name,
         stateId: state.id,
-        county: place.county ?? match?.county_name ?? null,
-        population: population,
-        lat: match?.lat ?? place.lat,
-        lng: match?.lng ?? place.lng,
-        osmId: place.osmId,
-        osmType: place.osmType,
-        displayName: `${place.name}, ${state.id}`,
+        county,
+        population,
+        lat,
+        lng,
+        osmId: BigInt(osmElement.id),
+        osmType: osmElement.type,
+        osmData: osmElement as any, // Store full OSM JSON
+        displayName: `${name}, ${state.id}`,
         populationSource: source,
       },
     });
@@ -97,11 +108,9 @@ async function processPlace(
     await prisma.city.update({
       where: { id: place.dbId },
       data: {
-        population: population,
+        population,
         populationSource: source,
-        county: match?.county_name ?? place.county,
-        lat: match?.lat ?? place.lat,
-        lng: match?.lng ?? place.lng,
+        osmData: osmElement as any, // Update OSM JSON
       },
     });
   }
@@ -118,15 +127,12 @@ async function getPlacesForState(
     const cities = await prisma.city.findMany({
       where: { stateId },
     });
-    return cities.map((city) => ({
-      osmId: Number(city.osmId),
-      name: city.name,
-      osmType: city.osmType,
-      lat: city.lat,
-      lng: city.lng,
-      county: city.county,
-      dbId: city.id,
-    }));
+    return cities
+      .filter((city) => city.osmData) // Only process if we have OSM data
+      .map((city) => ({
+        osmElement: city.osmData as OsmElement,
+        dbId: city.id,
+      }));
   }
 
   // Seed mode - fetch from OSM
@@ -137,22 +143,12 @@ async function getPlacesForState(
   return osmPlaces
     .filter((place) => place.tags.name) // Skip unnamed places
     .map((place) => ({
-      osmId: place.id,
-      name: place.tags.name!,
-      osmType: place.type,
-      lat: place.center?.lat ?? null,
-      lng: place.center?.lon ?? null,
-      county: place.tags["addr:county"] ?? null,
+      osmElement: place,
     }));
 }
 
 async function seedCities() {
   const mode = isRematch ? "rematch" : "seed";
-
-  console.log("🌎 Loading SimpleMaps data...");
-  const simpleMapsData = loadSimpleMaps();
-  const citiesByState = groupByState(simpleMapsData);
-  console.log(`✅ Loaded ${simpleMapsData.length} cities from SimpleMaps\n`);
 
   if (shouldClear) {
     console.log("🗑️  Clearing city table...");
@@ -162,7 +158,7 @@ async function seedCities() {
   }
 
   if (isRematch) {
-    console.log("🔄 Rematch mode - re-running matching on existing cities\n");
+    console.log("🔄 Rematch mode - re-processing existing cities from OSM data\n");
     console.log("🗑️  Clearing existing population data...");
     await prisma.city.updateMany({
       data: { population: null, populationSource: null },
@@ -204,35 +200,32 @@ async function seedCities() {
         continue;
       }
 
-      const stateCities = citiesByState.get(state.id) ?? [];
-      console.log(`   Found ${stateCities.length} SimpleMaps cities`);
-
       // In seed mode, filter out duplicates (both within results and in DB)
       let placesToProcess = places;
       if (mode === "seed") {
         // Dedupe within the results themselves
         const seenOsmIds = new Set<number>();
         placesToProcess = places.filter((p) => {
-          if (seenOsmIds.has(p.osmId)) return false;
-          seenOsmIds.add(p.osmId);
+          if (seenOsmIds.has(p.osmElement.id)) return false;
+          seenOsmIds.add(p.osmElement.id);
           return true;
         });
 
         // Filter out any that already exist in DB
         const existingOsmIds = new Set(
           (await prisma.city.findMany({
-            where: { osmId: { in: placesToProcess.map((p) => BigInt(p.osmId)) } },
+            where: { osmId: { in: placesToProcess.map((p) => BigInt(p.osmElement.id)) } },
             select: { osmId: true },
           })).map((c) => Number(c.osmId)),
         );
-        placesToProcess = placesToProcess.filter((p) => !existingOsmIds.has(p.osmId));
+        placesToProcess = placesToProcess.filter((p) => !existingOsmIds.has(p.osmElement.id));
       }
 
       for (const place of placesToProcess) {
         try {
-          await processPlace(place, state, stateCities, stats, mode);
+          await processPlace(place, state, stats, mode);
         } catch (error) {
-          console.error(`   ❌ Error processing ${place.name}:`, error);
+          console.error(`   ❌ Error processing ${place.osmElement.tags.name}:`, error);
           stats.errors++;
         }
       }
@@ -267,39 +260,31 @@ async function seedCities() {
         const state = US_STATES.find((s) => s.id === stateId);
         const stateName = state?.name ?? stateId;
 
-        // Get SimpleMaps cities for matching
-        const stateCities = citiesByState.get(stateId) ?? [];
-
-        // Create minimal OSM element for matching
+        // Create minimal OSM element - population will be fetched via Wikidata later
         const osmElement: OsmElement = {
           type: "relation",
           id: osmId,
           tags: { name },
         };
 
-        const { population, source, match } = findPopulation(
-          osmElement,
-          stateCities,
-        );
-
         // Track stats
         stats.totalProcessed++;
-        if (source === PopulationSource.EXACT_MATCH) stats.exactMatches++;
-        else stats.noMatches++;
+        stats.noMatches++;
 
         await prisma.city.create({
           data: {
             name,
             state: stateName,
             stateId,
-            county: match?.county_name ?? null,
-            population,
-            lat: match?.lat ?? null,
-            lng: match?.lng ?? null,
+            county: null,
+            population: null,
+            lat: null,
+            lng: null,
             osmId: BigInt(osmId),
             osmType: "relation",
+            osmData: osmElement as any,
             displayName: `${name}, ${stateId}`,
-            populationSource: source,
+            populationSource: PopulationSource.NO_MATCH,
           },
         });
 
