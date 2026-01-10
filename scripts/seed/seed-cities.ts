@@ -15,7 +15,6 @@ const prisma = new PrismaClient();
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const isRematch = args.includes("--rematch");
 const shouldClear = args.includes("--clear");
 
 type Stats = {
@@ -29,8 +28,6 @@ type Stats = {
 
 type PlaceToProcess = {
   osmElement: OsmElement;
-  // For rematch mode - existing DB record ID
-  dbId?: number;
 };
 
 /**
@@ -51,25 +48,19 @@ function extractPopulation(osmElement: OsmElement): {
 }
 
 /**
- * Process a single place - either insert (seed) or update (rematch)
+ * Process a single place and insert into database
  */
 async function processPlace(
   place: PlaceToProcess,
   state: { id: string; name: string },
   stats: Stats,
-  mode: "seed" | "rematch",
 ): Promise<void> {
   const osmElement = place.osmElement;
   const name = osmElement.tags.name!;
 
   // Skip places that should be excluded
   if (shouldExclude(name)) {
-    if (mode === "rematch" && place.dbId) {
-      console.log(`   🗑️  Deleting excluded place: ${name}`);
-      await prisma.city.delete({ where: { id: place.dbId } });
-    } else {
-      console.log(`   🗑️  Excluding: ${name}`);
-    }
+    console.log(`   🗑️  Excluding: ${name}`);
     stats.excluded++;
     return;
   }
@@ -87,55 +78,30 @@ async function processPlace(
   if (source === PopulationSource.OSM) stats.exactMatches++;
   else stats.noMatches++;
 
-  if (mode === "seed") {
-    await prisma.city.create({
-      data: {
-        name,
-        state: state.name,
-        stateId: state.id,
-        county,
-        population,
-        lat,
-        lng,
-        osmId: BigInt(osmElement.id),
-        osmType: osmElement.type,
-        osmData: osmElement as Prisma.InputJsonValue, // Store full OSM JSON
-        displayName: `${name}, ${state.id}`,
-        populationSource: source,
-      },
-    });
-  } else if (place.dbId) {
-    await prisma.city.update({
-      where: { id: place.dbId },
-      data: {
-        population,
-        populationSource: source,
-        osmData: osmElement as Prisma.InputJsonValue, // Update OSM JSON
-      },
-    });
-  }
+  await prisma.city.create({
+    data: {
+      name,
+      state: state.name,
+      stateId: state.id,
+      county,
+      population,
+      lat,
+      lng,
+      osmId: BigInt(osmElement.id),
+      osmType: osmElement.type,
+      osmData: osmElement as Prisma.InputJsonValue,
+      displayName: `${name}, ${state.id}`,
+      populationSource: source,
+    },
+  });
 }
 
 /**
- * Get places to process for a state - either from OSM (seed) or DB (rematch)
+ * Get places from OpenStreetMap for a state
  */
 async function getPlacesForState(
   stateId: string,
-  mode: "seed" | "rematch",
 ): Promise<PlaceToProcess[]> {
-  if (mode === "rematch") {
-    const cities = await prisma.city.findMany({
-      where: { stateId },
-    });
-    return cities
-      .filter((city) => city.osmData) // Only process if we have OSM data
-      .map((city) => ({
-        osmElement: city.osmData as OsmElement,
-        dbId: city.id,
-      }));
-  }
-
-  // Seed mode - fetch from OSM
   const data: unknown = await queryOverpass(buildMunicipalitiesQuery(stateId));
   const parsed = OverpassResponseSchema.parse(data);
   const osmPlaces = parsed.elements.filter((el) => el.type === "relation");
@@ -148,21 +114,11 @@ async function getPlacesForState(
 }
 
 async function seedCities() {
-  const mode = isRematch ? "rematch" : "seed";
-
   if (shouldClear) {
     console.log("🗑️  Clearing city table...");
     const count = await prisma.city.count();
     await prisma.city.deleteMany({});
     console.log(`✅ Deleted ${count} cities\n`);
-  }
-
-  if (isRematch) {
-    console.log("🔄 Rematch mode - re-processing existing cities from OSM data\n");
-    console.log("🗑️  Clearing existing population data...");
-    await prisma.city.updateMany({
-      data: { population: null, populationSource: null },
-    });
   }
 
   const stats: Stats = {
@@ -178,21 +134,19 @@ async function seedCities() {
     console.log(`\n📍 Processing ${state.name} (${state.id})...`);
 
     try {
-      // In seed mode, skip states that already have cities
-      if (mode === "seed") {
-        const existingCount = await prisma.city.count({
-          where: { stateId: state.id },
-        });
-        if (existingCount > 0) {
-          console.log(
-            `   ⏭️  Skipping - ${existingCount} cities already exist`,
-          );
-          stats.statesSkipped++;
-          continue;
-        }
+      // Skip states that already have cities
+      const existingCount = await prisma.city.count({
+        where: { stateId: state.id },
+      });
+      if (existingCount > 0) {
+        console.log(
+          `   ⏭️  Skipping - ${existingCount} cities already exist`,
+        );
+        stats.statesSkipped++;
+        continue;
       }
 
-      const places = await getPlacesForState(state.id, mode);
+      const places = await getPlacesForState(state.id);
       console.log(`   Found ${places.length} places`);
 
       if (places.length === 0) {
@@ -200,30 +154,27 @@ async function seedCities() {
         continue;
       }
 
-      // In seed mode, filter out duplicates (both within results and in DB)
-      let placesToProcess = places;
-      if (mode === "seed") {
-        // Dedupe within the results themselves
-        const seenOsmIds = new Set<number>();
-        placesToProcess = places.filter((p) => {
-          if (seenOsmIds.has(p.osmElement.id)) return false;
-          seenOsmIds.add(p.osmElement.id);
-          return true;
-        });
+      // Filter out duplicates (both within results and in DB)
+      // Dedupe within the results themselves
+      const seenOsmIds = new Set<number>();
+      let placesToProcess = places.filter((p) => {
+        if (seenOsmIds.has(p.osmElement.id)) return false;
+        seenOsmIds.add(p.osmElement.id);
+        return true;
+      });
 
-        // Filter out any that already exist in DB
-        const existingOsmIds = new Set(
-          (await prisma.city.findMany({
-            where: { osmId: { in: placesToProcess.map((p) => BigInt(p.osmElement.id)) } },
-            select: { osmId: true },
-          })).map((c) => Number(c.osmId)),
-        );
-        placesToProcess = placesToProcess.filter((p) => !existingOsmIds.has(p.osmElement.id));
-      }
+      // Filter out any that already exist in DB
+      const existingOsmIds = new Set(
+        (await prisma.city.findMany({
+          where: { osmId: { in: placesToProcess.map((p) => BigInt(p.osmElement.id)) } },
+          select: { osmId: true },
+        })).map((c) => Number(c.osmId)),
+      );
+      placesToProcess = placesToProcess.filter((p) => !existingOsmIds.has(p.osmElement.id));
 
       for (const place of placesToProcess) {
         try {
-          await processPlace(place, state, stats, mode);
+          await processPlace(place, state, stats);
         } catch (error) {
           console.error(`   ❌ Error processing ${place.osmElement.tags.name}:`, error);
           stats.errors++;
@@ -232,10 +183,8 @@ async function seedCities() {
 
       console.log(`   ✅ Processed ${placesToProcess.length} places`);
 
-      // Rate limit in seed mode
-      if (mode === "seed") {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+      // Rate limit
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       console.error(`   ❌ Failed to process ${state.name}:`, error);
       stats.errors++;
@@ -243,7 +192,7 @@ async function seedCities() {
   }
 
   // Process special OSM cities (miscategorized or non-standard)
-  if (mode === "seed") {
+  {
     console.log("\n📍 Processing special OSM cities...");
     for (const { osmId, stateId, name } of SPECIAL_OSM_CITY_IDS) {
       try {

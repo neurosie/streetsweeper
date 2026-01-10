@@ -124,14 +124,10 @@ Cities are stored with:
 
 ### Re-running city seed (OSM data)
 
-To update city data from OSM:
+The seed script automatically skips states that already have cities. To re-seed:
+
 ```bash
 npm run seed:cities -- --clear  # Clears and reseeds all cities
-```
-
-Or use rematch mode to update existing cities' OSM data:
-```bash
-npm run seed:cities -- --rematch  # Updates OSM data for existing cities
 ```
 
 ### Re-running population fetch
