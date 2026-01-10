@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import { US_STATES, SPECIAL_OSM_CITY_IDS } from "./states";
 import { shouldExclude } from "./matcher";
 import {

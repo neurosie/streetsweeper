@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
+import { z } from "zod";
 import { PopulationSource, type OsmElement } from "./types";
 
 const prisma = new PrismaClient();
@@ -9,37 +10,40 @@ const stateFilter = args.find((arg) => arg.startsWith("--state="))?.split("=")[1
 const limitArg = args.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
 const limit = limitArg ? parseInt(limitArg, 10) : undefined;
 
-type WikidataEntity = {
-  id: string;
-  claims?: {
-    P1082?: Array<{
-      mainsnak: {
-        datavalue?: {
-          value?: {
-            amount?: string;
-          };
-        };
-      };
-      qualifiers?: {
-        P585?: Array<{
-          datavalue?: {
-            value?: {
-              time?: string;
-            };
-          };
-        }>;
-      };
-    }>;
-  };
-};
+// Wikidata API response schemas
+const WikidataClaimSchema = z.object({
+  mainsnak: z.object({
+    datavalue: z.object({
+      value: z.object({
+        amount: z.string(),
+      }).optional(),
+    }).optional(),
+  }),
+  qualifiers: z.object({
+    P585: z.array(z.object({
+      datavalue: z.object({
+        value: z.object({
+          time: z.string(),
+        }).optional(),
+      }).optional(),
+    })).optional(),
+  }).optional(),
+});
 
-type WikidataResponse = {
-  entities: Record<string, WikidataEntity>;
-  error?: {
-    code: string;
-    info: string;
-  };
-};
+const WikidataEntitySchema = z.object({
+  id: z.string(),
+  claims: z.object({
+    P1082: z.array(WikidataClaimSchema).optional(),
+  }).optional(),
+});
+
+const WikidataResponseSchema = z.object({
+  entities: z.record(z.string(), WikidataEntitySchema),
+  error: z.object({
+    code: z.string(),
+    info: z.string(),
+  }).optional(),
+});
 
 /**
  * Extract Wikidata ID from OSM data
@@ -90,7 +94,8 @@ async function fetchWikidataPopulations(
         continue;
       }
 
-      const data = (await response.json()) as WikidataResponse;
+      const json: unknown = await response.json();
+      const data = WikidataResponseSchema.parse(json);
 
       // Handle API errors (e.g., maxlag - server too busy)
       if (data.error) {
