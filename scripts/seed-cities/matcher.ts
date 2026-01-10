@@ -32,8 +32,7 @@ export function shouldExclude(name: string): boolean {
 }
 
 /**
- * Generate name variants to try matching against SimpleMaps.
- * These are only used for matching - the original name is preserved in the database.
+ * Generate name variants for city name matching.
  */
 function getNameVariants(name: string): string[] {
   const variants: string[] = [name];
@@ -101,7 +100,7 @@ export function findPopulation(
     if (exactMatch) {
       return {
         population: exactMatch.population,
-        source: PopulationSource.EXACT_MATCH,
+        source: PopulationSource.OSM,
         match: exactMatch,
       };
     }

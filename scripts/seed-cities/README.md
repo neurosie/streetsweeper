@@ -148,11 +148,3 @@ To start completely fresh:
 1. Drop and recreate the table: `npx prisma migrate reset`
 2. Re-run the seed: `npm run seed:cities`
 3. Fetch populations: `npm run seed:population`
-
-## Benefits of this Approach
-
-1. **Better data quality** - OSM metadata (like "official_name" for Rome, NY) is preserved
-2. **Consistent IDs** - Wikidata IDs are available on most OSM entities, even small towns
-3. **No external CSV dependency** - No need to download and match SimpleMaps data
-4. **More complete coverage** - Wikidata has population for more places than SimpleMaps
-5. **Flexible re-fetching** - Can re-run population fetch without re-downloading OSM data

@@ -32,7 +32,6 @@ export const OverpassResponseSchema = z.object({
 
 export type OsmElement = z.infer<typeof OsmElementSchema>;
 
-// SimpleMaps CSV types
 export const SimpleMapsRowSchema = z.object({
   city: z.string(),
   city_ascii: z.string(),

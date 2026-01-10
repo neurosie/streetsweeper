@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { PopulationSource, type OsmElement } from "./types";
 
 const prisma = new PrismaClient();
@@ -162,12 +162,12 @@ async function seedPopulation() {
   console.log("🌍 Fetching population data from Wikidata...\n");
 
   // Build query conditions
-  const whereConditions: any = {
-    osmData: { not: null },
+  const whereConditions = {
+    osmData: { not: Prisma.JsonNull },
+    ...(stateFilter ? { stateId: stateFilter } : {}),
   };
 
   if (stateFilter) {
-    whereConditions.stateId = stateFilter;
     console.log(`📍 Filtering to state: ${stateFilter}\n`);
   }
 

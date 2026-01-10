@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { US_STATES, SPECIAL_OSM_CITY_IDS } from "./states";
 import { shouldExclude } from "./matcher";
 import {
@@ -99,7 +99,7 @@ async function processPlace(
         lng,
         osmId: BigInt(osmElement.id),
         osmType: osmElement.type,
-        osmData: osmElement as any, // Store full OSM JSON
+        osmData: osmElement as Prisma.InputJsonValue, // Store full OSM JSON
         displayName: `${name}, ${state.id}`,
         populationSource: source,
       },
@@ -110,7 +110,7 @@ async function processPlace(
       data: {
         population,
         populationSource: source,
-        osmData: osmElement as any, // Update OSM JSON
+        osmData: osmElement as Prisma.InputJsonValue, // Update OSM JSON
       },
     });
   }
@@ -282,7 +282,7 @@ async function seedCities() {
             lng: null,
             osmId: BigInt(osmId),
             osmType: "relation",
-            osmData: osmElement as any,
+            osmData: osmElement as Prisma.InputJsonValue,
             displayName: `${name}, ${stateId}`,
             populationSource: PopulationSource.NO_MATCH,
           },
