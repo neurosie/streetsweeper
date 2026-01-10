@@ -25,16 +25,18 @@ const config = {
   output: "standalone",
 
   /**
-   * Skip type checking and linting during production builds
-   * These checks are resource-intensive and should be done during development/CI
-   * This dramatically speeds up Docker builds on resource-constrained servers
+   * Skip type checking and linting during Docker production builds
+   * Set SKIP_TYPE_CHECK=true in Dockerfile to enable this optimization
+   * Type checking should be done in CI before deployment
    */
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  ...(process.env.SKIP_TYPE_CHECK === "true" && {
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+  }),
 };
 
 export default config;

@@ -50,6 +50,10 @@ ENV SKIP_ENV_VALIDATION=true
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Skip type checking and linting in Docker builds for faster deployment
+# Type checking should be done in CI before deployment
+ENV SKIP_TYPE_CHECK=true
+
 # Generate Prisma Client
 # This creates the type-safe database client based on your schema
 RUN npx prisma generate
