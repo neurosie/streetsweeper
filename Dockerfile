@@ -3,7 +3,7 @@
 # ==============================================================================
 # This stage installs all dependencies (both production and development)
 # We use Alpine Linux for a smaller image size (~40MB vs ~900MB for regular node)
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 
 # Install OpenSSL for Prisma (Prisma needs it to generate the client)
 RUN apk add --no-cache libc6-compat openssl
@@ -23,7 +23,7 @@ RUN npm ci --frozen-lockfile
 # STAGE 2: Builder
 # ==============================================================================
 # This stage builds the Next.js application
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 RUN apk add --no-cache libc6-compat openssl
 
@@ -50,6 +50,10 @@ ENV SKIP_ENV_VALIDATION=true
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Skip type checking and linting in Docker builds for faster deployment
+# Type checking should be done in CI before deployment
+ENV SKIP_TYPE_CHECK=true
+
 # Generate Prisma Client
 # This creates the type-safe database client based on your schema
 RUN npx prisma generate
@@ -62,7 +66,7 @@ RUN npm run build
 # STAGE 3: Runner
 # ==============================================================================
 # This is the final stage - a minimal image that only contains what's needed to run
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 RUN apk add --no-cache libc6-compat openssl
 

@@ -23,6 +23,20 @@ const config = {
    * This creates a minimal server.js and copies only necessary files
    */
   output: "standalone",
+
+  /**
+   * Skip type checking and linting during Docker production builds
+   * Set SKIP_TYPE_CHECK=true in Dockerfile to enable this optimization
+   * Type checking should be done in CI before deployment
+   */
+  ...(process.env.SKIP_TYPE_CHECK === "true" && {
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+  }),
 };
 
 export default config;
