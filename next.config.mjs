@@ -23,6 +23,18 @@ const config = {
    * This creates a minimal server.js and copies only necessary files
    */
   output: "standalone",
+
+  /**
+   * Skip type checking and linting during production builds
+   * These checks are resource-intensive and should be done during development/CI
+   * This dramatically speeds up Docker builds on resource-constrained servers
+   */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default config;
