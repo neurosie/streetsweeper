@@ -2,9 +2,7 @@ import { PrismaClient, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { PopulationSource, type OsmElement } from "./types";
 
-const prisma = new PrismaClient({
-  datasourceUrl: process.env.POSTGRES_URL_NON_POOLING,
-});
+const prisma = new PrismaClient();
 
 // Parse command line arguments
 const args = process.argv.slice(2);
