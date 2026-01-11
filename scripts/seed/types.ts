@@ -32,28 +32,9 @@ export const OverpassResponseSchema = z.object({
 
 export type OsmElement = z.infer<typeof OsmElementSchema>;
 
-// SimpleMaps CSV types
-export const SimpleMapsRowSchema = z.object({
-  city: z.string(),
-  city_ascii: z.string(),
-  state_id: z.string(),
-  state_name: z.string(),
-  county_name: z.string().optional().default(""),
-  lat: z.coerce.number(),
-  lng: z.coerce.number(),
-  population: z.coerce.number(),
-});
-
-export type SimpleMapsRow = z.infer<typeof SimpleMapsRowSchema>;
-
-// Population match result
+// Population source tracking
 export enum PopulationSource {
-  EXACT_MATCH = "exact-match",
+  OSM = "osm",
+  WIKIDATA = "wikidata",
   NO_MATCH = "no-match",
 }
-
-export type PopulationMatch = {
-  population: number | null;
-  source: PopulationSource;
-  match?: SimpleMapsRow;
-};
