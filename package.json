@@ -10,6 +10,11 @@
     "start": "next start",
     "prepare": "husky install",
     "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "vitest run src/server/api/routers/*.test.ts",
+    "test:unit": "vitest run src/server/geo/*.test.ts",
     "seed:cities": "tsx scripts/seed/seed-cities.ts",
     "seed:population": "tsx scripts/seed/seed-population.ts"
   },
@@ -52,6 +57,7 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.34.1",
+    "@testcontainers/postgresql": "^11.11.0",
     "@types/eslint": "^8.44.2",
     "@types/mapbox-gl": "^2.7.13",
     "@types/node": "^18.16.0",
@@ -59,6 +65,7 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "@vitest/ui": "^1.6.1",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.13",
@@ -70,7 +77,7 @@
     "prisma": "^5.1.1",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6",
-    "vitest": "^0.34.6"
+    "vitest": "^1.6.1"
   },
   "ct3aMetadata": {
     "initVersion": "7.19.0"
