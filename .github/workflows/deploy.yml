@@ -26,8 +26,13 @@ jobs:
         env:
           SKIP_ENV_VALIDATION: true
 
-      - name: Run tests
-        run: npm run test -- --run
+      - name: Run unit tests
+        run: npm run test:unit
+        env:
+          SKIP_ENV_VALIDATION: true
+
+      - name: Run integration tests
+        run: npm run test:integration
         env:
           SKIP_ENV_VALIDATION: true
 
