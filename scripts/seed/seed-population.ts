@@ -11,6 +11,7 @@ const args = process.argv.slice(2);
 const stateFilter = args.find((arg) => arg.startsWith("--state="))?.split("=")[1];
 const limitArg = args.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
 const limit = limitArg ? parseInt(limitArg, 10) : undefined;
+const isMissingOnly = args.includes("--missing-only");
 
 // Wikidata API response schemas
 const WikidataClaimSchema = z.object({
@@ -172,11 +173,16 @@ async function seedPopulation() {
   const whereConditions = {
     osmData: { not: Prisma.JsonNull },
     ...(stateFilter ? { stateId: stateFilter } : {}),
+    ...(isMissingOnly ? { population: null } : {}),
   };
 
   if (stateFilter) {
-    console.log(`📍 Filtering to state: ${stateFilter}\n`);
+    console.log(`📍 Filtering to state: ${stateFilter}`);
   }
+  if (isMissingOnly) {
+    console.log(`🔍 Only processing cities without population data`);
+  }
+  console.log();
 
   // Get all cities that have OSM data with Wikidata IDs
   const cities = await prisma.city.findMany({

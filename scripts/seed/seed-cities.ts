@@ -18,6 +18,7 @@ const prisma = new PrismaClient({
 // Parse command line arguments
 const args = process.argv.slice(2);
 const shouldClear = args.includes("--clear");
+const isNewOnly = args.includes("--new-only");
 
 type Stats = {
   totalProcessed: number;
@@ -48,6 +49,10 @@ function extractPopulation(osmElement: OsmElement): {
   }
   return { population: null, source: PopulationSource.NO_MATCH };
 }
+
+// TODO: Strip "City of ", "Town of ", "Village of " prefixes from NY cities only.
+// These prefixes are common in NY OSM data but cause false positives in other states.
+// Example: "City of Troy" -> "Troy", "Town of Colonie" -> "Colonie"
 
 /**
  * Process a single place and insert into database
@@ -123,6 +128,10 @@ async function seedCities() {
     console.log(`✅ Deleted ${count} cities\n`);
   }
 
+  if (isNewOnly) {
+    console.log("🆕 New-only mode - adding cities not already in database\n");
+  }
+
   const stats: Stats = {
     totalProcessed: 0,
     exactMatches: 0,
@@ -136,16 +145,18 @@ async function seedCities() {
     console.log(`\n📍 Processing ${state.name} (${state.id})...`);
 
     try {
-      // Skip states that already have cities
-      const existingCount = await prisma.city.count({
-        where: { stateId: state.id },
-      });
-      if (existingCount > 0) {
-        console.log(
-          `   ⏭️  Skipping - ${existingCount} cities already exist`,
-        );
-        stats.statesSkipped++;
-        continue;
+      // Skip states that already have cities (unless --new-only mode)
+      if (!isNewOnly) {
+        const existingCount = await prisma.city.count({
+          where: { stateId: state.id },
+        });
+        if (existingCount > 0) {
+          console.log(
+            `   ⏭️  Skipping - ${existingCount} cities already exist`,
+          );
+          stats.statesSkipped++;
+          continue;
+        }
       }
 
       const places = await getPlacesForState(state.id);
