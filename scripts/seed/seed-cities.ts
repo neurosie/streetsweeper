@@ -11,7 +11,9 @@ import {
   buildMunicipalitiesQuery,
 } from "../../src/server/osm/overpass";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.POSTGRES_URL_NON_POOLING,
+});
 
 // Parse command line arguments
 const args = process.argv.slice(2);
