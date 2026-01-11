@@ -182,18 +182,28 @@ The project uses Husky for git hooks:
 - Pre-commit hooks are configured in `.husky/`
 - Type checking and linting are run on pre-commit
 
-**IMPORTANT: Always install hooks in new environments**
+**CRITICAL: Git hooks MUST be installed before any work**
 
-When working in a new environment (cloud IDE, fresh clone, etc.), pre-commit hooks may not be installed automatically. **You MUST manually ensure they are installed**:
+⚠️ **MANDATORY FIRST STEP** ⚠️
+
+Pre-commit hooks are NOT installed automatically in cloud environments, fresh clones, or CI. **BEFORE MAKING ANY CHANGES**, you MUST run:
 
 ```bash
-# After cloning or in a new environment, run:
 npm install          # Installs dependencies
-npm run prepare      # Installs Husky git hooks
+npm run prepare      # Installs Husky git hooks - THIS IS MANDATORY
 
-# Verify hooks are installed:
-ls -la .git/hooks/   # Should show pre-commit symlink to .husky/pre-commit
+# Verify hooks are installed (REQUIRED):
+ls -la .git/hooks/   # MUST show pre-commit symlink to .husky/pre-commit
 ```
+
+**If you skip `npm run prepare`:**
+- Code will not be linted before commit
+- Type errors will not be caught
+- Commits will bypass quality gates
+- CI/CD will fail
+- Pull requests will be rejected
+
+**DO NOT PROCEED** with any development work until hooks are verified as installed.
 
 ### Environment Variables
 
