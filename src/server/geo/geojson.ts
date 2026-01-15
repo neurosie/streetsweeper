@@ -14,7 +14,6 @@ import {
   type Polygon,
 } from "geojson";
 import osmtogeojson from "osmtogeojson";
-import { generateAbbreviations } from "./abbreviations";
 import { z } from "zod";
 import booleanIntersects from "@turf/boolean-intersects";
 
@@ -23,7 +22,7 @@ import booleanIntersects from "@turf/boolean-intersects";
  *
  * Bump whenever making an algo change that needs to be in sync with a frontend change.
  */
-export const ALGORITHM_VERSION = 1;
+export const ALGORITHM_VERSION = 2;
 
 /**
  * API response for a Place and all its contained roads.
@@ -188,13 +187,7 @@ export function transformGeodata(response: unknown): PlaceResponse {
           geometry,
           properties: {
             name,
-            alternateNames: Array.from(
-              new Set(
-                Array.from(alternateNames).flatMap((name) =>
-                  generateAbbreviations(name, "easy"),
-                ),
-              ),
-            ),
+            alternateNames: Array.from(alternateNames),
             lengthMi: length(
               { type: "Feature", geometry, properties: {} },
               { units: "miles" },

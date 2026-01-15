@@ -8,8 +8,22 @@ import { carIcon } from "~/components/carIcon";
 import Map from "~/components/Map";
 import { type PlaceResponse, type Road } from "~/server/geo/geojson";
 import { api } from "~/utils/api";
+import { generateAbbreviations } from "~/utils/abbreviations";
 
 type GuessState = "right" | "wrong" | "repeat";
+
+function expandAlternateNames(data: PlaceResponse): PlaceResponse {
+  for (const road of data.roads.features) {
+    road.properties.alternateNames = Array.from(
+      new Set(
+        road.properties.alternateNames.flatMap((name) =>
+          generateAbbreviations(name, "easy"),
+        ),
+      ),
+    );
+  }
+  return data;
+}
 
 export default function Play() {
   const router = useRouter();
@@ -33,7 +47,8 @@ export default function Play() {
       if (!response.ok) {
         throw new Error("Data response had an error: " + response.statusText);
       }
-      return (await response.json()) as PlaceResponse;
+      const data = (await response.json()) as PlaceResponse;
+      return expandAlternateNames(data);
     },
   });
   let status: "apiLoading" | "dataLoading" | "error" | "success",
