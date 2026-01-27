@@ -9,6 +9,7 @@ import {
 import {
   queryOverpass,
   buildMunicipalitiesQuery,
+  buildRelationQuery,
 } from "../../src/server/osm/overpass";
 
 const prisma = new PrismaClient();
@@ -216,39 +217,58 @@ async function seedCities() {
           continue;
         }
 
+        // Fetch actual OSM data for this relation
+        console.log(`   📡 Fetching OSM data for ${name}...`);
+        const data: unknown = await queryOverpass(buildRelationQuery(osmId));
+        const parsed = OverpassResponseSchema.parse(data);
+        const osmElement = parsed.elements.find(
+          (el) => el.type === "relation" && el.id === osmId,
+        );
+
+        if (!osmElement) {
+          console.error(`   ❌ Could not find relation ${osmId} in OSM`);
+          stats.errors++;
+          continue;
+        }
+
         // Find state (may not exist for special cases like DC)
         const state = US_STATES.find((s) => s.id === stateId);
         const stateName = state?.name ?? stateId;
 
-        // Create minimal OSM element - population will be fetched via Wikidata later
-        const osmElement: OsmElement = {
-          type: "relation",
-          id: osmId,
-          tags: { name },
-        };
+        // Extract population from OSM if available
+        const { population, source } = extractPopulation(osmElement);
+
+        // Get coordinates
+        const lat = osmElement.center?.lat ?? null;
+        const lng = osmElement.center?.lon ?? null;
+        const county = osmElement.tags["addr:county"] ?? null;
 
         // Track stats
         stats.totalProcessed++;
-        stats.noMatches++;
+        if (source === PopulationSource.OSM) stats.exactMatches++;
+        else stats.noMatches++;
 
         await prisma.city.create({
           data: {
             name,
             state: stateName,
             stateId,
-            county: null,
-            population: null,
-            lat: null,
-            lng: null,
+            county,
+            population,
+            lat,
+            lng,
             osmId: BigInt(osmId),
             osmType: "relation",
             osmData: osmElement as Prisma.InputJsonValue,
             displayName: `${name}, ${stateId}`,
-            populationSource: PopulationSource.NO_MATCH,
+            populationSource: source,
           },
         });
 
         console.log(`   ✅ Added ${name}, ${stateId}`);
+
+        // Rate limit
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (error) {
         console.error(`   ❌ Error processing ${name}, ${stateId}:`, error);
         stats.errors++;
