@@ -72,3 +72,13 @@ area["ISO3166-2"="US-${stateISO}"]->.state;
 );
 out center tags;`;
 }
+
+/**
+ * Build Overpass query to fetch a single relation by ID
+ * @param relationId - OSM relation ID
+ */
+export function buildRelationQuery(relationId: number): string {
+  return `[out:json];
+relation(${relationId});
+out center tags;`;
+}
