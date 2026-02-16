@@ -1,10 +1,9 @@
 # ==============================================================================
 # Docker Compose Configuration for Streetsweeper
 # ==============================================================================
-# This file defines three services that work together:
-# 1. postgres: PostgreSQL database
-# 2. app: Next.js application
-# 3. nginx: Reverse proxy for SSL and routing
+# This file defines two services that work together:
+# 1. app: Next.js application
+# 2. nginx: Reverse proxy for SSL and routing
 #
 # Usage:
 #   Start: docker compose up -d
@@ -14,55 +13,6 @@
 # ==============================================================================
 
 services:
-  # ============================================================================
-  # PostgreSQL Database
-  # ============================================================================
-  # This is your database. Data persists in the 'postgres_data' volume below.
-  postgres:
-    # Using Alpine version for smaller size
-    image: postgres:16-alpine
-
-    container_name: streetsweeper-db
-
-    # Restart policy: always restart unless explicitly stopped
-    # This ensures your DB comes back up after server reboots
-    restart: unless-stopped
-
-    # Load environment variables from .env file
-    # This file is NOT committed to git (it contains secrets)
-    # Create it from .env.example
-    env_file:
-      - .env
-
-    # Environment variables for database configuration
-    environment:
-      # Performance tuning for smaller droplets
-      # shared_buffers: RAM allocated for caching (256MB for 1GB droplet)
-      POSTGRES_SHARED_BUFFERS: 256MB
-      POSTGRES_MAX_CONNECTIONS: 100
-
-    # Optionally expose this port on the host machine for local dev
-    ports:
-      - "${POSTGRES_PORT:-}:5432"
-
-    # Volume mapping - THIS IS CRITICAL FOR DATA PERSISTENCE
-    # The named volume 'postgres_data' stores your database files
-    # Even if you delete the container, this data remains safe
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-    # Health check - Docker will monitor if postgres is ready
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-    # Internal network - postgres is not exposed to the internet
-    # Only accessible by other containers in this compose file
-    networks:
-      - app-network
-
   # ============================================================================
   # Next.js Application
   # ============================================================================
@@ -89,12 +39,6 @@ services:
 
     restart: unless-stopped
 
-    # Wait for postgres to be healthy before starting
-    # This prevents connection errors on startup
-    depends_on:
-      postgres:
-        condition: service_healthy
-
     # Load environment variables from .env file
     # This file is NOT committed to git (it contains secrets)
     # Create it from .env.example
@@ -106,53 +50,11 @@ services:
     expose:
       - "3000"
 
-    # Override the default CMD to run migrations before starting the app
-    # This ensures your database schema is always up to date
-    command: >
-      sh -c "
-        echo 'Running database migrations...' &&
-        npx prisma migrate deploy &&
-        echo 'Starting application...' &&
-        node server.js
-      "
+    # Start the application
+    command: node server.js
 
     networks:
       - app-network
-
-  # ============================================================================
-  # Seed Service (for running scripts like seed:cities)
-  # ============================================================================
-  # This service uses the builder stage which has tsx and source scripts
-  # Use: docker compose run --rm seed
-  seed:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: builder  # Use builder stage which has all dependencies and scripts
-      args:
-        NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: ${NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-
-    container_name: streetsweeper-seed
-
-    # Wait for postgres to be healthy before starting
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-    # Load environment variables from .env file
-    env_file:
-      - .env
-
-    # Only run when explicitly requested with: docker compose run --rm seed
-    profiles:
-      - tools
-
-    networks:
-      - app-network
-
-    # Default command runs the city seeding script
-    # You can override this with: docker compose run --rm seed npm run <other-script>
-    command: npm run seed:cities
 
   # ============================================================================
   # Nginx Reverse Proxy
@@ -228,14 +130,7 @@ networks:
 # Volumes
 # ==============================================================================
 # Named volumes persist data even when containers are destroyed
-# IMPORTANT: Don't delete these volumes or you'll lose your data!
 volumes:
-  # Database files - THIS IS YOUR DATA!
-  # Location on host: /var/lib/docker/volumes/
-  # To backup: docker run --rm -v postgres_data:/data -v $(pwd):/backup ubuntu tar czf /backup/db-backup.tar.gz /data
-  postgres_data:
-    driver: local
-
   # Nginx cache (optional, improves performance)
   nginx_cache:
     driver: local

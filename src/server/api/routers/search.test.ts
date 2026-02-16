@@ -1,4 +1,4 @@
-import { expect, test, beforeEach, describe, vi } from "vitest";
+import { expect, test, describe, vi } from "vitest";
 import { matchStateQuery, parseSearchQuery } from "./search";
 import type { CitySearchData, PlaceResult } from "./search";
 
@@ -9,7 +9,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "NY",
     county: "New York County",
     population: 8336817,
-    osmId: BigInt(175905),
+    osmId: 175905,
     osmType: "relation",
     displayName: "New York, NY",
   },
@@ -19,7 +19,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "CA",
     county: "Los Angeles County",
     population: 3979576,
-    osmId: BigInt(207359),
+    osmId: 207359,
     osmType: "relation",
     displayName: "Los Angeles, CA",
   },
@@ -29,7 +29,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "IL",
     county: "Cook County",
     population: 2693976,
-    osmId: BigInt(122604),
+    osmId: 122604,
     osmType: "relation",
     displayName: "Chicago, IL",
   },
@@ -39,7 +39,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "NY",
     county: "Rensselaer County",
     population: 50129,
-    osmId: BigInt(175906),
+    osmId: 175906,
     osmType: "relation",
     displayName: "Troy, NY",
   },
@@ -49,7 +49,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "MI",
     county: "Oakland County",
     population: 87294,
-    osmId: BigInt(175907),
+    osmId: 175907,
     osmType: "relation",
     displayName: "Troy, MI",
   },
@@ -59,7 +59,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "AL",
     county: "Pike County",
     population: 18033,
-    osmId: BigInt(175908),
+    osmId: 175908,
     osmType: "relation",
     displayName: "Troy, AL",
   },
@@ -69,7 +69,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "OR",
     county: "Multnomah County",
     population: 652503,
-    osmId: BigInt(186579),
+    osmId: 186579,
     osmType: "relation",
     displayName: "Portland, OR",
   },
@@ -79,7 +79,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "ME",
     county: "Cumberland County",
     population: 68408,
-    osmId: BigInt(186580),
+    osmId: 186580,
     osmType: "relation",
     displayName: "Portland, ME",
   },
@@ -89,7 +89,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "IL",
     county: "Sangamon County",
     population: 114394,
-    osmId: BigInt(128271),
+    osmId: 128271,
     osmType: "relation",
     displayName: "Springfield, IL",
   },
@@ -99,7 +99,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "MA",
     county: "Hampden County",
     population: 155929,
-    osmId: BigInt(128272),
+    osmId: 128272,
     osmType: "relation",
     displayName: "Springfield, MA",
   },
@@ -109,7 +109,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "MO",
     county: "Greene County",
     population: 169176,
-    osmId: BigInt(128273),
+    osmId: 128273,
     osmType: "relation",
     displayName: "Springfield, MO",
   },
@@ -119,7 +119,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "NY",
     county: "Albany County",
     population: 99224,
-    osmId: BigInt(175909),
+    osmId: 175909,
     osmType: "relation",
     displayName: "Albany, NY",
   },
@@ -129,7 +129,7 @@ const MOCK_CITIES: CitySearchData[] = [
     stateId: "AZ",
     county: "Maricopa County",
     population: 25000,
-    osmId: BigInt(999999),
+    osmId: 999999,
     osmType: "relation",
     displayName: "Spring Mesa, AZ",
   },
@@ -142,19 +142,13 @@ async function searchWithFreshModule(
 ): Promise<PlaceResult[]> {
   // Reset modules to clear the cache, then dynamically import
   vi.resetModules();
+  vi.doMock("~/server/cities", () => ({
+    loadCities: () => cities,
+  }));
   const { searchRouter } = await import("./search");
 
-  const sortedCities = [...cities].sort(
-    (a, b) => (b.population ?? 0) - (a.population ?? 0),
-  );
-  const mockPrisma = {
-    city: {
-      findMany: vi.fn().mockResolvedValue(sortedCities),
-    },
-  };
-
   const result = await searchRouter({
-    ctx: { prisma: mockPrisma as never },
+    ctx: {} as never,
     input: { query },
     type: "query",
     path: "search",
@@ -217,7 +211,7 @@ describe("searchRouter", () => {
         stateId: "TS",
         county: null,
         population: 1000 + i,
-        osmId: BigInt(1000 + i),
+        osmId: 1000 + i,
         osmType: "relation",
         displayName: `Testville${i}, TS`,
       });
@@ -244,7 +238,7 @@ describe("searchRouter", () => {
     expect(result.name).toBe("Albany");
   });
 
-  test("converts osmId from BigInt to number", async () => {
+  test("osmId is a number", async () => {
     const results = await searchWithFreshModule("Albany", MOCK_CITIES);
 
     expect(results[0]?.osmId).toBe(175909);
@@ -258,7 +252,7 @@ describe("searchRouter", () => {
         stateId: "TS",
         county: null,
         population: 10000,
-        osmId: BigInt(999),
+        osmId: 999,
         osmType: "relation",
         displayName: "Test City, TS",
       },

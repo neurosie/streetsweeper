@@ -1,44 +1,39 @@
 /**
  * Search Quality Benchmark Tests
  *
- * These tests run against the real database to validate search ranking behavior.
- * They are skipped when no database is available (CI without Docker, sandboxes).
+ * These tests run against the real cities.jsonl data file to validate search ranking behavior.
+ * They are skipped when no city data is available (empty cities.jsonl).
  *
  * Run with: npm test -- search.benchmark
- * Requires: DATABASE_URL environment variable pointing to populated database
+ * Requires: populated data/cities.jsonl file (run seed:cities first)
  */
 
-import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { describe, test, expect, beforeAll } from "vitest";
 import { searchRouter, type PlaceResult } from "./search";
 
-// --- Database Connection ---
+// --- Data Availability ---
 
-const prisma = new PrismaClient();
-let dbAvailable = false;
+let dataAvailable = false;
 
 beforeAll(async () => {
   try {
-    await prisma.$connect();
-    const count = await prisma.city.count();
-    if (count > 0) {
-      dbAvailable = true;
-      console.log(`Database available with ${count} cities`);
+    // Trigger a search to load the JSONL data, then check if cities exist
+    await performSearch("test");
+    const allResults = await performSearch("a");
+    if (allResults.length > 0) {
+      dataAvailable = true;
+      console.log(`City data available`);
     }
   } catch {
-    console.log("Database not available, skipping benchmark tests");
+    console.log("City data not available, skipping benchmark tests");
   }
-});
-
-afterAll(async () => {
-  await prisma.$disconnect();
 });
 
 // --- Search Helper ---
 
 async function performSearch(query: string): Promise<PlaceResult[]> {
   const result = await searchRouter({
-    ctx: { prisma: prisma as never },
+    ctx: {} as never,
     input: { query },
     type: "query",
     path: "search",
@@ -322,7 +317,7 @@ async function runBenchmark(benchmark: Benchmark) {
 describe("Search Quality Benchmarks", () => {
   for (const benchmark of BENCHMARKS) {
     test(benchmark.description, async ({ skip }) => {
-      if (!dbAvailable) {
+      if (!dataAvailable) {
         skip();
         return;
       }

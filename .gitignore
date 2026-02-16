@@ -8,10 +8,6 @@
 # testing
 /coverage
 
-# database
-/prisma/db.sqlite
-/prisma/db.sqlite-journal
-
 # next.js
 /.next/
 /out/
@@ -47,5 +43,5 @@ certbot/
 # vscode workspace settings
 .vscode
 
-# data files
+# seed script data (osmData dump, local cache only)
 scripts/data/

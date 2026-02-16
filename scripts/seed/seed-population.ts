@@ -1,8 +1,11 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join } from "path";
 import { z } from "zod";
-import { PopulationSource, type OsmElement } from "./types";
+import type { OsmElement } from "./types";
+import type { CityData } from "../../src/server/cities";
 
-const prisma = new PrismaClient();
+const CITIES_JSONL_PATH = join(process.cwd(), "data", "cities.jsonl");
+const OSM_DUMP_PATH = join(process.cwd(), "scripts", "data", "cities-osm.jsonl");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -10,6 +13,8 @@ const stateFilter = args.find((arg) => arg.startsWith("--state="))?.split("=")[1
 const limitArg = args.find((arg) => arg.startsWith("--limit="))?.split("=")[1];
 const limit = limitArg ? parseInt(limitArg, 10) : undefined;
 const isMissingOnly = args.includes("--missing-only");
+
+type OsmDumpRecord = { osmId: number; data: OsmElement };
 
 // Wikidata API response schemas
 const WikidataClaimSchema = z.object({
@@ -45,6 +50,39 @@ const WikidataResponseSchema = z.object({
     info: z.string(),
   }).optional(),
 });
+
+/**
+ * Read cities from JSONL file
+ */
+function readCities(): CityData[] {
+  if (!existsSync(CITIES_JSONL_PATH)) return [];
+  const content = readFileSync(CITIES_JSONL_PATH, "utf-8");
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line) as CityData);
+}
+
+/**
+ * Write cities to JSONL file
+ */
+function writeCities(cities: CityData[]): void {
+  const content = cities.map((c) => JSON.stringify(c)).join("\n") + "\n";
+  writeFileSync(CITIES_JSONL_PATH, content, "utf-8");
+}
+
+/**
+ * Read OSM dump records and build lookup by osmId
+ */
+function readOsmDump(): Map<number, OsmElement> {
+  if (!existsSync(OSM_DUMP_PATH)) return new Map();
+  const content = readFileSync(OSM_DUMP_PATH, "utf-8");
+  const records = content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line) as OsmDumpRecord);
+  return new Map(records.map((r) => [r.osmId, r.data]));
+}
 
 /**
  * Extract Wikidata ID from OSM data
@@ -158,7 +196,7 @@ async function fetchWikidataPopulations(
 }
 
 type CityToProcess = {
-  id: number;
+  index: number;
   name: string;
   stateId: string;
   wikidataId: string;
@@ -167,12 +205,19 @@ type CityToProcess = {
 async function seedPopulation() {
   console.log("🌍 Fetching population data from Wikidata...\n");
 
-  // Build query conditions
-  const whereConditions = {
-    osmData: { not: Prisma.JsonNull },
-    ...(stateFilter ? { stateId: stateFilter } : {}),
-    ...(isMissingOnly ? { population: null } : {}),
-  };
+  // Load city data and OSM dump
+  const cities = readCities();
+  const osmDump = readOsmDump();
+
+  if (cities.length === 0) {
+    console.log("❌ No cities found in data/cities.jsonl. Run seed:cities first.");
+    return;
+  }
+
+  if (osmDump.size === 0) {
+    console.log("❌ No OSM data found in scripts/data/cities-osm.jsonl. Run seed:cities first.");
+    return;
+  }
 
   if (stateFilter) {
     console.log(`📍 Filtering to state: ${stateFilter}`);
@@ -182,40 +227,35 @@ async function seedPopulation() {
   }
   console.log();
 
-  // Get all cities that have OSM data with Wikidata IDs
-  const cities = await prisma.city.findMany({
-    where: whereConditions,
-    select: {
-      id: true,
-      name: true,
-      stateId: true,
-      osmData: true,
-      populationSource: true,
-    },
-    take: limit,
-  });
-
-  console.log(`📊 Found ${cities.length} cities to process\n`);
-
-  // Extract Wikidata IDs
+  // Find cities to process
   const citiesToProcess: CityToProcess[] = [];
-  for (const city of cities) {
-    const osmData = city.osmData as OsmElement | null;
+  for (let i = 0; i < cities.length; i++) {
+    const city = cities[i]!;
+
+    // Apply filters
+    if (stateFilter && city.stateId !== stateFilter) continue;
+    if (isMissingOnly && city.population != null) continue;
+
+    // Look up OSM data for this city
+    const osmData = osmDump.get(city.osmId);
     if (!osmData) continue;
 
     const wikidataId = extractWikidataId(osmData);
     if (!wikidataId) continue;
 
     citiesToProcess.push({
-      id: city.id,
+      index: i,
       name: city.name,
       stateId: city.stateId,
       wikidataId,
     });
+
+    if (limit && citiesToProcess.length >= limit) break;
   }
 
+  console.log(`📊 Found ${cities.length} total cities`);
   console.log(
-    `🔍 Found ${citiesToProcess.length} cities with Wikidata IDs\n`,
+    `🔍 Found ${citiesToProcess.length} cities with Wikidata IDs to process\n`,
   );
 
   if (citiesToProcess.length === 0) {
@@ -229,30 +269,28 @@ async function seedPopulation() {
   const populations = await fetchWikidataPopulations(wikidataIds);
   console.log(`✅ Retrieved ${populations.size} population values\n`);
 
-  // Update cities
+  // Update cities in-place
   let updated = 0;
   let notFound = 0;
 
-  for (const city of citiesToProcess) {
-    const population = populations.get(city.wikidataId);
+  for (const cityToProcess of citiesToProcess) {
+    const population = populations.get(cityToProcess.wikidataId);
 
     if (population !== undefined) {
-      await prisma.city.update({
-        where: { id: city.id },
-        data: {
-          population,
-          populationSource: PopulationSource.WIKIDATA,
-        },
-      });
+      cities[cityToProcess.index]!.population = population;
       console.log(
-        `   ✅ ${city.name}, ${city.stateId}: ${population.toLocaleString()}`,
+        `   ✅ ${cityToProcess.name}, ${cityToProcess.stateId}: ${population.toLocaleString()}`,
       );
       updated++;
     } else {
-      console.log(`   ⚠️  ${city.name}, ${city.stateId}: No population found`);
+      console.log(`   ⚠️  ${cityToProcess.name}, ${cityToProcess.stateId}: No population found`);
       notFound++;
     }
   }
+
+  // Write updated cities
+  console.log(`\n💾 Writing updated cities to ${CITIES_JSONL_PATH}`);
+  writeCities(cities);
 
   console.log("\n✨ Complete!\n");
   console.log("📊 Statistics:");

@@ -1,4 +1,5 @@
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { join } from "path";
 import { US_STATES, SPECIAL_OSM_CITY_IDS } from "./states";
 import { shouldExclude } from "./matcher";
 import {
@@ -11,8 +12,11 @@ import {
   buildMunicipalitiesQuery,
   buildRelationQuery,
 } from "../../src/server/osm/overpass";
+import type { CityData } from "../../src/server/cities";
 
-const prisma = new PrismaClient();
+const CITIES_JSONL_PATH = join(process.cwd(), "data", "cities.jsonl");
+const OSM_DATA_PATH = join(process.cwd(), "scripts", "data");
+const OSM_DUMP_PATH = join(OSM_DATA_PATH, "cities-osm.jsonl");
 
 // Parse command line arguments
 const args = process.argv.slice(2);
@@ -32,6 +36,50 @@ type PlaceToProcess = {
   osmElement: OsmElement;
 };
 
+type CityRecord = CityData;
+type OsmDumpRecord = { osmId: number; data: OsmElement };
+
+/**
+ * Read existing cities from JSONL file
+ */
+function readExistingCities(): CityRecord[] {
+  if (!existsSync(CITIES_JSONL_PATH)) return [];
+  const content = readFileSync(CITIES_JSONL_PATH, "utf-8");
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line) as CityRecord);
+}
+
+/**
+ * Read existing OSM dump records
+ */
+function readExistingOsmDump(): OsmDumpRecord[] {
+  if (!existsSync(OSM_DUMP_PATH)) return [];
+  const content = readFileSync(OSM_DUMP_PATH, "utf-8");
+  return content
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line) => JSON.parse(line) as OsmDumpRecord);
+}
+
+/**
+ * Write cities to JSONL file
+ */
+function writeCities(cities: CityRecord[]): void {
+  const content = cities.map((c) => JSON.stringify(c)).join("\n") + "\n";
+  writeFileSync(CITIES_JSONL_PATH, content, "utf-8");
+}
+
+/**
+ * Write OSM dump to JSONL file (gitignored, for local osmData cache)
+ */
+function writeOsmDump(records: OsmDumpRecord[]): void {
+  mkdirSync(OSM_DATA_PATH, { recursive: true });
+  const content = records.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  writeFileSync(OSM_DUMP_PATH, content, "utf-8");
+}
+
 /**
  * Extract population from OSM tags
  */
@@ -49,18 +97,14 @@ function extractPopulation(osmElement: OsmElement): {
   return { population: null, source: PopulationSource.NO_MATCH };
 }
 
-// TODO: Strip "City of ", "Town of ", "Village of " prefixes from NY cities only.
-// These prefixes are common in NY OSM data but cause false positives in other states.
-// Example: "City of Troy" -> "Troy", "Town of Colonie" -> "Colonie"
-
 /**
- * Process a single place and insert into database
+ * Process a single place into a city record
  */
-async function processPlace(
+function processPlace(
   place: PlaceToProcess,
   state: { id: string; name: string },
   stats: Stats,
-): Promise<void> {
+): { city: CityRecord; osmDump: OsmDumpRecord } | null {
   const osmElement = place.osmElement;
   const name = osmElement.tags.name!;
 
@@ -68,15 +112,12 @@ async function processPlace(
   if (shouldExclude(name)) {
     console.log(`   🗑️  Excluding: ${name}`);
     stats.excluded++;
-    return;
+    return null;
   }
 
   // Extract population from OSM if available
   const { population, source } = extractPopulation(osmElement);
 
-  // Get coordinates
-  const lat = osmElement.center?.lat ?? osmElement.lat ?? null;
-  const lng = osmElement.center?.lon ?? osmElement.lon ?? null;
   const county = osmElement.tags["addr:county"] ?? null;
 
   // Track stats
@@ -84,22 +125,23 @@ async function processPlace(
   if (source === PopulationSource.OSM) stats.exactMatches++;
   else stats.noMatches++;
 
-  await prisma.city.create({
-    data: {
-      name,
-      state: state.name,
-      stateId: state.id,
-      county,
-      population,
-      lat,
-      lng,
-      osmId: BigInt(osmElement.id),
-      osmType: osmElement.type,
-      osmData: osmElement as Prisma.InputJsonValue,
-      displayName: `${name}, ${state.id}`,
-      populationSource: source,
-    },
-  });
+  const city: CityRecord = {
+    name,
+    state: state.name,
+    stateId: state.id,
+    county,
+    population,
+    osmId: osmElement.id,
+    osmType: osmElement.type,
+    displayName: `${name}, ${state.id}`,
+  };
+
+  const osmDump: OsmDumpRecord = {
+    osmId: osmElement.id,
+    data: osmElement,
+  };
+
+  return { city, osmDump };
 }
 
 /**
@@ -120,16 +162,27 @@ async function getPlacesForState(
 }
 
 async function seedCities() {
+  // Load existing data
+  const existingCities = shouldClear ? [] : readExistingCities();
+  const existingOsmDump = shouldClear ? [] : readExistingOsmDump();
+
   if (shouldClear) {
-    console.log("🗑️  Clearing city table...");
-    const count = await prisma.city.count();
-    await prisma.city.deleteMany({});
-    console.log(`✅ Deleted ${count} cities\n`);
+    console.log("🗑️  Clearing city data...");
+    console.log(`✅ Cleared ${existingCities.length} cities\n`);
+    writeCities([]);
+    writeOsmDump([]);
   }
 
   if (isNewOnly) {
-    console.log("🆕 New-only mode - adding cities not already in database\n");
+    console.log("🆕 New-only mode - adding cities not already in file\n");
   }
+
+  const existingOsmIds = new Set(existingCities.map((c) => c.osmId));
+  // Build index of which states already have cities
+  const statesWithCities = new Set(existingCities.map((c) => c.stateId));
+
+  const newCities: CityRecord[] = [];
+  const newOsmDumps: OsmDumpRecord[] = [];
 
   const stats: Stats = {
     totalProcessed: 0,
@@ -145,17 +198,13 @@ async function seedCities() {
 
     try {
       // Skip states that already have cities (unless --new-only mode)
-      if (!isNewOnly) {
-        const existingCount = await prisma.city.count({
-          where: { stateId: state.id },
-        });
-        if (existingCount > 0) {
-          console.log(
-            `   ⏭️  Skipping - ${existingCount} cities already exist`,
-          );
-          stats.statesSkipped++;
-          continue;
-        }
+      if (!isNewOnly && statesWithCities.has(state.id)) {
+        const count = existingCities.filter((c) => c.stateId === state.id).length;
+        console.log(
+          `   ⏭️  Skipping - ${count} cities already exist`,
+        );
+        stats.statesSkipped++;
+        continue;
       }
 
       const places = await getPlacesForState(state.id);
@@ -166,8 +215,7 @@ async function seedCities() {
         continue;
       }
 
-      // Filter out duplicates (both within results and in DB)
-      // Dedupe within the results themselves
+      // Filter out duplicates (both within results and existing)
       const seenOsmIds = new Set<number>();
       let placesToProcess = places.filter((p) => {
         if (seenOsmIds.has(p.osmElement.id)) return false;
@@ -175,20 +223,24 @@ async function seedCities() {
         return true;
       });
 
-      // Filter out any that already exist in DB
-      const existingOsmIds = new Set(
-        (await prisma.city.findMany({
-          where: { osmId: { in: placesToProcess.map((p) => BigInt(p.osmElement.id)) } },
-          select: { osmId: true },
-        })).map((c) => Number(c.osmId)),
+      // Filter out any that already exist
+      placesToProcess = placesToProcess.filter(
+        (p) => !existingOsmIds.has(p.osmElement.id),
       );
-      placesToProcess = placesToProcess.filter((p) => !existingOsmIds.has(p.osmElement.id));
 
       for (const place of placesToProcess) {
         try {
-          await processPlace(place, state, stats);
+          const result = processPlace(place, state, stats);
+          if (result) {
+            newCities.push(result.city);
+            newOsmDumps.push(result.osmDump);
+            existingOsmIds.add(result.city.osmId);
+          }
         } catch (error) {
-          console.error(`   ❌ Error processing ${place.osmElement.tags.name}:`, error);
+          console.error(
+            `   ❌ Error processing ${place.osmElement.tags.name}:`,
+            error,
+          );
           stats.errors++;
         }
       }
@@ -209,10 +261,7 @@ async function seedCities() {
     for (const { osmId, stateId, name } of SPECIAL_OSM_CITY_IDS) {
       try {
         // Check if already exists
-        const existing = await prisma.city.findFirst({
-          where: { osmId: BigInt(osmId) },
-        });
-        if (existing) {
+        if (existingOsmIds.has(osmId)) {
           console.log(`   ⏭️  Skipping ${name}, ${stateId} - already exists`);
           continue;
         }
@@ -238,9 +287,6 @@ async function seedCities() {
         // Extract population from OSM if available
         const { population, source } = extractPopulation(osmElement);
 
-        // Get coordinates
-        const lat = osmElement.center?.lat ?? null;
-        const lng = osmElement.center?.lon ?? null;
         const county = osmElement.tags["addr:county"] ?? null;
 
         // Track stats
@@ -248,22 +294,20 @@ async function seedCities() {
         if (source === PopulationSource.OSM) stats.exactMatches++;
         else stats.noMatches++;
 
-        await prisma.city.create({
-          data: {
-            name,
-            state: stateName,
-            stateId,
-            county,
-            population,
-            lat,
-            lng,
-            osmId: BigInt(osmId),
-            osmType: "relation",
-            osmData: osmElement as Prisma.InputJsonValue,
-            displayName: `${name}, ${stateId}`,
-            populationSource: source,
-          },
-        });
+        const city: CityRecord = {
+          name,
+          state: stateName,
+          stateId,
+          county,
+          population,
+          osmId,
+          osmType: "relation",
+          displayName: `${name}, ${stateId}`,
+        };
+
+        newCities.push(city);
+        newOsmDumps.push({ osmId, data: osmElement });
+        existingOsmIds.add(osmId);
 
         console.log(`   ✅ Added ${name}, ${stateId}`);
 
@@ -275,6 +319,16 @@ async function seedCities() {
       }
     }
   }
+
+  // Write results
+  const allCities = [...existingCities, ...newCities];
+  const allOsmDumps = [...existingOsmDump, ...newOsmDumps];
+
+  console.log(`\n💾 Writing ${allCities.length} cities to ${CITIES_JSONL_PATH}`);
+  writeCities(allCities);
+
+  console.log(`💾 Writing ${allOsmDumps.length} OSM records to ${OSM_DUMP_PATH}`);
+  writeOsmDump(allOsmDumps);
 
   printStats(stats);
 }

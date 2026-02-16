@@ -5,8 +5,8 @@
 # We use Alpine Linux for a smaller image size (~40MB vs ~900MB for regular node)
 FROM node:20-alpine AS deps
 
-# Install OpenSSL for Prisma (Prisma needs it to generate the client)
-RUN apk add --no-cache libc6-compat openssl
+# Install libc compatibility layer
+RUN apk add --no-cache libc6-compat
 
 # Set working directory - all commands will run from here
 WORKDIR /app
@@ -25,7 +25,7 @@ RUN npm ci --frozen-lockfile
 # This stage builds the Next.js application
 FROM node:20-alpine AS builder
 
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
@@ -54,10 +54,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Type checking should be done in CI before deployment
 ENV SKIP_TYPE_CHECK=true
 
-# Generate Prisma Client
-# This creates the type-safe database client based on your schema
-RUN npx prisma generate
-
 # Build the Next.js application
 # This creates an optimized production build in the .next folder
 RUN npm run build
@@ -68,7 +64,7 @@ RUN npm run build
 # This is the final stage - a minimal image that only contains what's needed to run
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
@@ -88,12 +84,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma files (needed for migrations)
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin ./node_modules/.bin
+# Copy city data (JSONL file loaded at runtime for search)
+COPY --from=builder --chown=nextjs:nodejs /app/data ./data
 
 # Switch to non-root user
 USER nextjs

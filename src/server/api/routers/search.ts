@@ -1,7 +1,7 @@
 import Fuse from "fuse.js";
 import { z } from "zod";
 import { publicProcedure } from "~/server/api/trpc";
-import type { PrismaClient } from "@prisma/client";
+import { loadCities, type CityData } from "~/server/cities";
 import { US_STATES } from "~/data/states";
 import { calculateFinalScore } from "./searchUtils";
 
@@ -84,17 +84,8 @@ export type PlaceResult = {
   displayName: string;
 };
 
-/** Fields needed for search index - excludes large/unnecessary fields like osmData, lat, lng */
-export type CitySearchData = {
-  name: string;
-  state: string;
-  stateId: string;
-  county: string | null;
-  population: number | null;
-  osmId: bigint;
-  osmType: string;
-  displayName: string;
-};
+/** Fields needed for search index - loaded from cities.jsonl */
+export type CitySearchData = CityData;
 
 /** Fuse.js configuration for city search */
 const FUSE_OPTIONS = {
@@ -112,27 +103,16 @@ let citySearchIndex: Fuse<CitySearchData> | null = null;
 let citiesData: CitySearchData[] = [];
 
 /**
- * Initialize city search index (runs once on first search)
+ * Initialize city search index (runs once on first search).
+ * Loads city data from the JSONL file checked into the repo.
  */
-async function getCitySearchIndex(
-  prisma: PrismaClient,
-): Promise<Fuse<CitySearchData>> {
+function getCitySearchIndex(): Fuse<CitySearchData> {
   if (!citySearchIndex) {
     console.log("Loading cities into memory...");
 
-    citiesData = await prisma.city.findMany({
-      select: {
-        name: true,
-        state: true,
-        stateId: true,
-        county: true,
-        population: true,
-        osmId: true,
-        osmType: true,
-        displayName: true,
-      },
-      orderBy: { population: "desc" },
-    });
+    citiesData = loadCities().sort(
+      (a, b) => (b.population ?? 0) - (a.population ?? 0),
+    );
 
     citySearchIndex = new Fuse(citiesData, FUSE_OPTIONS);
 
@@ -148,7 +128,7 @@ async function getCitySearchIndex(
 function cityToPlaceResult(city: CitySearchData): PlaceResult {
   return {
     osmType: city.osmType,
-    osmId: Number(city.osmId),
+    osmId: city.osmId,
     name: city.name,
     state: city.state,
     stateId: city.stateId,
@@ -180,11 +160,11 @@ function calculateScoreWithStateHint(
 
 /**
  * City search using in-memory fuzzy matching.
- * No database queries after initial load.
+ * Data loaded from JSONL on first search, no database needed.
  */
 export const searchRouter = publicProcedure
   .input(z.object({ query: z.string() }))
-  .query(async ({ input, ctx }): Promise<PlaceResult[]> => {
+  .query(({ input }): PlaceResult[] => {
     const { query } = input;
 
     if (query === "") {
@@ -192,7 +172,7 @@ export const searchRouter = publicProcedure
     }
 
     // Ensure index is loaded (runs once on first search)
-    const fuse = await getCitySearchIndex(ctx.prisma);
+    const fuse = getCitySearchIndex();
 
     // Parse query to extract city name and optional state hint
     const { cityQuery, stateHint } = parseSearchQuery(query);
