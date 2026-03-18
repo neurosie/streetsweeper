@@ -6,7 +6,7 @@ import { retryWithBackoff, RATE_LIMIT_BACKOFF_OPTIONS } from "~/utils/backoff";
  * @param query - Overpass QL query string
  * @returns Parsed JSON response
  */
-export async function queryOverpass<T = unknown>(query: string): Promise<T> {
+export async function queryOverpass(query: string): Promise<unknown> {
   return retryWithBackoff(async () => {
     const response = await fetchWithUA(
       "	https://overpass.private.coffee/api/interpreter",
@@ -22,7 +22,14 @@ export async function queryOverpass<T = unknown>(query: string): Promise<T> {
       );
     }
 
-    return (await response.json()) as T;
+    const text = await response.text();
+    try {
+      return JSON.parse(text) as unknown;
+    } catch (e) {
+      throw new Error(
+        `Overpass API returned non-JSON response (status ${response.status}):\n${text.slice(0, 2000)}`,
+      );
+    }
   }, RATE_LIMIT_BACKOFF_OPTIONS);
 }
 

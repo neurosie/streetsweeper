@@ -111,7 +111,12 @@ async function fetchWikidataPopulations(
   // Process in batches of 50 (Wikidata API limit)
   // Serial processing (one batch at a time) per API etiquette
   const batchSize = 50;
+  const totalBatches = Math.ceil(wikidataIds.length / batchSize);
   for (let i = 0; i < wikidataIds.length; i += batchSize) {
+    const batchNum = Math.floor(i / batchSize) + 1;
+    if (batchNum % 10 === 1 || batchNum === totalBatches) {
+      console.log(`   📦 Batch ${batchNum}/${totalBatches} (${results.size} populations so far)`);
+    }
     const batch = wikidataIds.slice(i, i + batchSize);
     const ids = batch.join("|");
 
