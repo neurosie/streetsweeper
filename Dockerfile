@@ -1,101 +1,52 @@
-# ==============================================================================
-# STAGE 1: Dependencies
-# ==============================================================================
-# This stage installs all dependencies (both production and development)
-# We use Alpine Linux for a smaller image size (~40MB vs ~900MB for regular node)
-FROM node:20-alpine AS deps
+# syntax = docker/dockerfile:1
 
-# Install libc compatibility layer
-RUN apk add --no-cache libc6-compat
+# Adjust NODE_VERSION as desired
+ARG NODE_VERSION=20.11.0
+FROM node:${NODE_VERSION}-slim AS base
 
-# Set working directory - all commands will run from here
+LABEL fly_launch_runtime="Next.js"
+
+# Next.js app lives here
 WORKDIR /app
 
-# Copy package files first (Docker caches layers, so if these don't change,
-# we can skip reinstalling dependencies on subsequent builds)
-COPY package.json package-lock.json ./
+# Set production environment
+ENV NODE_ENV="production"
 
-# Install dependencies
-# --frozen-lockfile ensures we use exact versions from package-lock.json
-RUN npm ci --frozen-lockfile
 
-# ==============================================================================
-# STAGE 2: Builder
-# ==============================================================================
-# This stage builds the Next.js application
-FROM node:20-alpine AS builder
+# Throw-away build stage to reduce size of final image
+FROM base AS build
 
-RUN apk add --no-cache libc6-compat
+# Install packages needed to build node modules
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
-WORKDIR /app
+# Install node modules
+COPY package-lock.json package.json ./
+RUN npm ci --include=dev
 
-# Copy dependencies from the deps stage (faster than reinstalling)
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copy all source files
+# Copy application code
 COPY . .
 
-# ==============================================================================
-# NEXT_PUBLIC_* Environment Variables (Build-time)
-# ==============================================================================
-# These variables are embedded into the Next.js JavaScript bundle at build time.
-# To add a new NEXT_PUBLIC_* variable:
-#   1. Add it to .env and .env.example
-#   2. Add ARG and ENV lines here (copy the pattern below)
-#   3. Add it to docker-compose.yml's build.args section
-# ==============================================================================
-ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-ENV SKIP_ENV_VALIDATION=true
+# Build application
+ENV SKIP_ENV_VALIDATION=1
+RUN --mount=type=secret,id=NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN \
+    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN="$(cat /run/secrets/NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN)" \
+    npm run build
 
-ENV NEXT_TELEMETRY_DISABLED=1
+# Remove development dependencies
+RUN npm prune --omit=dev
 
-# Skip type checking and linting in Docker builds for faster deployment
-# Type checking should be done in CI before deployment
-ENV SKIP_TYPE_CHECK=true
 
-# Build the Next.js application
-# This creates an optimized production build in the .next folder
-RUN npm run build
+# Final stage for app image
+FROM base
 
-# ==============================================================================
-# STAGE 3: Runner
-# ==============================================================================
-# This is the final stage - a minimal image that only contains what's needed to run
-FROM node:20-alpine AS runner
+# Copy built application
+COPY --from=build /app/.next/standalone /app
+COPY --from=build /app/.next/static /app/.next/static
+COPY --from=build /app/public /app/public
+COPY --from=build /app/data/cities.jsonl /app/data/cities.jsonl
 
-RUN apk add --no-cache libc6-compat
-
-WORKDIR /app
-
-# Don't run as root (security best practice)
-# Create a system user and group called 'nodejs'
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy only the built application and necessary files
-# We don't need source code or build tools in the final image
-
-# Copy public files (images, fonts, etc.)
-COPY --from=builder /app/public ./public
-
-# Copy Next.js build output
-# Set proper permissions for the nextjs user
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy city data (JSONL file loaded at runtime for search)
-COPY --from=builder --chown=nextjs:nodejs /app/data ./data
-
-# Switch to non-root user
-USER nextjs
-
-# Expose port 3000 (Next.js default port)
+# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-
-ENV PORT=3000
-ENV NODE_ENV=production
-
-# Start the application
-# server.js is created by Next.js standalone build
-CMD ["node", "server.js"]
+ENV HOSTNAME="0.0.0.0"
+CMD [ "node", "server.js" ]

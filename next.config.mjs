@@ -1,6 +1,6 @@
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
+ * for CI and production builds.
  */
 await import("./src/env.mjs");
 
@@ -19,14 +19,14 @@ const config = {
   },
 
   /**
-   * Standalone output mode for Docker deployments
+   * Standalone output mode for production deployments
    * This creates a minimal server.js and copies only necessary files
    */
   output: "standalone",
 
   /**
-   * Skip type checking and linting during Docker production builds
-   * Set SKIP_TYPE_CHECK=true in Dockerfile to enable this optimization
+   * Skip type checking and linting during production builds
+   * Set SKIP_TYPE_CHECK=true to enable this optimization
    * Type checking should be done in CI before deployment
    */
   ...(process.env.SKIP_TYPE_CHECK === "true" && {

@@ -4,7 +4,7 @@
 
 StreetSweeper is a local geography guessing game where users pick a town or city and try to name as many streets as they can - like Sporcle for your neighborhood.
 
-**Live Site**: https://streetsweeper.vercel.app/
+**Live Site**: https://streetsweeper.fly.dev/
 
 ## Issue tracking
 
@@ -52,7 +52,6 @@ Built with the [T3 Stack](https://create.t3.gg/):
 
 - **Next.js** - React framework with SSR and API routes
 - **TypeScript** - Type-safe JavaScript
-- **Prisma** - Database ORM
 - **tRPC** - End-to-end type-safe APIs
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Query** (@tanstack/react-query) - Data fetching and caching
@@ -60,10 +59,8 @@ Built with the [T3 Stack](https://create.t3.gg/):
 ### External Services
 
 - **OpenStreetMap Overpass API** - Geographic street data
-- **OSM Nominatim** - Location search functionality
 - **MapBox GL JS** - Interactive map rendering
 - **AWS S3** - Data storage (@aws-sdk/client-s3)
-- **PostgreSQL** - Database (via Vercel Postgres)
 
 ### Additional Libraries
 
@@ -98,15 +95,12 @@ streetsweeper/
 │   │   │   ├── geojson.test.ts
 │   │   │   ├── abbreviations.ts   # Street name abbreviations
 │   │   │   └── abbreviations.test.ts
-│   │   ├── db.ts        # Prisma client
 │   │   └── s3.ts        # S3 integration
 │   ├── styles/          # Global styles
 │   ├── utils/           # Utility functions
 │   │   ├── api.ts       # tRPC client setup
 │   │   └── fetch.ts     # Fetch utilities
 │   └── env.mjs          # Environment variable validation
-├── prisma/
-│   └── schema.prisma    # Database schema
 ├── public/              # Static assets
 ├── devlog/              # Development logs
 ├── .husky/              # Git hooks
@@ -115,18 +109,12 @@ streetsweeper/
 
 ## Key Files and Directories
 
-### Database (Prisma)
-
-**prisma/schema.prisma** - Defines the database schema:
-
-- `Search` model - Caches search query results with updatedAt timestamp
-
 ### Server-Side Code
 
 **src/server/api/** - tRPC API definition
 
 - `routers/place.ts` - Handles place/location data and game logic
-- `routers/search.ts` - Handles location search queries via Nominatim
+- `routers/search.ts` - Handles location search queries against local city data
 - `root.ts` - Combines all routers
 - `trpc.ts` - tRPC configuration and middleware
 
@@ -136,8 +124,6 @@ streetsweeper/
 - `abbreviations.ts` - Street name abbreviation handling (St., Ave., Rd., etc.)
 
 **src/server/s3.ts** - AWS S3 integration for storing/retrieving geographic data
-
-**src/server/db.ts** - Prisma client singleton
 
 ### Client-Side Code
 
@@ -199,10 +185,8 @@ ls -la .git/hooks/   # Should show pre-commit symlink to .husky/pre-commit
 
 Required environment variables (see `.env.example`):
 
-- `POSTGRES_PRISMA_URL` - PostgreSQL connection string (pooled)
-- `POSTGRES_URL_NON_POOLING` - PostgreSQL direct connection
-- `NEXT_PUBLIC_MAPBOX_TOKEN` - MapBox API token
-- AWS S3 credentials for data storage
+- `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` - MapBox API token (build-time, set as Fly.io secret)
+- `OWNER_EMAIL` - Owner email address (set as Fly.io secret)
 
 ## Important Patterns
 
@@ -214,7 +198,7 @@ Required environment variables (see `.env.example`):
 
 ### Geographic Data Flow
 
-1. User searches for a location (Nominatim API)
+1. User searches for a location (local city data)
 2. Location data fetched from OpenStreetMap Overpass API
 3. Data converted to GeoJSON using osmtogeojson
 4. Processed with @turf libraries for spatial operations
@@ -247,13 +231,13 @@ Run tests with: `npm test`
 
 ## Deployment
 
-The application is deployed on Vercel at https://streetsweeper.vercel.app/
+The application is deployed on Fly.io at https://streetsweeper.fly.dev/
 
 ## Notes for AI Assistants
 
 - This is a geography game, not a street cleaning/sanitation app
 - The main game logic involves matching user-typed street names against OSM data
 - Map visualization is critical to the user experience
-- Performance matters: data is cached in S3 and Prisma for faster loading
+- Performance matters: data is cached in S3 for faster loading
 - Street name matching must be flexible (handle abbreviations, case, etc.)
 - All geographic operations use GeoJSON format

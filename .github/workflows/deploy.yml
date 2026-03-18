@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Digital Ocean
+    name: Deploy to Fly.io
     runs-on: ubuntu-latest
 
     steps:
@@ -38,24 +38,9 @@ jobs:
         env:
           SKIP_ENV_VALIDATION: true
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: ${{ secrets.DEPLOY_PORT || 22 }}
-          command_timeout: 20m
-          script: |
-            cd ~/apps/streetsweeper
-            ./deploy.sh
+      - uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deployment status
-        if: success()
-        run: echo "✅ Deployment completed successfully!"
-
-      - name: Deployment failed
-        if: failure()
-        run: |
-          echo "❌ Deployment failed. Check the logs above for details."
-          exit 1
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
