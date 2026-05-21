@@ -221,7 +221,7 @@ export default function Play() {
       )
       .filter((road): road is Road => road !== null);
     return (
-      <div className="flex h-screen flex-col sm:max-h-screen sm:min-h-screen">
+      <div className="flex h-[100dvh] flex-col sm:max-h-screen sm:min-h-screen">
         {/* Header */}
         {Header}
 

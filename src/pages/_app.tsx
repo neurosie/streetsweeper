@@ -1,5 +1,6 @@
 import { type AppType } from "next/app";
 import { Overpass, Sail } from "next/font/google";
+import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import { api, queryClient } from "~/utils/api";
@@ -22,8 +23,14 @@ const sail = Sail({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div
-      className={`${overpass.variable} ${sail.variable} min-h-screen bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
+      className={`${overpass.variable} ${sail.variable} min-h-[100dvh] bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
     >
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
+        />
+      </Head>
       <style jsx global>{`
         :root {
           --font-overpass: ${overpass.style.fontFamily};
