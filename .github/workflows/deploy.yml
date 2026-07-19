@@ -18,8 +18,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -41,6 +41,9 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+        run: |
+          flyctl deploy --remote-only \
+            --build-arg NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN="$MAPBOX_TOKEN"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_PROD_TOKEN }}

@@ -8,6 +8,7 @@
     "lint": "next lint -- --dir .",
     "start": "next start",
     "prepare": "husky install",
+    "deploy": "bash scripts/deploy.sh",
     "test": "vitest",
     "seed:cities": "tsx scripts/seed/seed-cities.ts",
     "seed:population": "tsx scripts/seed/seed-population.ts"

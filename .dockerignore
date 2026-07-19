@@ -1,6 +1,16 @@
 /.git
 /node_modules
 .dockerignore
-.env
 Dockerfile
 fly.toml
+
+# Secrets -- these are gitignored, but .dockerignore is a separate list
+.env
+.env.\*
+\*.pem
+
+# Local build output
+/.next
+
+# Cached OSM downloads, not needed to build.
+/scripts/data

@@ -1,6 +1,6 @@
 **StreetSweeper** is a local geography guessing game, like Sporcle for your neighborhood. Pick a town or city and see how many streets you can name!
 
-➡➡➡ **[Try it out!](https://streetsweeper.fly.dev/)** ⬅⬅⬅
+➡➡➡ **[Try it out!](https://streetsweeper.xyz/)** ⬅⬅⬅
 
 This site uses the [T3 stack](https://create.t3.gg/), namely:
 
@@ -39,18 +39,29 @@ The app is deployed on [Fly.io](https://fly.io/).
 ### First-time setup
 
 ```bash
-# Set secrets (only needed once)
+# Set runtime secrets (only needed once)
 fly secrets set OWNER_EMAIL=your-email@example.com
-fly secrets set NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=pk.your_token_here
 ```
+
+The Mapbox token is **not** a Fly secret. It is passed as a `--build-arg` at deploy time.
+
+Production uses the URL-restricted token (`streetsweeper.xyz`); it will not work
+on other hostnames, including `streetsweeper.fly.dev`. Local development uses the
+unrestricted token in `.env`, which is gitignored. For CI, store the production token as a GitHub Actions secret named
+`MAPBOX_PROD_TOKEN` (alongside `FLY_API_TOKEN`).
 
 ### Deploy
 
 ```bash
-fly deploy
+# Store the production Mapbox token once (gitignored)
+echo 'MAPBOX_PROD_TOKEN=pk.your_prod_token' >> .env.deploy.local
+
+npm run deploy
 ```
 
-Pushes to `main` also trigger automatic deployment via GitHub Actions. This requires a `FLY_API_TOKEN` secret set in the GitHub repo settings.
+Use `npm run deploy` rather than `fly deploy` directly — it passes a necessary build arg.
+
+Pushes to `main` also trigger automatic deployment via GitHub Actions. This requires `FLY_API_TOKEN` and `MAPBOX_PROD_TOKEN` secrets set in the GitHub repo settings.
 
 ### Custom domain
 

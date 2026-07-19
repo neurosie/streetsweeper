@@ -4,7 +4,7 @@
 
 StreetSweeper is a local geography guessing game where users pick a town or city and try to name as many streets as they can - like Sporcle for your neighborhood.
 
-**Live Site**: https://streetsweeper.fly.dev/
+**Live Site**: https://streetsweeper.xyz/
 
 ## Tech Stack
 
@@ -52,12 +52,13 @@ streetsweeper/
 │   │   │       └── search.ts # Search endpoints
 │   │   ├── geo/
 │   │   │   ├── geojson.ts        # GeoJSON processing
-│   │   │   ├── geojson.test.ts
-│   │   │   ├── abbreviations.ts   # Street name abbreviations
-│   │   │   └── abbreviations.test.ts
+│   │   │   └── geojson.test.ts
+│   │   ├── cities.ts    # Loads data/cities.jsonl
 │   │   └── s3.ts        # S3 integration
 │   ├── styles/          # Global styles
 │   ├── utils/           # Utility functions
+│   │   ├── abbreviations.ts   # Street name abbreviations
+│   │   └── abbreviations.test.ts
 │   │   ├── api.ts       # tRPC client setup
 │   │   └── fetch.ts     # Fetch utilities
 │   └── env.mjs          # Environment variable validation
@@ -81,7 +82,8 @@ streetsweeper/
 **src/server/geo/** - Geographic data processing
 
 - `geojson.ts` - GeoJSON manipulation and processing
-- `abbreviations.ts` - Street name abbreviation handling (St., Ave., Rd., etc.)
+
+**src/utils/abbreviations.ts** - Street name abbreviation handling (St., Ave., Rd., etc.)
 
 **src/server/s3.ts** - AWS S3 integration for storing/retrieving geographic data
 
@@ -167,7 +169,7 @@ Required environment variables (see `.env.example`):
 
 ### Street Name Normalization
 
-- Street names are normalized using abbreviations (src/server/geo/abbreviations.ts)
+- Street names are normalized using abbreviations (src/utils/abbreviations.ts)
 - This allows flexible matching (e.g., "Main Street" matches "Main St")
 
 ## Recent Changes
@@ -185,13 +187,18 @@ From git history:
 Tests are written using Vitest:
 
 - `src/server/geo/geojson.test.ts` - GeoJSON processing tests
-- `src/server/geo/abbreviations.test.ts` - Street abbreviation tests
+- `src/utils/abbreviations.test.ts` - Street abbreviation tests
+- `src/server/api/routers/search.test.ts` - City search tests
+- `src/server/api/routers/search.benchmark.test.ts` - Search quality benchmarks
 
 Run tests with: `npm test`
 
 ## Deployment
 
-The application is deployed on Fly.io at https://streetsweeper.fly.dev/
+The application is deployed on Fly.io at https://streetsweeper.xyz/
+
+The Mapbox token must be passed as a build arg (`npm run deploy`), not a Fly
+secret — Next inlines `NEXT_PUBLIC_*` at build time. See README "Deployment".
 
 ## Notes for AI Assistants
 

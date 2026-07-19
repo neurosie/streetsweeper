@@ -28,10 +28,17 @@ RUN npm ci --include=dev
 COPY . .
 
 # Build application
+# Next inlines NEXT_PUBLIC_* at build time, so the token must be a build arg;
+# a runtime secret would leave it compiled in as an empty string.
+ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+RUN test -n "$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN" || \
+      (echo "ERROR: NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN build arg is empty." >&2 && exit 1)
+
+# Validation stays skipped because OWNER_EMAIL is a runtime-only Fly secret and
+# would fail a build-time check -- hence the hand-rolled token guard above.
 ENV SKIP_ENV_VALIDATION=1
-RUN --mount=type=secret,id=NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN \
-    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN="$(cat /run/secrets/NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN)" \
-    npm run build
+RUN npm run build
 
 # Remove development dependencies
 RUN npm prune --omit=dev
