@@ -21,7 +21,7 @@ const OSM_DUMP_PATH = join(OSM_DATA_PATH, "cities-osm.jsonl");
 // Parse command line arguments
 const args = process.argv.slice(2);
 const shouldClear = args.includes("--clear");
-const isNewOnly = args.includes("--new-only");
+const noSkip = args.includes("--no-skip");
 
 type Stats = {
   totalProcessed: number;
@@ -147,9 +147,7 @@ function processPlace(
 /**
  * Get places from OpenStreetMap for a state
  */
-async function getPlacesForState(
-  stateId: string,
-): Promise<PlaceToProcess[]> {
+async function getPlacesForState(stateId: string): Promise<PlaceToProcess[]> {
   const data: unknown = await queryOverpass(buildMunicipalitiesQuery(stateId));
   const parsed = OverpassResponseSchema.parse(data);
   const osmPlaces = parsed.elements.filter((el) => el.type === "relation");
@@ -173,13 +171,22 @@ async function seedCities() {
     writeOsmDump([]);
   }
 
-  if (isNewOnly) {
-    console.log("🆕 New-only mode - adding cities not already in file\n");
+  if (noSkip) {
+    console.log(
+      "🔁 No-skip mode - querying every state, including ones that already have cities\n",
+    );
   }
 
   const existingOsmIds = new Set(existingCities.map((c) => c.osmId));
-  // Build index of which states already have cities
-  const statesWithCities = new Set(existingCities.map((c) => c.stateId));
+  // Build index of which states already have cities.
+  // Skip special-list cities, since their individual queries might have succeeded
+  // when the whole-state query failed.
+  const specialOsmIds = new Set(SPECIAL_OSM_CITY_IDS.map((c) => c.osmId));
+  const statesWithCities = new Set(
+    existingCities
+      .filter((c) => !specialOsmIds.has(c.osmId))
+      .map((c) => c.stateId),
+  );
 
   const newCities: CityRecord[] = [];
   const newOsmDumps: OsmDumpRecord[] = [];
@@ -197,12 +204,12 @@ async function seedCities() {
     console.log(`\n📍 Processing ${state.name} (${state.id})...`);
 
     try {
-      // Skip states that already have cities (unless --new-only mode)
-      if (!isNewOnly && statesWithCities.has(state.id)) {
-        const count = existingCities.filter((c) => c.stateId === state.id).length;
-        console.log(
-          `   ⏭️  Skipping - ${count} cities already exist`,
-        );
+      // Skip states that already have cities (unless --no-skip mode)
+      if (!noSkip && statesWithCities.has(state.id)) {
+        const count = existingCities.filter(
+          (c) => c.stateId === state.id,
+        ).length;
+        console.log(`   ⏭️  Skipping - ${count} cities already exist`);
         stats.statesSkipped++;
         continue;
       }
@@ -324,10 +331,14 @@ async function seedCities() {
   const allCities = [...existingCities, ...newCities];
   const allOsmDumps = [...existingOsmDump, ...newOsmDumps];
 
-  console.log(`\n💾 Writing ${allCities.length} cities to ${CITIES_JSONL_PATH}`);
+  console.log(
+    `\n💾 Writing ${allCities.length} cities to ${CITIES_JSONL_PATH}`,
+  );
   writeCities(allCities);
 
-  console.log(`💾 Writing ${allOsmDumps.length} OSM records to ${OSM_DUMP_PATH}`);
+  console.log(
+    `💾 Writing ${allOsmDumps.length} OSM records to ${OSM_DUMP_PATH}`,
+  );
   writeOsmDump(allOsmDumps);
 
   printStats(stats);

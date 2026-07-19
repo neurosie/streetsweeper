@@ -1,8 +1,9 @@
 import { expect, test, describe, vi } from "vitest";
 import { matchStateQuery, parseSearchQuery } from "./search";
-import type { CitySearchData, PlaceResult } from "./search";
+import type { PlaceResult } from "./search";
+import type { CityData } from "~/server/cities";
 
-const MOCK_CITIES: CitySearchData[] = [
+const MOCK_CITIES: CityData[] = [
   {
     name: "New York",
     state: "New York",
@@ -138,7 +139,7 @@ const MOCK_CITIES: CitySearchData[] = [
 // Helper to call the search router with fresh module state
 async function searchWithFreshModule(
   query: string,
-  cities: CitySearchData[],
+  cities: CityData[],
 ): Promise<PlaceResult[]> {
   // Reset modules to clear the cache, then dynamically import
   vi.resetModules();
@@ -203,7 +204,7 @@ describe("searchRouter", () => {
   });
 
   test("limits results to 10", async () => {
-    const manyCities: CitySearchData[] = [];
+    const manyCities: CityData[] = [];
     for (let i = 0; i < 20; i++) {
       manyCities.push({
         name: `Testville${i}`,
@@ -245,7 +246,7 @@ describe("searchRouter", () => {
   });
 
   test("handles county being null", async () => {
-    const citiesWithNullCounty: CitySearchData[] = [
+    const citiesWithNullCounty: CityData[] = [
       {
         name: "Test City",
         state: "Test State",
@@ -376,10 +377,11 @@ describe("searchRouter with state hints (ranking boost)", () => {
   test("state hint with name prefix boosts matching state", async () => {
     // Springfield, MO (169176) > MA (155929) > IL (114394) by population
     // With "mass" hint, Springfield, MA should rank first
-    // Note: Spring Mesa, AZ also matches "spring", so we get 4 results
+    // Spring Mesa, AZ is too weak a match for "springfield" to clear the
+    // fuzziness threshold, so only the 3 Springfields come back
     const results = await searchWithFreshModule("springfield mass", MOCK_CITIES);
 
-    expect(results.length).toBe(4); // 3 Springfields + Spring Mesa
+    expect(results.length).toBe(3);
     expect(results[0]?.stateId).toBe("MA"); // MA boosted to top
   });
 
@@ -414,10 +416,11 @@ describe("searchRouter with state hints (ranking boost)", () => {
   });
 
   test("full state name hint works", async () => {
-    // Note: Spring Mesa, AZ also matches "spring", so we get 4 results
+    // Spring Mesa, AZ is too weak a match for "springfield" to clear the
+    // fuzziness threshold, so only the 3 Springfields come back
     const results = await searchWithFreshModule("springfield, illinois", MOCK_CITIES);
 
-    expect(results.length).toBe(4); // 3 Springfields + Spring Mesa
+    expect(results.length).toBe(3);
     expect(results[0]?.stateId).toBe("IL"); // IL boosted to top
   });
 

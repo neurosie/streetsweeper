@@ -15,6 +15,10 @@ const EXCLUSION_PATTERNS = [
   // Generic numbered townships
   /^Township\s+\d+/i,
   /^Township\s+[A-Z]$/i, // Township E, Township D, etc.
+  // Municipal wards
+  /^Ward\s+\d+$/i,
+  // Historic districts tagged as municipal boundaries in OSM
+  /\bHistoric District$/i,
 ];
 
 /**

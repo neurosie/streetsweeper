@@ -25914,3 +25914,623 @@
 {"name":"Fort Hall","state":"Idaho","stateId":"ID","county":null,"population":3195,"osmId":121465,"osmType":"relation","displayName":"Fort Hall, ID"}
 {"name":"Grangeville","state":"Idaho","stateId":"ID","county":null,"population":3308,"osmId":8908870,"osmType":"relation","displayName":"Grangeville, ID"}
 {"name":"Ammon","state":"Idaho","stateId":"ID","county":null,"population":null,"osmId":12564743,"osmType":"relation","displayName":"Ammon, ID"}
+{"name":"Keaau","state":"Hawaii","stateId":"HI","county":null,"population":null,"osmId":119203,"osmType":"relation","displayName":"Keaau, HI"}
+{"name":"Village of Munsey Park","state":"New York","stateId":"NY","county":null,"population":2809,"osmId":174364,"osmType":"relation","displayName":"Village of Munsey Park, NY"}
+{"name":"Village of Canajoharie","state":"New York","stateId":"NY","county":null,"population":2037,"osmId":174371,"osmType":"relation","displayName":"Village of Canajoharie, NY"}
+{"name":"Village of Palatine Bridge","state":"New York","stateId":"NY","county":null,"population":796,"osmId":174372,"osmType":"relation","displayName":"Village of Palatine Bridge, NY"}
+{"name":"Village of Fultonville","state":"New York","stateId":"NY","county":null,"population":742,"osmId":174373,"osmType":"relation","displayName":"Village of Fultonville, NY"}
+{"name":"Village of Fonda","state":"New York","stateId":"NY","county":null,"population":668,"osmId":174374,"osmType":"relation","displayName":"Village of Fonda, NY"}
+{"name":"Village of Fort Plain","state":"New York","stateId":"NY","county":null,"population":1930,"osmId":174375,"osmType":"relation","displayName":"Village of Fort Plain, NY"}
+{"name":"Village of Nelliston","state":"New York","stateId":"NY","county":null,"population":555,"osmId":174376,"osmType":"relation","displayName":"Village of Nelliston, NY"}
+{"name":"Village of Athens","state":"New York","stateId":"NY","county":null,"population":1586,"osmId":174377,"osmType":"relation","displayName":"Village of Athens, NY"}
+{"name":"Village of Catskill","state":"New York","stateId":"NY","county":null,"population":3745,"osmId":174378,"osmType":"relation","displayName":"Village of Catskill, NY"}
+{"name":"Village of South Glens Falls","state":"New York","stateId":"NY","county":null,"population":3744,"osmId":174382,"osmType":"relation","displayName":"Village of South Glens Falls, NY"}
+{"name":"City of Glens Falls","state":"New York","stateId":"NY","county":null,"population":14830,"osmId":174383,"osmType":"relation","displayName":"City of Glens Falls, NY"}
+{"name":"Village of Waterford","state":"New York","stateId":"NY","county":null,"population":2038,"osmId":174384,"osmType":"relation","displayName":"Village of Waterford, NY"}
+{"name":"City of Watervliet","state":"New York","stateId":"NY","county":null,"population":10375,"osmId":174386,"osmType":"relation","displayName":"City of Watervliet, NY"}
+{"name":"City of Troy","state":"New York","stateId":"NY","county":null,"population":51401,"osmId":174387,"osmType":"relation","displayName":"City of Troy, NY"}
+{"name":"City of Cohoes","state":"New York","stateId":"NY","county":null,"population":18147,"osmId":174388,"osmType":"relation","displayName":"City of Cohoes, NY"}
+{"name":"City of Rensselaer","state":"New York","stateId":"NY","county":null,"population":9210,"osmId":174389,"osmType":"relation","displayName":"City of Rensselaer, NY"}
+{"name":"Village of Hewlett Neck","state":"New York","stateId":"NY","county":null,"population":569,"osmId":174392,"osmType":"relation","displayName":"Village of Hewlett Neck, NY"}
+{"name":"Village of Woodsburgh","state":"New York","stateId":"NY","county":null,"population":897,"osmId":174393,"osmType":"relation","displayName":"Village of Woodsburgh, NY"}
+{"name":"Village of East Williston","state":"New York","stateId":"NY","county":null,"population":2645,"osmId":174394,"osmType":"relation","displayName":"Village of East Williston, NY"}
+{"name":"Village of Williston Park","state":"New York","stateId":"NY","county":null,"population":7591,"osmId":174395,"osmType":"relation","displayName":"Village of Williston Park, NY"}
+{"name":"Village of Westbury","state":"New York","stateId":"NY","county":null,"population":15864,"osmId":174396,"osmType":"relation","displayName":"Village of Westbury, NY"}
+{"name":"Village of Valley Stream","state":"New York","stateId":"NY","county":null,"population":40634,"osmId":174399,"osmType":"relation","displayName":"Village of Valley Stream, NY"}
+{"name":"Village of Upper Brookville","state":"New York","stateId":"NY","county":null,"population":1786,"osmId":174401,"osmType":"relation","displayName":"Village of Upper Brookville, NY"}
+{"name":"Village of Thomaston","state":"New York","stateId":"NY","county":null,"population":2759,"osmId":174403,"osmType":"relation","displayName":"Village of Thomaston, NY"}
+{"name":"Village of Stewart Manor","state":"New York","stateId":"NY","county":null,"population":1992,"osmId":174404,"osmType":"relation","displayName":"Village of Stewart Manor, NY"}
+{"name":"Village of South Floral Park","state":"New York","stateId":"NY","county":null,"population":1741,"osmId":174405,"osmType":"relation","displayName":"Village of South Floral Park, NY"}
+{"name":"Village of Sea Cliff","state":"New York","stateId":"NY","county":null,"population":5062,"osmId":174406,"osmType":"relation","displayName":"Village of Sea Cliff, NY"}
+{"name":"Village of Sands Point","state":"New York","stateId":"NY","county":null,"population":2712,"osmId":174408,"osmType":"relation","displayName":"Village of Sands Point, NY"}
+{"name":"Village of Russell Gardens","state":"New York","stateId":"NY","county":null,"population":978,"osmId":174409,"osmType":"relation","displayName":"Village of Russell Gardens, NY"}
+{"name":"Village of Roslyn Harbor","state":"New York","stateId":"NY","county":null,"population":1067,"osmId":174411,"osmType":"relation","displayName":"Village of Roslyn Harbor, NY"}
+{"name":"Village of Roslyn Estates","state":"New York","stateId":"NY","county":null,"population":1318,"osmId":174412,"osmType":"relation","displayName":"Village of Roslyn Estates, NY"}
+{"name":"Village of Roslyn","state":"New York","stateId":"NY","county":null,"population":2988,"osmId":174413,"osmType":"relation","displayName":"Village of Roslyn, NY"}
+{"name":"Village of Rockville Centre","state":"New York","stateId":"NY","county":null,"population":26016,"osmId":174422,"osmType":"relation","displayName":"Village of Rockville Centre, NY"}
+{"name":"Village of Port Washington North","state":"New York","stateId":"NY","county":null,"population":3160,"osmId":174423,"osmType":"relation","displayName":"Village of Port Washington North, NY"}
+{"name":"Village of Manorhaven","state":"New York","stateId":"NY","county":null,"population":6956,"osmId":174424,"osmType":"relation","displayName":"Village of Manorhaven, NY"}
+{"name":"Village of Plandome Manor","state":"New York","stateId":"NY","county":null,"population":793,"osmId":174427,"osmType":"relation","displayName":"Village of Plandome Manor, NY"}
+{"name":"Village of Plandome","state":"New York","stateId":"NY","county":null,"population":1448,"osmId":174428,"osmType":"relation","displayName":"Village of Plandome, NY"}
+{"name":"Village of Plandome Heights","state":"New York","stateId":"NY","county":null,"population":1009,"osmId":174429,"osmType":"relation","displayName":"Village of Plandome Heights, NY"}
+{"name":"Village of Flower Hill","state":"New York","stateId":"NY","county":null,"population":4794,"osmId":174430,"osmType":"relation","displayName":"Village of Flower Hill, NY"}
+{"name":"Village of Oyster Bay Cove","state":"New York","stateId":"NY","county":null,"population":2265,"osmId":174433,"osmType":"relation","displayName":"Village of Oyster Bay Cove, NY"}
+{"name":"Village of Cove Neck","state":"New York","stateId":"NY","county":null,"population":293,"osmId":174434,"osmType":"relation","displayName":"Village of Cove Neck, NY"}
+{"name":"Village of Brookville","state":"New York","stateId":"NY","county":null,"population":2939,"osmId":174435,"osmType":"relation","displayName":"Village of Brookville, NY"}
+{"name":"Village of Old Westbury","state":"New York","stateId":"NY","county":null,"population":4289,"osmId":174436,"osmType":"relation","displayName":"Village of Old Westbury, NY"}
+{"name":"Village of Old Brookville","state":"New York","stateId":"NY","county":null,"population":2020,"osmId":174437,"osmType":"relation","displayName":"Village of Old Brookville, NY"}
+{"name":"Village of East Hills","state":"New York","stateId":"NY","county":null,"population":7284,"osmId":174438,"osmType":"relation","displayName":"Village of East Hills, NY"}
+{"name":"Village of North Hills","state":"New York","stateId":"NY","county":null,"population":5464,"osmId":174441,"osmType":"relation","displayName":"Village of North Hills, NY"}
+{"name":"Village of New Hyde Park","state":"New York","stateId":"NY","county":null,"population":10257,"osmId":174442,"osmType":"relation","displayName":"Village of New Hyde Park, NY"}
+{"name":"Village of Muttontown","state":"New York","stateId":"NY","county":null,"population":3512,"osmId":174443,"osmType":"relation","displayName":"Village of Muttontown, NY"}
+{"name":"Village of Mineola","state":"New York","stateId":"NY","county":null,"population":20800,"osmId":174445,"osmType":"relation","displayName":"Village of Mineola, NY"}
+{"name":"Village of Mill Neck","state":"New York","stateId":"NY","county":null,"population":1054,"osmId":174446,"osmType":"relation","displayName":"Village of Mill Neck, NY"}
+{"name":"Village of Matinecock","state":"New York","stateId":"NY","county":null,"population":847,"osmId":174448,"osmType":"relation","displayName":"Village of Matinecock, NY"}
+{"name":"Village of Malverne","state":"New York","stateId":"NY","county":null,"population":8560,"osmId":174451,"osmType":"relation","displayName":"Village of Malverne, NY"}
+{"name":"Village of Lynbrook","state":"New York","stateId":"NY","county":null,"population":20438,"osmId":174452,"osmType":"relation","displayName":"Village of Lynbrook, NY"}
+{"name":"City of Long Beach","state":"New York","stateId":"NY","county":null,"population":35029,"osmId":174454,"osmType":"relation","displayName":"City of Long Beach, NY"}
+{"name":"Village of Lawrence","state":"New York","stateId":"NY","county":null,"population":6809,"osmId":174455,"osmType":"relation","displayName":"Village of Lawrence, NY"}
+{"name":"Village of Cedarhurst","state":"New York","stateId":"NY","county":null,"population":7374,"osmId":174456,"osmType":"relation","displayName":"Village of Cedarhurst, NY"}
+{"name":"Village of Laurel Hollow","state":"New York","stateId":"NY","county":null,"population":1940,"osmId":174458,"osmType":"relation","displayName":"Village of Laurel Hollow, NY"}
+{"name":"Village of Lattingtown","state":"New York","stateId":"NY","county":null,"population":1881,"osmId":174459,"osmType":"relation","displayName":"Village of Lattingtown, NY"}
+{"name":"Village of Lake Success","state":"New York","stateId":"NY","county":null,"population":2828,"osmId":174460,"osmType":"relation","displayName":"Village of Lake Success, NY"}
+{"name":"Village of Kings Point","state":"New York","stateId":"NY","county":null,"population":5619,"osmId":174461,"osmType":"relation","displayName":"Village of Kings Point, NY"}
+{"name":"Village of Kensington","state":"New York","stateId":"NY","county":null,"population":1226,"osmId":174462,"osmType":"relation","displayName":"Village of Kensington, NY"}
+{"name":"Village of Island Park","state":"New York","stateId":"NY","county":null,"population":4928,"osmId":174465,"osmType":"relation","displayName":"Village of Island Park, NY"}
+{"name":"Village of Hewlett Bay Park","state":"New York","stateId":"NY","county":null,"population":494,"osmId":174466,"osmType":"relation","displayName":"Village of Hewlett Bay Park, NY"}
+{"name":"Village of Hewlett Harbor","state":"New York","stateId":"NY","county":null,"population":1290,"osmId":174468,"osmType":"relation","displayName":"Village of Hewlett Harbor, NY"}
+{"name":"Village of Hempstead","state":"New York","stateId":"NY","county":null,"population":59169,"osmId":174472,"osmType":"relation","displayName":"Village of Hempstead, NY"}
+{"name":"Village of Great Neck Plaza","state":"New York","stateId":"NY","county":null,"population":7482,"osmId":174473,"osmType":"relation","displayName":"Village of Great Neck Plaza, NY"}
+{"name":"Village of Great Neck Estates","state":"New York","stateId":"NY","county":null,"population":2990,"osmId":174477,"osmType":"relation","displayName":"Village of Great Neck Estates, NY"}
+{"name":"Village of Great Neck","state":"New York","stateId":"NY","county":null,"population":11145,"osmId":174479,"osmType":"relation","displayName":"Village of Great Neck, NY"}
+{"name":"City of Glen Cove","state":"New York","stateId":"NY","county":null,"population":28365,"osmId":174480,"osmType":"relation","displayName":"City of Glen Cove, NY"}
+{"name":"Village of Garden City","state":"New York","stateId":"NY","county":null,"population":23272,"osmId":174481,"osmType":"relation","displayName":"Village of Garden City, NY"}
+{"name":"Village of Freeport","state":"New York","stateId":"NY","county":null,"population":44472,"osmId":174482,"osmType":"relation","displayName":"Village of Freeport, NY"}
+{"name":"Village of Floral Park","state":"New York","stateId":"NY","county":null,"population":16172,"osmId":174483,"osmType":"relation","displayName":"Village of Floral Park, NY"}
+{"name":"Village of Bellerose","state":"New York","stateId":"NY","county":null,"population":1173,"osmId":174484,"osmType":"relation","displayName":"Village of Bellerose, NY"}
+{"name":"Village of East Rockaway","state":"New York","stateId":"NY","county":null,"population":10159,"osmId":174486,"osmType":"relation","displayName":"Village of East Rockaway, NY"}
+{"name":"Village of Centre Island","state":"New York","stateId":"NY","county":null,"population":407,"osmId":174487,"osmType":"relation","displayName":"Village of Centre Island, NY"}
+{"name":"Village of Bayville","state":"New York","stateId":"NY","county":null,"population":6748,"osmId":174488,"osmType":"relation","displayName":"Village of Bayville, NY"}
+{"name":"Village of Baxter Estates","state":"New York","stateId":"NY","county":null,"population":991,"osmId":174490,"osmType":"relation","displayName":"Village of Baxter Estates, NY"}
+{"name":"Village of Atlantic Beach","state":"New York","stateId":"NY","county":null,"population":1707,"osmId":174492,"osmType":"relation","displayName":"Village of Atlantic Beach, NY"}
+{"name":"Village of Tuckahoe","state":"New York","stateId":"NY","county":null,"population":7084,"osmId":174493,"osmType":"relation","displayName":"Village of Tuckahoe, NY"}
+{"name":"City of Yonkers","state":"New York","stateId":"NY","county":null,"population":211569,"osmId":174494,"osmType":"relation","displayName":"City of Yonkers, NY"}
+{"name":"City of White Plains","state":"New York","stateId":"NY","county":null,"population":59559,"osmId":174495,"osmType":"relation","displayName":"City of White Plains, NY"}
+{"name":"Village of Bronxville","state":"New York","stateId":"NY","county":null,"population":6656,"osmId":174496,"osmType":"relation","displayName":"Village of Bronxville, NY"}
+{"name":"Village of Tarrytown","state":"New York","stateId":"NY","county":null,"population":11860,"osmId":174498,"osmType":"relation","displayName":"Village of Tarrytown, NY"}
+{"name":"Village of Sleepy Hollow","state":"New York","stateId":"NY","county":null,"population":9986,"osmId":174499,"osmType":"relation","displayName":"Village of Sleepy Hollow, NY"}
+{"name":"Village of Port Chester","state":"New York","stateId":"NY","county":null,"population":31693,"osmId":174869,"osmType":"relation","displayName":"Village of Port Chester, NY"}
+{"name":"City of Rye","state":"New York","stateId":"NY","county":null,"population":16592,"osmId":174873,"osmType":"relation","displayName":"City of Rye, NY"}
+{"name":"Village of Pleasantville","state":"New York","stateId":"NY","county":null,"population":7513,"osmId":174875,"osmType":"relation","displayName":"Village of Pleasantville, NY"}
+{"name":"Village of Pelham","state":"New York","stateId":"NY","county":null,"population":7326,"osmId":174876,"osmType":"relation","displayName":"Village of Pelham, NY"}
+{"name":"Village of Pelham Manor","state":"New York","stateId":"NY","county":null,"population":5752,"osmId":174877,"osmType":"relation","displayName":"Village of Pelham Manor, NY"}
+{"name":"City of Peekskill","state":"New York","stateId":"NY","county":null,"population":25431,"osmId":174879,"osmType":"relation","displayName":"City of Peekskill, NY"}
+{"name":"Village of Ossining","state":"New York","stateId":"NY","county":null,"population":27551,"osmId":174882,"osmType":"relation","displayName":"Village of Ossining, NY"}
+{"name":"City of Mount Vernon","state":"New York","stateId":"NY","county":null,"population":73893,"osmId":174883,"osmType":"relation","displayName":"City of Mount Vernon, NY"}
+{"name":"City of New Rochelle","state":"New York","stateId":"NY","county":null,"population":79726,"osmId":174885,"osmType":"relation","displayName":"City of New Rochelle, NY"}
+{"name":"Village of Larchmont","state":"New York","stateId":"NY","county":null,"population":6630,"osmId":174890,"osmType":"relation","displayName":"Village of Larchmont, NY"}
+{"name":"Village of Irvington","state":"New York","stateId":"NY","county":null,"population":6652,"osmId":174891,"osmType":"relation","displayName":"Village of Irvington, NY"}
+{"name":"Village of Hastings-on-Hudson","state":"New York","stateId":"NY","county":null,"population":8590,"osmId":174892,"osmType":"relation","displayName":"Village of Hastings-on-Hudson, NY"}
+{"name":"Village of Dobbs Ferry","state":"New York","stateId":"NY","county":null,"population":11541,"osmId":174893,"osmType":"relation","displayName":"Village of Dobbs Ferry, NY"}
+{"name":"Village of Elmsford","state":"New York","stateId":"NY","county":null,"population":5239,"osmId":174894,"osmType":"relation","displayName":"Village of Elmsford, NY"}
+{"name":"Village of Croton-on-Hudson","state":"New York","stateId":"NY","county":null,"population":8327,"osmId":174895,"osmType":"relation","displayName":"Village of Croton-on-Hudson, NY"}
+{"name":"Village of Buchanan","state":"New York","stateId":"NY","county":null,"population":2302,"osmId":174900,"osmType":"relation","displayName":"Village of Buchanan, NY"}
+{"name":"Village of Briarcliff Manor","state":"New York","stateId":"NY","county":null,"population":7569,"osmId":174901,"osmType":"relation","displayName":"Village of Briarcliff Manor, NY"}
+{"name":"Village of Ardsley","state":"New York","stateId":"NY","county":null,"population":5079,"osmId":174903,"osmType":"relation","displayName":"Village of Ardsley, NY"}
+{"name":"City of Hudson","state":"New York","stateId":"NY","county":null,"population":5894,"osmId":174904,"osmType":"relation","displayName":"City of Hudson, NY"}
+{"name":"Village of Valatie","state":"New York","stateId":"NY","county":null,"population":1785,"osmId":174908,"osmType":"relation","displayName":"Village of Valatie, NY"}
+{"name":"Village of Kinderhook","state":"New York","stateId":"NY","county":null,"population":1170,"osmId":174909,"osmType":"relation","displayName":"Village of Kinderhook, NY"}
+{"name":"Village of East Syracuse","state":"New York","stateId":"NY","county":null,"population":3078,"osmId":174911,"osmType":"relation","displayName":"Village of East Syracuse, NY"}
+{"name":"Village of Liverpool","state":"New York","stateId":"NY","county":null,"population":2242,"osmId":174912,"osmType":"relation","displayName":"Village of Liverpool, NY"}
+{"name":"Village of Solvay","state":"New York","stateId":"NY","county":null,"population":6645,"osmId":174913,"osmType":"relation","displayName":"Village of Solvay, NY"}
+{"name":"City of Syracuse","state":"New York","stateId":"NY","county":null,"population":148620,"osmId":174916,"osmType":"relation","displayName":"City of Syracuse, NY"}
+{"name":"Village of Mohawk","state":"New York","stateId":"NY","county":null,"population":2415,"osmId":174918,"osmType":"relation","displayName":"Village of Mohawk, NY"}
+{"name":"City of Olean","state":"New York","stateId":"NY","county":null,"population":13937,"osmId":174925,"osmType":"relation","displayName":"City of Olean, NY"}
+{"name":"Village of Allegany / ohi꞉yoʾ","state":"New York","stateId":"NY","county":null,"population":1544,"osmId":174927,"osmType":"relation","displayName":"Village of Allegany / ohi꞉yoʾ, NY"}
+{"name":"Village of Johnson City","state":"New York","stateId":"NY","county":null,"population":15343,"osmId":174932,"osmType":"relation","displayName":"Village of Johnson City, NY"}
+{"name":"City of Binghamton","state":"New York","stateId":"NY","county":null,"population":47969,"osmId":174933,"osmType":"relation","displayName":"City of Binghamton, NY"}
+{"name":"Village of Port Dickinson","state":"New York","stateId":"NY","county":null,"population":1699,"osmId":174934,"osmType":"relation","displayName":"Village of Port Dickinson, NY"}
+{"name":"Village of Endicott","state":"New York","stateId":"NY","county":null,"population":13667,"osmId":174937,"osmType":"relation","displayName":"Village of Endicott, NY"}
+{"name":"Village of Lakewood","state":"New York","stateId":"NY","county":null,"population":3002,"osmId":174938,"osmType":"relation","displayName":"Village of Lakewood, NY"}
+{"name":"Village of Celoron","state":"New York","stateId":"NY","county":null,"population":1069,"osmId":174941,"osmType":"relation","displayName":"Village of Celoron, NY"}
+{"name":"Jamestown","state":"New York","stateId":"NY","county":null,"population":28712,"osmId":174942,"osmType":"relation","displayName":"Jamestown, NY"}
+{"name":"Village of Falconer","state":"New York","stateId":"NY","county":null,"population":2269,"osmId":174943,"osmType":"relation","displayName":"Village of Falconer, NY"}
+{"name":"Village of Fredonia","state":"New York","stateId":"NY","county":null,"population":9585,"osmId":174944,"osmType":"relation","displayName":"Village of Fredonia, NY"}
+{"name":"City of Dunkirk","state":"New York","stateId":"NY","county":null,"population":12743,"osmId":174947,"osmType":"relation","displayName":"City of Dunkirk, NY"}
+{"name":"City of Elmira","state":"New York","stateId":"NY","county":null,"population":26523,"osmId":174948,"osmType":"relation","displayName":"City of Elmira, NY"}
+{"name":"Village of Horseheads","state":"New York","stateId":"NY","county":null,"population":6606,"osmId":174949,"osmType":"relation","displayName":"Village of Horseheads, NY"}
+{"name":"City of Poughkeepsie","state":"New York","stateId":"NY","county":null,"population":31577,"osmId":174952,"osmType":"relation","displayName":"City of Poughkeepsie, NY"}
+{"name":"Village of Wampsville","state":"New York","stateId":"NY","county":null,"population":573,"osmId":174954,"osmType":"relation","displayName":"Village of Wampsville, NY"}
+{"name":"Village of Oneida Castle","state":"New York","stateId":"NY","county":null,"population":586,"osmId":174962,"osmType":"relation","displayName":"Village of Oneida Castle, NY"}
+{"name":"Village of Richburg","state":"New York","stateId":"NY","county":null,"population":401,"osmId":174965,"osmType":"relation","displayName":"Village of Richburg, NY"}
+{"name":"Village of Bolivar","state":"New York","stateId":"NY","county":null,"population":1010,"osmId":174966,"osmType":"relation","displayName":"Village of Bolivar, NY"}
+{"name":"Village of Victory","state":"New York","stateId":"NY","county":null,"population":666,"osmId":174967,"osmType":"relation","displayName":"Village of Victory, NY"}
+{"name":"Village of Schuylerville","state":"New York","stateId":"NY","county":null,"population":1370,"osmId":174968,"osmType":"relation","displayName":"Village of Schuylerville, NY"}
+{"name":"City of Ithaca","state":"New York","stateId":"NY","county":null,"population":32108,"osmId":174979,"osmType":"relation","displayName":"City of Ithaca, NY"}
+{"name":"Village of Cayuga Heights","state":"New York","stateId":"NY","county":null,"population":4114,"osmId":174983,"osmType":"relation","displayName":"Village of Cayuga Heights, NY"}
+{"name":"Village of West Carthage","state":"New York","stateId":"NY","county":null,"population":1780,"osmId":174984,"osmType":"relation","displayName":"Village of West Carthage, NY"}
+{"name":"Village of Carthage","state":"New York","stateId":"NY","county":null,"population":3236,"osmId":174985,"osmType":"relation","displayName":"Village of Carthage, NY"}
+{"name":"Village of Glen Park","state":"New York","stateId":"NY","county":null,"population":452,"osmId":174986,"osmType":"relation","displayName":"Village of Glen Park, NY"}
+{"name":"Village of Brownville","state":"New York","stateId":"NY","county":null,"population":930,"osmId":174987,"osmType":"relation","displayName":"Village of Brownville, NY"}
+{"name":"Village of Deferiet","state":"New York","stateId":"NY","county":null,"population":245,"osmId":174988,"osmType":"relation","displayName":"Village of Deferiet, NY"}
+{"name":"Village of Black River","state":"New York","stateId":"NY","county":null,"population":1232,"osmId":174989,"osmType":"relation","displayName":"Village of Black River, NY"}
+{"name":"City of Cortland","state":"New York","stateId":"NY","county":null,"population":17556,"osmId":174991,"osmType":"relation","displayName":"City of Cortland, NY"}
+{"name":"Village of Sandy Creek","state":"New York","stateId":"NY","county":null,"population":646,"osmId":174994,"osmType":"relation","displayName":"Village of Sandy Creek, NY"}
+{"name":"Village of Lacona","state":"New York","stateId":"NY","county":null,"population":657,"osmId":174995,"osmType":"relation","displayName":"Village of Lacona, NY"}
+{"name":"City of Oswego","state":"New York","stateId":"NY","county":null,"population":16921,"osmId":174996,"osmType":"relation","displayName":"City of Oswego, NY"}
+{"name":"Village of Cold Spring","state":"New York","stateId":"NY","county":null,"population":1986,"osmId":175002,"osmType":"relation","displayName":"Village of Cold Spring, NY"}
+{"name":"Village of Nelsonville","state":"New York","stateId":"NY","county":null,"population":624,"osmId":175003,"osmType":"relation","displayName":"Village of Nelsonville, NY"}
+{"name":"Village of Ellenville","state":"New York","stateId":"NY","county":null,"population":4167,"osmId":175004,"osmType":"relation","displayName":"Village of Ellenville, NY"}
+{"name":"City of Kingston","state":"New York","stateId":"NY","county":null,"population":24069,"osmId":175010,"osmType":"relation","displayName":"City of Kingston, NY"}
+{"name":"Village of Saugerties","state":"New York","stateId":"NY","county":null,"population":3899,"osmId":175026,"osmType":"relation","displayName":"Village of Saugerties, NY"}
+{"name":"Village of Blasdell","state":"New York","stateId":"NY","county":null,"population":2539,"osmId":175027,"osmType":"relation","displayName":"Village of Blasdell, NY"}
+{"name":"City of Lackawanna","state":"New York","stateId":"NY","county":null,"population":19949,"osmId":175028,"osmType":"relation","displayName":"City of Lackawanna, NY"}
+{"name":"Village of Kenmore","state":"New York","stateId":"NY","county":null,"population":15205,"osmId":175029,"osmType":"relation","displayName":"Village of Kenmore, NY"}
+{"name":"Village of Sloan","state":"New York","stateId":"NY","county":null,"population":3775,"osmId":175030,"osmType":"relation","displayName":"Village of Sloan, NY"}
+{"name":"Buffalo","state":"New York","stateId":"NY","county":null,"population":278349,"osmId":175031,"osmType":"relation","displayName":"Buffalo, NY"}
+{"name":"Village of Lancaster","state":"New York","stateId":"NY","county":null,"population":10027,"osmId":175037,"osmType":"relation","displayName":"Village of Lancaster, NY"}
+{"name":"Village of Depew","state":"New York","stateId":"NY","county":null,"population":15178,"osmId":175038,"osmType":"relation","displayName":"Village of Depew, NY"}
+{"name":"City of Tonawanda","state":"New York","stateId":"NY","county":null,"population":15129,"osmId":175052,"osmType":"relation","displayName":"City of Tonawanda, NY"}
+{"name":"City of North Tonawanda","state":"New York","stateId":"NY","county":null,"population":30496,"osmId":175053,"osmType":"relation","displayName":"City of North Tonawanda, NY"}
+{"name":"Village of Williamsville","state":"New York","stateId":"NY","county":null,"population":5423,"osmId":175054,"osmType":"relation","displayName":"Village of Williamsville, NY"}
+{"name":"City of Auburn","state":"New York","stateId":"NY","county":null,"population":26866,"osmId":175448,"osmType":"relation","displayName":"City of Auburn, NY"}
+{"name":"Village of Manchester","state":"New York","stateId":"NY","county":null,"population":1640,"osmId":175449,"osmType":"relation","displayName":"Village of Manchester, NY"}
+{"name":"Village of Shortsville","state":"New York","stateId":"NY","county":null,"population":1400,"osmId":175450,"osmType":"relation","displayName":"Village of Shortsville, NY"}
+{"name":"Village of Cornwall-on-Hudson","state":"New York","stateId":"NY","county":null,"population":3075,"osmId":175454,"osmType":"relation","displayName":"Village of Cornwall-on-Hudson, NY"}
+{"name":"Village of Harriman","state":"New York","stateId":"NY","county":null,"population":2714,"osmId":175455,"osmType":"relation","displayName":"Village of Harriman, NY"}
+{"name":"Village of Monroe","state":"New York","stateId":"NY","county":null,"population":9343,"osmId":175456,"osmType":"relation","displayName":"Village of Monroe, NY"}
+{"name":"Village of Highland Falls","state":"New York","stateId":"NY","county":null,"population":3684,"osmId":175461,"osmType":"relation","displayName":"Village of Highland Falls, NY"}
+{"name":"Village of Kiryas Joel","state":"New York","stateId":"NY","county":null,"population":32954,"osmId":175464,"osmType":"relation","displayName":"Village of Kiryas Joel, NY"}
+{"name":"City of Middletown","state":"New York","stateId":"NY","county":null,"population":30345,"osmId":175466,"osmType":"relation","displayName":"City of Middletown, NY"}
+{"name":"City of Newburgh","state":"New York","stateId":"NY","county":null,"population":28856,"osmId":175469,"osmType":"relation","displayName":"City of Newburgh, NY"}
+{"name":"Village of Washingtonville","state":"New York","stateId":"NY","county":null,"population":5657,"osmId":175471,"osmType":"relation","displayName":"Village of Washingtonville, NY"}
+{"name":"Village of South Blooming Grove","state":"New York","stateId":"NY","county":null,"population":3973,"osmId":175472,"osmType":"relation","displayName":"Village of South Blooming Grove, NY"}
+{"name":"Village of Woodbury","state":"New York","stateId":"NY","county":null,"population":11526,"osmId":175473,"osmType":"relation","displayName":"Village of Woodbury, NY"}
+{"name":"Village of Scotia","state":"New York","stateId":"NY","county":null,"population":7272,"osmId":175476,"osmType":"relation","displayName":"Village of Scotia, NY"}
+{"name":"City of Schenectady","state":"New York","stateId":"NY","county":null,"population":67047,"osmId":175481,"osmType":"relation","displayName":"City of Schenectady, NY"}
+{"name":"Village of Delanson","state":"New York","stateId":"NY","county":null,"population":335,"osmId":175482,"osmType":"relation","displayName":"Village of Delanson, NY"}
+{"name":"City of Lockport","state":"New York","stateId":"NY","county":null,"population":20876,"osmId":175484,"osmType":"relation","displayName":"City of Lockport, NY"}
+{"name":"Village of New Hartford","state":"New York","stateId":"NY","county":null,"population":1859,"osmId":175485,"osmType":"relation","displayName":"Village of New Hartford, NY"}
+{"name":"Village of New York Mills","state":"New York","stateId":"NY","county":null,"population":3244,"osmId":175486,"osmType":"relation","displayName":"Village of New York Mills, NY"}
+{"name":"City of Utica","state":"New York","stateId":"NY","county":null,"population":65283,"osmId":175487,"osmType":"relation","displayName":"City of Utica, NY"}
+{"name":"Village of Yorkville","state":"New York","stateId":"NY","county":null,"population":2657,"osmId":175488,"osmType":"relation","displayName":"Village of Yorkville, NY"}
+{"name":"Village of Whitesboro","state":"New York","stateId":"NY","county":null,"population":3612,"osmId":175489,"osmType":"relation","displayName":"Village of Whitesboro, NY"}
+{"name":"Village of South Corning","state":"New York","stateId":"NY","county":null,"population":1108,"osmId":175490,"osmType":"relation","displayName":"Village of South Corning, NY"}
+{"name":"City of Corning","state":"New York","stateId":"NY","county":null,"population":10551,"osmId":175491,"osmType":"relation","displayName":"City of Corning, NY"}
+{"name":"Village of North Hornell","state":"New York","stateId":"NY","county":null,"population":732,"osmId":175492,"osmType":"relation","displayName":"Village of North Hornell, NY"}
+{"name":"City of Hornell","state":"New York","stateId":"NY","county":null,"population":8263,"osmId":175493,"osmType":"relation","displayName":"City of Hornell, NY"}
+{"name":"Painted Post","state":"New York","stateId":"NY","county":null,"population":1768,"osmId":175495,"osmType":"relation","displayName":"Painted Post, NY"}
+{"name":"Village of Riverside","state":"New York","stateId":"NY","county":null,"population":423,"osmId":175496,"osmType":"relation","displayName":"Village of Riverside, NY"}
+{"name":"Village of Amityville","state":"New York","stateId":"NY","county":null,"population":9500,"osmId":175498,"osmType":"relation","displayName":"Village of Amityville, NY"}
+{"name":"Village of Babylon","state":"New York","stateId":"NY","county":null,"population":12188,"osmId":175499,"osmType":"relation","displayName":"Village of Babylon, NY"}
+{"name":"Village of Belle Terre","state":"New York","stateId":"NY","county":null,"population":808,"osmId":175500,"osmType":"relation","displayName":"Village of Belle Terre, NY"}
+{"name":"Village of Bellport","state":"New York","stateId":"NY","county":null,"population":2203,"osmId":175504,"osmType":"relation","displayName":"Village of Bellport, NY"}
+{"name":"Village of Brightwaters","state":"New York","stateId":"NY","county":null,"population":3181,"osmId":175505,"osmType":"relation","displayName":"Village of Brightwaters, NY"}
+{"name":"Village of Dering Harbor","state":"New York","stateId":"NY","county":null,"population":50,"osmId":175508,"osmType":"relation","displayName":"Village of Dering Harbor, NY"}
+{"name":"Village of East Hampton","state":"New York","stateId":"NY","county":null,"population":1517,"osmId":175509,"osmType":"relation","displayName":"Village of East Hampton, NY"}
+{"name":"Village of Greenport","state":"New York","stateId":"NY","county":null,"population":2583,"osmId":175510,"osmType":"relation","displayName":"Village of Greenport, NY"}
+{"name":"Village of Head of the Harbor","state":"New York","stateId":"NY","county":null,"population":1520,"osmId":175511,"osmType":"relation","displayName":"Village of Head of the Harbor, NY"}
+{"name":"Village of Huntington Bay","state":"New York","stateId":"NY","county":null,"population":1446,"osmId":175514,"osmType":"relation","displayName":"Village of Huntington Bay, NY"}
+{"name":"Village of Islandia","state":"New York","stateId":"NY","county":null,"population":3567,"osmId":175515,"osmType":"relation","displayName":"Village of Islandia, NY"}
+{"name":"Village of Lake Grove","state":"New York","stateId":"NY","county":null,"population":11072,"osmId":175517,"osmType":"relation","displayName":"Village of Lake Grove, NY"}
+{"name":"Village of Lindenhurst","state":"New York","stateId":"NY","county":null,"population":27148,"osmId":175520,"osmType":"relation","displayName":"Village of Lindenhurst, NY"}
+{"name":"Village of Lloyd Harbor","state":"New York","stateId":"NY","county":null,"population":3571,"osmId":175521,"osmType":"relation","displayName":"Village of Lloyd Harbor, NY"}
+{"name":"Village of Nissequogue","state":"New York","stateId":"NY","county":null,"population":1564,"osmId":175522,"osmType":"relation","displayName":"Village of Nissequogue, NY"}
+{"name":"Village of North Haven","state":"New York","stateId":"NY","county":null,"population":1162,"osmId":175523,"osmType":"relation","displayName":"Village of North Haven, NY"}
+{"name":"Village of Northport","state":"New York","stateId":"NY","county":null,"population":7347,"osmId":175524,"osmType":"relation","displayName":"Village of Northport, NY"}
+{"name":"Village of Ocean Beach","state":"New York","stateId":"NY","county":null,"population":153,"osmId":175526,"osmType":"relation","displayName":"Village of Ocean Beach, NY"}
+{"name":"Village of Old Field","state":"New York","stateId":"NY","county":null,"population":893,"osmId":175527,"osmType":"relation","displayName":"Village of Old Field, NY"}
+{"name":"Village of Patchogue","state":"New York","stateId":"NY","county":null,"population":12408,"osmId":175530,"osmType":"relation","displayName":"Village of Patchogue, NY"}
+{"name":"Village of Poquott","state":"New York","stateId":"NY","county":null,"population":903,"osmId":175531,"osmType":"relation","displayName":"Village of Poquott, NY"}
+{"name":"Village of Port Jefferson","state":"New York","stateId":"NY","county":null,"population":7962,"osmId":175532,"osmType":"relation","displayName":"Village of Port Jefferson, NY"}
+{"name":"Village of Quogue","state":"New York","stateId":"NY","county":null,"population":1662,"osmId":175533,"osmType":"relation","displayName":"Village of Quogue, NY"}
+{"name":"Village of Sag Harbor","state":"New York","stateId":"NY","county":null,"population":2772,"osmId":175534,"osmType":"relation","displayName":"Village of Sag Harbor, NY"}
+{"name":"Village of Saltaire","state":"New York","stateId":"NY","county":null,"population":113,"osmId":175535,"osmType":"relation","displayName":"Village of Saltaire, NY"}
+{"name":"Village of Shoreham","state":"New York","stateId":"NY","county":null,"population":561,"osmId":175536,"osmType":"relation","displayName":"Village of Shoreham, NY"}
+{"name":"Village of Southampton","state":"New York","stateId":"NY","county":null,"population":4550,"osmId":175537,"osmType":"relation","displayName":"Village of Southampton, NY"}
+{"name":"Village of the Branch","state":"New York","stateId":"NY","county":null,"population":1735,"osmId":175539,"osmType":"relation","displayName":"Village of the Branch, NY"}
+{"name":"Village of Westhampton Beach","state":"New York","stateId":"NY","county":null,"population":2150,"osmId":175541,"osmType":"relation","displayName":"Village of Westhampton Beach, NY"}
+{"name":"Village of Sagaponack","state":"New York","stateId":"NY","county":null,"population":770,"osmId":175542,"osmType":"relation","displayName":"Village of Sagaponack, NY"}
+{"name":"City of Plattsburgh","state":"New York","stateId":"NY","county":null,"population":19841,"osmId":175544,"osmType":"relation","displayName":"City of Plattsburgh, NY"}
+{"name":"Village of Menands","state":"New York","stateId":"NY","county":null,"population":4554,"osmId":175548,"osmType":"relation","displayName":"Village of Menands, NY"}
+{"name":"City of Albany","state":"New York","stateId":"NY","county":null,"population":99224,"osmId":175549,"osmType":"relation","displayName":"City of Albany, NY"}
+{"name":"Village of Ravena","state":"New York","stateId":"NY","county":null,"population":3271,"osmId":175552,"osmType":"relation","displayName":"Village of Ravena, NY"}
+{"name":"Village of Airmont","state":"New York","stateId":"NY","county":null,"population":10166,"osmId":175555,"osmType":"relation","displayName":"Village of Airmont, NY"}
+{"name":"Village of Chestnut Ridge","state":"New York","stateId":"NY","county":null,"population":10505,"osmId":175556,"osmType":"relation","displayName":"Village of Chestnut Ridge, NY"}
+{"name":"Village of Grand View-on-Hudson","state":"New York","stateId":"NY","county":null,"population":246,"osmId":175557,"osmType":"relation","displayName":"Village of Grand View-on-Hudson, NY"}
+{"name":"Village of Haverstraw","state":"New York","stateId":"NY","county":null,"population":12323,"osmId":175559,"osmType":"relation","displayName":"Village of Haverstraw, NY"}
+{"name":"Village of Hillburn","state":"New York","stateId":"NY","county":null,"population":930,"osmId":175560,"osmType":"relation","displayName":"Village of Hillburn, NY"}
+{"name":"Village of Suffern","state":"New York","stateId":"NY","county":null,"population":11441,"osmId":175561,"osmType":"relation","displayName":"Village of Suffern, NY"}
+{"name":"Village of Montebello","state":"New York","stateId":"NY","county":null,"population":4507,"osmId":175562,"osmType":"relation","displayName":"Village of Montebello, NY"}
+{"name":"Village of Wesley Hills","state":"New York","stateId":"NY","county":null,"population":6116,"osmId":175564,"osmType":"relation","displayName":"Village of Wesley Hills, NY"}
+{"name":"Village of New Hempstead","state":"New York","stateId":"NY","county":null,"population":5463,"osmId":175566,"osmType":"relation","displayName":"Village of New Hempstead, NY"}
+{"name":"Village of New Square","state":"New York","stateId":"NY","county":null,"population":9679,"osmId":175567,"osmType":"relation","displayName":"Village of New Square, NY"}
+{"name":"Village of Nyack","state":"New York","stateId":"NY","county":null,"population":7265,"osmId":175568,"osmType":"relation","displayName":"Village of Nyack, NY"}
+{"name":"Village of Upper Nyack","state":"New York","stateId":"NY","county":null,"population":2015,"osmId":175569,"osmType":"relation","displayName":"Village of Upper Nyack, NY"}
+{"name":"Village of Piermont","state":"New York","stateId":"NY","county":null,"population":2517,"osmId":175570,"osmType":"relation","displayName":"Village of Piermont, NY"}
+{"name":"Village of Pomona","state":"New York","stateId":"NY","county":null,"population":3824,"osmId":175571,"osmType":"relation","displayName":"Village of Pomona, NY"}
+{"name":"Village of West Haverstraw","state":"New York","stateId":"NY","county":null,"population":10678,"osmId":175573,"osmType":"relation","displayName":"Village of West Haverstraw, NY"}
+{"name":"Riverhead","state":"New York","stateId":"NY","county":null,"population":14993,"osmId":175687,"osmType":"relation","displayName":"Riverhead, NY"}
+{"name":"Brookhaven","state":"New York","stateId":"NY","county":null,"population":3330,"osmId":175701,"osmType":"relation","displayName":"Brookhaven, NY"}
+{"name":"Village of Rye Brook","state":"New York","stateId":"NY","county":null,"population":10047,"osmId":175808,"osmType":"relation","displayName":"Village of Rye Brook, NY"}
+{"name":"Village of Manlius","state":"New York","stateId":"NY","county":null,"population":4662,"osmId":175810,"osmType":"relation","displayName":"Village of Manlius, NY"}
+{"name":"Village of Herkimer","state":"New York","stateId":"NY","county":null,"population":7234,"osmId":175811,"osmType":"relation","displayName":"Village of Herkimer, NY"}
+{"name":"Village of Millerton","state":"New York","stateId":"NY","county":null,"population":903,"osmId":175812,"osmType":"relation","displayName":"Village of Millerton, NY"}
+{"name":"Village of Brockport","state":"New York","stateId":"NY","county":null,"population":7104,"osmId":175813,"osmType":"relation","displayName":"Village of Brockport, NY"}
+{"name":"Village of Arcade","state":"New York","stateId":"NY","county":null,"population":1908,"osmId":175816,"osmType":"relation","displayName":"Village of Arcade, NY"}
+{"name":"Village of Speculator","state":"New York","stateId":"NY","county":null,"population":406,"osmId":175828,"osmType":"relation","displayName":"Village of Speculator, NY"}
+{"name":"Village of Ames","state":"New York","stateId":"NY","county":null,"population":138,"osmId":175829,"osmType":"relation","displayName":"Village of Ames, NY"}
+{"name":"Village of Hagaman","state":"New York","stateId":"NY","county":null,"population":1117,"osmId":175830,"osmType":"relation","displayName":"Village of Hagaman, NY"}
+{"name":"Village of Saint Johnsville","state":"New York","stateId":"NY","county":null,"population":1643,"osmId":175831,"osmType":"relation","displayName":"Village of Saint Johnsville, NY"}
+{"name":"Village of Coxsackie","state":"New York","stateId":"NY","county":null,"population":2746,"osmId":175832,"osmType":"relation","displayName":"Village of Coxsackie, NY"}
+{"name":"Village of Hunter","state":"New York","stateId":"NY","county":null,"population":429,"osmId":175833,"osmType":"relation","displayName":"Village of Hunter, NY"}
+{"name":"Village of Tannersville","state":"New York","stateId":"NY","county":null,"population":568,"osmId":175834,"osmType":"relation","displayName":"Village of Tannersville, NY"}
+{"name":"Village of Lake George","state":"New York","stateId":"NY","county":null,"population":1008,"osmId":175835,"osmType":"relation","displayName":"Village of Lake George, NY"}
+{"name":"Village of Rushville","state":"New York","stateId":"NY","county":null,"population":651,"osmId":175836,"osmType":"relation","displayName":"Village of Rushville, NY"}
+{"name":"Village of Dresden","state":"New York","stateId":"NY","county":null,"population":293,"osmId":175837,"osmType":"relation","displayName":"Village of Dresden, NY"}
+{"name":"Village of Dundee","state":"New York","stateId":"NY","county":null,"population":1690,"osmId":175838,"osmType":"relation","displayName":"Village of Dundee, NY"}
+{"name":"Village of Penn Yan","state":"New York","stateId":"NY","county":null,"population":5056,"osmId":175839,"osmType":"relation","displayName":"Village of Penn Yan, NY"}
+{"name":"Village of Lake Placid","state":"New York","stateId":"NY","county":null,"population":2205,"osmId":175841,"osmType":"relation","displayName":"Village of Lake Placid, NY"}
+{"name":"Village of Valley Falls","state":"New York","stateId":"NY","county":null,"population":510,"osmId":175842,"osmType":"relation","displayName":"Village of Valley Falls, NY"}
+{"name":"Village of Schaghticoke","state":"New York","stateId":"NY","county":null,"population":527,"osmId":175843,"osmType":"relation","displayName":"Village of Schaghticoke, NY"}
+{"name":"Village of Nassau","state":"New York","stateId":"NY","county":null,"population":1103,"osmId":175844,"osmType":"relation","displayName":"Village of Nassau, NY"}
+{"name":"Village of Hoosick Falls","state":"New York","stateId":"NY","county":null,"population":3216,"osmId":175845,"osmType":"relation","displayName":"Village of Hoosick Falls, NY"}
+{"name":"Village of East Nassau","state":"New York","stateId":"NY","county":null,"population":559,"osmId":175846,"osmType":"relation","displayName":"Village of East Nassau, NY"}
+{"name":"Village of Castleton-on-Hudson","state":"New York","stateId":"NY","county":null,"population":1477,"osmId":175847,"osmType":"relation","displayName":"Village of Castleton-on-Hudson, NY"}
+{"name":"Village of Saddle Rock","state":"New York","stateId":"NY","county":null,"population":989,"osmId":175848,"osmType":"relation","displayName":"Village of Saddle Rock, NY"}
+{"name":"Village of Chatham","state":"New York","stateId":"NY","county":null,"population":1529,"osmId":175849,"osmType":"relation","displayName":"Village of Chatham, NY"}
+{"name":"Village of Philmont","state":"New York","stateId":"NY","county":null,"population":1377,"osmId":175850,"osmType":"relation","displayName":"Village of Philmont, NY"}
+{"name":"Village of Baldwinsville","state":"New York","stateId":"NY","county":null,"population":7898,"osmId":175851,"osmType":"relation","displayName":"Village of Baldwinsville, NY"}
+{"name":"Village of Camillus","state":"New York","stateId":"NY","county":null,"population":1222,"osmId":175852,"osmType":"relation","displayName":"Village of Camillus, NY"}
+{"name":"Village of Elbridge","state":"New York","stateId":"NY","county":null,"population":921,"osmId":175853,"osmType":"relation","displayName":"Village of Elbridge, NY"}
+{"name":"Village of Fabius","state":"New York","stateId":"NY","county":null,"population":309,"osmId":175854,"osmType":"relation","displayName":"Village of Fabius, NY"}
+{"name":"Village of Fayetteville","state":"New York","stateId":"NY","county":null,"population":4225,"osmId":175855,"osmType":"relation","displayName":"Village of Fayetteville, NY"}
+{"name":"Village of Jordan","state":"New York","stateId":"NY","county":null,"population":1192,"osmId":175856,"osmType":"relation","displayName":"Village of Jordan, NY"}
+{"name":"Village of Marcellus","state":"New York","stateId":"NY","county":null,"population":1745,"osmId":175857,"osmType":"relation","displayName":"Village of Marcellus, NY"}
+{"name":"Village of Minoa","state":"New York","stateId":"NY","county":null,"population":3657,"osmId":175859,"osmType":"relation","displayName":"Village of Minoa, NY"}
+{"name":"Village of North Syracuse","state":"New York","stateId":"NY","county":null,"population":6739,"osmId":175860,"osmType":"relation","displayName":"Village of North Syracuse, NY"}
+{"name":"Village of Skaneateles","state":"New York","stateId":"NY","county":null,"population":2533,"osmId":175861,"osmType":"relation","displayName":"Village of Skaneateles, NY"}
+{"name":"Village of Tully","state":"New York","stateId":"NY","county":null,"population":904,"osmId":175862,"osmType":"relation","displayName":"Village of Tully, NY"}
+{"name":"Village of Cold Brook","state":"New York","stateId":"NY","county":null,"population":250,"osmId":175863,"osmType":"relation","displayName":"Village of Cold Brook, NY"}
+{"name":"Village of Frankfort","state":"New York","stateId":"NY","county":null,"population":2320,"osmId":175864,"osmType":"relation","displayName":"Village of Frankfort, NY"}
+{"name":"Village of Ilion","state":"New York","stateId":"NY","county":null,"population":7646,"osmId":175865,"osmType":"relation","displayName":"Village of Ilion, NY"}
+{"name":"Village of Middleville","state":"New York","stateId":"NY","county":null,"population":407,"osmId":175867,"osmType":"relation","displayName":"Village of Middleville, NY"}
+{"name":"Village of Newport","state":"New York","stateId":"NY","county":null,"population":543,"osmId":175868,"osmType":"relation","displayName":"Village of Newport, NY"}
+{"name":"Village of Poland","state":"New York","stateId":"NY","county":null,"population":464,"osmId":175869,"osmType":"relation","displayName":"Village of Poland, NY"}
+{"name":"Village of West Winfield","state":"New York","stateId":"NY","county":null,"population":733,"osmId":175870,"osmType":"relation","displayName":"Village of West Winfield, NY"}
+{"name":"Waverly","state":"New York","stateId":"NY","county":null,"population":4373,"osmId":175871,"osmType":"relation","displayName":"Waverly, NY"}
+{"name":"Village of Spencer","state":"New York","stateId":"NY","county":null,"population":719,"osmId":175872,"osmType":"relation","displayName":"Village of Spencer, NY"}
+{"name":"Village of Nichols","state":"New York","stateId":"NY","county":null,"population":457,"osmId":175874,"osmType":"relation","displayName":"Village of Nichols, NY"}
+{"name":"Village of Newark Valley","state":"New York","stateId":"NY","county":null,"population":928,"osmId":175875,"osmType":"relation","displayName":"Village of Newark Valley, NY"}
+{"name":"Village of Candor","state":"New York","stateId":"NY","county":null,"population":786,"osmId":175876,"osmType":"relation","displayName":"Village of Candor, NY"}
+{"name":"Village of South Dayton","state":"New York","stateId":"NY","county":null,"population":541,"osmId":175877,"osmType":"relation","displayName":"Village of South Dayton, NY"}
+{"name":"City of Salamanca","state":"New York","stateId":"NY","county":null,"population":5929,"osmId":175879,"osmType":"relation","displayName":"City of Salamanca, NY"}
+{"name":"Village of Portville","state":"New York","stateId":"NY","county":null,"population":892,"osmId":175880,"osmType":"relation","displayName":"Village of Portville, NY"}
+{"name":"Village of Little Valley","state":"New York","stateId":"NY","county":null,"population":1058,"osmId":175882,"osmType":"relation","displayName":"Village of Little Valley, NY"}
+{"name":"Village of Ellicottville","state":"New York","stateId":"NY","county":null,"population":256,"osmId":175885,"osmType":"relation","displayName":"Village of Ellicottville, NY"}
+{"name":"Village of Delevan","state":"New York","stateId":"NY","county":null,"population":1043,"osmId":175886,"osmType":"relation","displayName":"Village of Delevan, NY"}
+{"name":"Cattaraugus","state":"New York","stateId":"NY","county":null,"population":960,"osmId":175887,"osmType":"relation","displayName":"Cattaraugus, NY"}
+{"name":"Village of Gowanda","state":"New York","stateId":"NY","county":null,"population":2513,"osmId":175888,"osmType":"relation","displayName":"Village of Gowanda, NY"}
+{"name":"Village of Whitehall","state":"New York","stateId":"NY","county":null,"population":2465,"osmId":175889,"osmType":"relation","displayName":"Village of Whitehall, NY"}
+{"name":"Village of Hudson Falls","state":"New York","stateId":"NY","county":null,"population":7427,"osmId":175891,"osmType":"relation","displayName":"Village of Hudson Falls, NY"}
+{"name":"Village of Greenwich","state":"New York","stateId":"NY","county":null,"population":1651,"osmId":175892,"osmType":"relation","displayName":"Village of Greenwich, NY"}
+{"name":"Village of Granville","state":"New York","stateId":"NY","county":null,"population":2404,"osmId":175893,"osmType":"relation","displayName":"Village of Granville, NY"}
+{"name":"Village of Fort Edward","state":"New York","stateId":"NY","county":null,"population":3108,"osmId":175895,"osmType":"relation","displayName":"Village of Fort Edward, NY"}
+{"name":"Village of Fort Ann","state":"New York","stateId":"NY","county":null,"population":460,"osmId":175896,"osmType":"relation","displayName":"Village of Fort Ann, NY"}
+{"name":"Village of Cambridge","state":"New York","stateId":"NY","county":null,"population":1788,"osmId":175903,"osmType":"relation","displayName":"Village of Cambridge, NY"}
+{"name":"Village of Argyle","state":"New York","stateId":"NY","county":null,"population":289,"osmId":175904,"osmType":"relation","displayName":"Village of Argyle, NY"}
+{"name":"Village of Lisle","state":"New York","stateId":"NY","county":null,"population":348,"osmId":175906,"osmType":"relation","displayName":"Village of Lisle, NY"}
+{"name":"Village of Whitney Point","state":"New York","stateId":"NY","county":null,"population":960,"osmId":175907,"osmType":"relation","displayName":"Village of Whitney Point, NY"}
+{"name":"Village of Windsor","state":"New York","stateId":"NY","county":null,"population":907,"osmId":175908,"osmType":"relation","displayName":"Village of Windsor, NY"}
+{"name":"Village of Westfield","state":"New York","stateId":"NY","county":null,"population":2910,"osmId":175909,"osmType":"relation","displayName":"Village of Westfield, NY"}
+{"name":"Village of Sinclairville","state":"New York","stateId":"NY","county":null,"population":579,"osmId":175910,"osmType":"relation","displayName":"Village of Sinclairville, NY"}
+{"name":"Village of Silver Creek","state":"New York","stateId":"NY","county":null,"population":2617,"osmId":175911,"osmType":"relation","displayName":"Village of Silver Creek, NY"}
+{"name":"Village of Sherman","state":"New York","stateId":"NY","county":null,"population":649,"osmId":175912,"osmType":"relation","displayName":"Village of Sherman, NY"}
+{"name":"Village of Panama","state":"New York","stateId":"NY","county":null,"population":475,"osmId":175913,"osmType":"relation","displayName":"Village of Panama, NY"}
+{"name":"Village of Mayville","state":"New York","stateId":"NY","county":null,"population":1442,"osmId":175914,"osmType":"relation","displayName":"Village of Mayville, NY"}
+{"name":"Forestville","state":"New York","stateId":"NY","county":null,"population":704,"osmId":175915,"osmType":"relation","displayName":"Forestville, NY"}
+{"name":"Cherry Creek","state":"New York","stateId":"NY","county":null,"population":409,"osmId":175916,"osmType":"relation","displayName":"Cherry Creek, NY"}
+{"name":"Village of Cassadaga","state":"New York","stateId":"NY","county":null,"population":573,"osmId":175917,"osmType":"relation","displayName":"Village of Cassadaga, NY"}
+{"name":"Village of Brocton","state":"New York","stateId":"NY","county":null,"population":1286,"osmId":175919,"osmType":"relation","displayName":"Village of Brocton, NY"}
+{"name":"Village of Bemus Point","state":"New York","stateId":"NY","county":null,"population":306,"osmId":175920,"osmType":"relation","displayName":"Village of Bemus Point, NY"}
+{"name":"Village of Elmira Heights","state":"New York","stateId":"NY","county":null,"population":3916,"osmId":175921,"osmType":"relation","displayName":"Village of Elmira Heights, NY"}
+{"name":"Village of Millport","state":"New York","stateId":"NY","county":null,"population":301,"osmId":175922,"osmType":"relation","displayName":"Village of Millport, NY"}
+{"name":"Village of Wellsburg","state":"New York","stateId":"NY","county":null,"population":490,"osmId":175925,"osmType":"relation","displayName":"Village of Wellsburg, NY"}
+{"name":"Village of Castorland","state":"New York","stateId":"NY","county":null,"population":334,"osmId":175926,"osmType":"relation","displayName":"Village of Castorland, NY"}
+{"name":"Village of Constableville","state":"New York","stateId":"NY","county":null,"population":293,"osmId":175927,"osmType":"relation","displayName":"Village of Constableville, NY"}
+{"name":"Village of Copenhagen","state":"New York","stateId":"NY","county":null,"population":631,"osmId":175928,"osmType":"relation","displayName":"Village of Copenhagen, NY"}
+{"name":"Village of Croghan","state":"New York","stateId":"NY","county":null,"population":639,"osmId":175929,"osmType":"relation","displayName":"Village of Croghan, NY"}
+{"name":"Harrisville","state":"New York","stateId":"NY","county":null,"population":612,"osmId":175930,"osmType":"relation","displayName":"Harrisville, NY"}
+{"name":"Village of Lowville","state":"New York","stateId":"NY","county":null,"population":3272,"osmId":175932,"osmType":"relation","displayName":"Village of Lowville, NY"}
+{"name":"Village of Lyons Falls","state":"New York","stateId":"NY","county":null,"population":570,"osmId":175933,"osmType":"relation","displayName":"Village of Lyons Falls, NY"}
+{"name":"Village of Port Leyden","state":"New York","stateId":"NY","county":null,"population":554,"osmId":175934,"osmType":"relation","displayName":"Village of Port Leyden, NY"}
+{"name":"Village of Turin","state":"New York","stateId":"NY","county":null,"population":197,"osmId":175935,"osmType":"relation","displayName":"Village of Turin, NY"}
+{"name":"City of Beacon","state":"New York","stateId":"NY","county":null,"population":13769,"osmId":175936,"osmType":"relation","displayName":"City of Beacon, NY"}
+{"name":"Village of Fishkill","state":"New York","stateId":"NY","county":null,"population":2166,"osmId":175937,"osmType":"relation","displayName":"Village of Fishkill, NY"}
+{"name":"Village of Millbrook","state":"New York","stateId":"NY","county":null,"population":1455,"osmId":175938,"osmType":"relation","displayName":"Village of Millbrook, NY"}
+{"name":"Village of Pawling","state":"New York","stateId":"NY","county":null,"population":1995,"osmId":175940,"osmType":"relation","displayName":"Village of Pawling, NY"}
+{"name":"Village of Red Hook","state":"New York","stateId":"NY","county":null,"population":1975,"osmId":175941,"osmType":"relation","displayName":"Village of Red Hook, NY"}
+{"name":"Village of Rhinebeck","state":"New York","stateId":"NY","county":null,"population":2697,"osmId":175942,"osmType":"relation","displayName":"Village of Rhinebeck, NY"}
+{"name":"Village of Tivoli","state":"New York","stateId":"NY","county":null,"population":1012,"osmId":175945,"osmType":"relation","displayName":"Village of Tivoli, NY"}
+{"name":"Village of Wappingers Falls","state":"New York","stateId":"NY","county":null,"population":6103,"osmId":175946,"osmType":"relation","displayName":"Village of Wappingers Falls, NY"}
+{"name":"Village of Canastota","state":"New York","stateId":"NY","county":null,"population":4556,"osmId":175947,"osmType":"relation","displayName":"Village of Canastota, NY"}
+{"name":"Village of Cazenovia","state":"New York","stateId":"NY","county":null,"population":2767,"osmId":175948,"osmType":"relation","displayName":"Village of Cazenovia, NY"}
+{"name":"Village of Chittenango","state":"New York","stateId":"NY","county":null,"population":4896,"osmId":175950,"osmType":"relation","displayName":"Village of Chittenango, NY"}
+{"name":"Village of DeRuyter","state":"New York","stateId":"NY","county":null,"population":408,"osmId":175951,"osmType":"relation","displayName":"Village of DeRuyter, NY"}
+{"name":"Village of Hamilton","state":"New York","stateId":"NY","county":null,"population":4107,"osmId":175952,"osmType":"relation","displayName":"Village of Hamilton, NY"}
+{"name":"Village of Madison","state":"New York","stateId":"NY","county":null,"population":311,"osmId":175953,"osmType":"relation","displayName":"Village of Madison, NY"}
+{"name":"Village of Morrisville","state":"New York","stateId":"NY","county":null,"population":1633,"osmId":175954,"osmType":"relation","displayName":"Village of Morrisville, NY"}
+{"name":"Village of Munnsville","state":"New York","stateId":"NY","county":null,"population":454,"osmId":175955,"osmType":"relation","displayName":"Village of Munnsville, NY"}
+{"name":"Village of Almond","state":"New York","stateId":"NY","county":null,"population":415,"osmId":175956,"osmType":"relation","displayName":"Village of Almond, NY"}
+{"name":"Village of Alfred","state":"New York","stateId":"NY","county":null,"population":4026,"osmId":175957,"osmType":"relation","displayName":"Village of Alfred, NY"}
+{"name":"Village of Andover","state":"New York","stateId":"NY","county":null,"population":890,"osmId":175958,"osmType":"relation","displayName":"Village of Andover, NY"}
+{"name":"Village of Angelica","state":"New York","stateId":"NY","county":null,"population":723,"osmId":175959,"osmType":"relation","displayName":"Village of Angelica, NY"}
+{"name":"Village of Belmont","state":"New York","stateId":"NY","county":null,"population":856,"osmId":175960,"osmType":"relation","displayName":"Village of Belmont, NY"}
+{"name":"Village of Canaseraga","state":"New York","stateId":"NY","county":null,"population":460,"osmId":175961,"osmType":"relation","displayName":"Village of Canaseraga, NY"}
+{"name":"Village of Cuba","state":"New York","stateId":"NY","county":null,"population":1517,"osmId":175962,"osmType":"relation","displayName":"Village of Cuba, NY"}
+{"name":"Village of Wellsville","state":"New York","stateId":"NY","county":null,"population":4587,"osmId":175963,"osmType":"relation","displayName":"Village of Wellsville, NY"}
+{"name":"Village of Waddington","state":"New York","stateId":"NY","county":null,"population":937,"osmId":175964,"osmType":"relation","displayName":"Village of Waddington, NY"}
+{"name":"Village of Richville","state":"New York","stateId":"NY","county":null,"population":234,"osmId":175965,"osmType":"relation","displayName":"Village of Richville, NY"}
+{"name":"Village of Rensselaer Falls","state":"New York","stateId":"NY","county":null,"population":361,"osmId":175966,"osmType":"relation","displayName":"Village of Rensselaer Falls, NY"}
+{"name":"Village of Potsdam","state":"New York","stateId":"NY","county":null,"population":8312,"osmId":175967,"osmType":"relation","displayName":"Village of Potsdam, NY"}
+{"name":"City of Ogdensburg","state":"New York","stateId":"NY","county":null,"population":10064,"osmId":175968,"osmType":"relation","displayName":"City of Ogdensburg, NY"}
+{"name":"Village of Norwood","state":"New York","stateId":"NY","county":null,"population":1552,"osmId":175969,"osmType":"relation","displayName":"Village of Norwood, NY"}
+{"name":"Village of Massena","state":"New York","stateId":"NY","county":null,"population":10151,"osmId":175971,"osmType":"relation","displayName":"Village of Massena, NY"}
+{"name":"Village of Heuvelton","state":"New York","stateId":"NY","county":null,"population":722,"osmId":175972,"osmType":"relation","displayName":"Village of Heuvelton, NY"}
+{"name":"Hermon","state":"New York","stateId":"NY","county":null,"population":436,"osmId":175973,"osmType":"relation","displayName":"Hermon, NY"}
+{"name":"Village of Hammond","state":"New York","stateId":"NY","county":null,"population":273,"osmId":175974,"osmType":"relation","displayName":"Village of Hammond, NY"}
+{"name":"Village of Gouverneur","state":"New York","stateId":"NY","county":null,"population":3526,"osmId":175975,"osmType":"relation","displayName":"Village of Gouverneur, NY"}
+{"name":"Village of Canton","state":"New York","stateId":"NY","county":null,"population":7155,"osmId":175977,"osmType":"relation","displayName":"Village of Canton, NY"}
+{"name":"Village of Stillwater","state":"New York","stateId":"NY","county":null,"population":1754,"osmId":175978,"osmType":"relation","displayName":"Village of Stillwater, NY"}
+{"name":"Village of Round Lake","state":"New York","stateId":"NY","county":null,"population":828,"osmId":175979,"osmType":"relation","displayName":"Village of Round Lake, NY"}
+{"name":"Village of Galway","state":"New York","stateId":"NY","county":null,"population":165,"osmId":175981,"osmType":"relation","displayName":"Village of Galway, NY"}
+{"name":"Village of Corinth","state":"New York","stateId":"NY","county":null,"population":2562,"osmId":175982,"osmType":"relation","displayName":"Village of Corinth, NY"}
+{"name":"Village of Sharon Springs","state":"New York","stateId":"NY","county":null,"population":483,"osmId":175983,"osmType":"relation","displayName":"Village of Sharon Springs, NY"}
+{"name":"Village of Schoharie","state":"New York","stateId":"NY","county":null,"population":916,"osmId":175984,"osmType":"relation","displayName":"Village of Schoharie, NY"}
+{"name":"Village of Richmondville","state":"New York","stateId":"NY","county":null,"population":858,"osmId":175985,"osmType":"relation","displayName":"Village of Richmondville, NY"}
+{"name":"Village of Middleburgh","state":"New York","stateId":"NY","county":null,"population":1131,"osmId":175986,"osmType":"relation","displayName":"Village of Middleburgh, NY"}
+{"name":"Village of Esperance","state":"New York","stateId":"NY","county":null,"population":346,"osmId":175987,"osmType":"relation","displayName":"Village of Esperance, NY"}
+{"name":"Village of Cobleskill","state":"New York","stateId":"NY","county":null,"population":4173,"osmId":175988,"osmType":"relation","displayName":"Village of Cobleskill, NY"}
+{"name":"Village of Trumansburg","state":"New York","stateId":"NY","county":null,"population":1714,"osmId":175989,"osmType":"relation","displayName":"Village of Trumansburg, NY"}
+{"name":"Village of Groton","state":"New York","stateId":"NY","county":null,"population":2145,"osmId":175990,"osmType":"relation","displayName":"Village of Groton, NY"}
+{"name":"Village of Freeville","state":"New York","stateId":"NY","county":null,"population":498,"osmId":175991,"osmType":"relation","displayName":"Village of Freeville, NY"}
+{"name":"Village of Dryden","state":"New York","stateId":"NY","county":null,"population":1887,"osmId":175992,"osmType":"relation","displayName":"Village of Dryden, NY"}
+{"name":"City of Watertown","state":"New York","stateId":"NY","county":null,"population":24685,"osmId":175993,"osmType":"relation","displayName":"City of Watertown, NY"}
+{"name":"Village of Theresa","state":"New York","stateId":"NY","county":null,"population":752,"osmId":175994,"osmType":"relation","displayName":"Village of Theresa, NY"}
+{"name":"Village of Sackets Harbor","state":"New York","stateId":"NY","county":null,"population":1351,"osmId":175995,"osmType":"relation","displayName":"Village of Sackets Harbor, NY"}
+{"name":"Village of Philadelphia","state":"New York","stateId":"NY","county":null,"population":1098,"osmId":175996,"osmType":"relation","displayName":"Village of Philadelphia, NY"}
+{"name":"Village of Mannsville","state":"New York","stateId":"NY","county":null,"population":297,"osmId":175997,"osmType":"relation","displayName":"Village of Mannsville, NY"}
+{"name":"Village of Evans Mills","state":"New York","stateId":"NY","county":null,"population":678,"osmId":175999,"osmType":"relation","displayName":"Village of Evans Mills, NY"}
+{"name":"Village of Ellisburg","state":"New York","stateId":"NY","county":null,"population":186,"osmId":176000,"osmType":"relation","displayName":"Village of Ellisburg, NY"}
+{"name":"Village of Dexter","state":"New York","stateId":"NY","county":null,"population":1004,"osmId":176001,"osmType":"relation","displayName":"Village of Dexter, NY"}
+{"name":"Village of Clayton","state":"New York","stateId":"NY","county":null,"population":1705,"osmId":176002,"osmType":"relation","displayName":"Village of Clayton, NY"}
+{"name":"Village of Chaumont","state":"New York","stateId":"NY","county":null,"population":615,"osmId":176003,"osmType":"relation","displayName":"Village of Chaumont, NY"}
+{"name":"Village of Cape Vincent","state":"New York","stateId":"NY","county":null,"population":699,"osmId":176004,"osmType":"relation","displayName":"Village of Cape Vincent, NY"}
+{"name":"Village of Antwerp","state":"New York","stateId":"NY","county":null,"population":506,"osmId":176005,"osmType":"relation","displayName":"Village of Antwerp, NY"}
+{"name":"Village of Alexandria Bay","state":"New York","stateId":"NY","county":null,"population":924,"osmId":176006,"osmType":"relation","displayName":"Village of Alexandria Bay, NY"}
+{"name":"Village of Adams","state":"New York","stateId":"NY","county":null,"population":1633,"osmId":176007,"osmType":"relation","displayName":"Village of Adams, NY"}
+{"name":"Village of Wurtsboro","state":"New York","stateId":"NY","county":null,"population":1124,"osmId":176008,"osmType":"relation","displayName":"Village of Wurtsboro, NY"}
+{"name":"Village of Woodridge","state":"New York","stateId":"NY","county":null,"population":747,"osmId":176009,"osmType":"relation","displayName":"Village of Woodridge, NY"}
+{"name":"Village of Monticello","state":"New York","stateId":"NY","county":null,"population":7173,"osmId":176010,"osmType":"relation","displayName":"Village of Monticello, NY"}
+{"name":"Village of Liberty","state":"New York","stateId":"NY","county":null,"population":4700,"osmId":176011,"osmType":"relation","displayName":"Village of Liberty, NY"}
+{"name":"Village of Jeffersonville","state":"New York","stateId":"NY","county":null,"population":368,"osmId":176012,"osmType":"relation","displayName":"Village of Jeffersonville, NY"}
+{"name":"Village of Bloomingburg","state":"New York","stateId":"NY","county":null,"population":1032,"osmId":176013,"osmType":"relation","displayName":"Village of Bloomingburg, NY"}
+{"name":"Village of Homer","state":"New York","stateId":"NY","county":null,"population":3210,"osmId":176014,"osmType":"relation","displayName":"Village of Homer, NY"}
+{"name":"Village of McGraw","state":"New York","stateId":"NY","county":null,"population":972,"osmId":176015,"osmType":"relation","displayName":"Village of McGraw, NY"}
+{"name":"Village of Marathon","state":"New York","stateId":"NY","county":null,"population":892,"osmId":176016,"osmType":"relation","displayName":"Village of Marathon, NY"}
+{"name":"Village of Central Square","state":"New York","stateId":"NY","county":null,"population":1862,"osmId":176018,"osmType":"relation","displayName":"Village of Central Square, NY"}
+{"name":"Village of Cleveland","state":"New York","stateId":"NY","county":null,"population":732,"osmId":176019,"osmType":"relation","displayName":"Village of Cleveland, NY"}
+{"name":"City of Fulton","state":"New York","stateId":"NY","county":null,"population":11389,"osmId":176020,"osmType":"relation","displayName":"City of Fulton, NY"}
+{"name":"Village of Hannibal","state":"New York","stateId":"NY","county":null,"population":535,"osmId":176021,"osmType":"relation","displayName":"Village of Hannibal, NY"}
+{"name":"Village of Mexico","state":"New York","stateId":"NY","county":null,"population":1531,"osmId":176022,"osmType":"relation","displayName":"Village of Mexico, NY"}
+{"name":"Village of Parish","state":"New York","stateId":"NY","county":null,"population":447,"osmId":176023,"osmType":"relation","displayName":"Village of Parish, NY"}
+{"name":"Village of Phoenix","state":"New York","stateId":"NY","county":null,"population":2226,"osmId":176024,"osmType":"relation","displayName":"Village of Phoenix, NY"}
+{"name":"Village of Pulaski","state":"New York","stateId":"NY","county":null,"population":2186,"osmId":176025,"osmType":"relation","displayName":"Village of Pulaski, NY"}
+{"name":"Village of Richfield Springs","state":"New York","stateId":"NY","county":null,"population":1050,"osmId":176026,"osmType":"relation","displayName":"Village of Richfield Springs, NY"}
+{"name":"Village of Cherry Valley","state":"New York","stateId":"NY","county":null,"population":467,"osmId":176027,"osmType":"relation","displayName":"Village of Cherry Valley, NY"}
+{"name":"Village of Cooperstown","state":"New York","stateId":"NY","county":null,"population":1794,"osmId":176028,"osmType":"relation","displayName":"Village of Cooperstown, NY"}
+{"name":"Village of Gilbertsville","state":"New York","stateId":"NY","county":null,"population":308,"osmId":176029,"osmType":"relation","displayName":"Village of Gilbertsville, NY"}
+{"name":"Village of Laurens","state":"New York","stateId":"NY","county":null,"population":185,"osmId":176030,"osmType":"relation","displayName":"Village of Laurens, NY"}
+{"name":"Village of Milford","state":"New York","stateId":"NY","county":null,"population":367,"osmId":176031,"osmType":"relation","displayName":"Village of Milford, NY"}
+{"name":"Village of Morris","state":"New York","stateId":"NY","county":null,"population":486,"osmId":176032,"osmType":"relation","displayName":"Village of Morris, NY"}
+{"name":"Village of Otego","state":"New York","stateId":"NY","county":null,"population":875,"osmId":176033,"osmType":"relation","displayName":"Village of Otego, NY"}
+{"name":"Village of Unadilla","state":"New York","stateId":"NY","county":null,"population":1065,"osmId":176034,"osmType":"relation","displayName":"Village of Unadilla, NY"}
+{"name":"Village of Brewster","state":"New York","stateId":"NY","county":null,"population":2508,"osmId":176035,"osmType":"relation","displayName":"Village of Brewster, NY"}
+{"name":"Village of New Paltz","state":"New York","stateId":"NY","county":null,"population":7324,"osmId":176036,"osmType":"relation","displayName":"Village of New Paltz, NY"}
+{"name":"Village of Akron","state":"New York","stateId":"NY","county":null,"population":2888,"osmId":176037,"osmType":"relation","displayName":"Village of Akron, NY"}
+{"name":"Village of Alden","state":"New York","stateId":"NY","county":null,"population":2604,"osmId":176038,"osmType":"relation","displayName":"Village of Alden, NY"}
+{"name":"Village of Angola","state":"New York","stateId":"NY","county":null,"population":2046,"osmId":176039,"osmType":"relation","displayName":"Village of Angola, NY"}
+{"name":"East Aurora","state":"New York","stateId":"NY","county":null,"population":5998,"osmId":176040,"osmType":"relation","displayName":"East Aurora, NY"}
+{"name":"Village of Farnham","state":"New York","stateId":"NY","county":null,"population":381,"osmId":176041,"osmType":"relation","displayName":"Village of Farnham, NY"}
+{"name":"Village of Hamburg","state":"New York","stateId":"NY","county":null,"population":9696,"osmId":176042,"osmType":"relation","displayName":"Village of Hamburg, NY"}
+{"name":"Village of North Collins","state":"New York","stateId":"NY","county":null,"population":1247,"osmId":176043,"osmType":"relation","displayName":"Village of North Collins, NY"}
+{"name":"Village of Orchard Park","state":"New York","stateId":"NY","county":null,"population":3108,"osmId":176044,"osmType":"relation","displayName":"Village of Orchard Park, NY"}
+{"name":"Village of Springville","state":"New York","stateId":"NY","county":null,"population":4225,"osmId":176045,"osmType":"relation","displayName":"Village of Springville, NY"}
+{"name":"Village of Aurora","state":"New York","stateId":"NY","county":null,"population":607,"osmId":176047,"osmType":"relation","displayName":"Village of Aurora, NY"}
+{"name":"Village of Cato","state":"New York","stateId":"NY","county":null,"population":517,"osmId":176048,"osmType":"relation","displayName":"Village of Cato, NY"}
+{"name":"Village of Cayuga","state":"New York","stateId":"NY","county":null,"population":472,"osmId":176049,"osmType":"relation","displayName":"Village of Cayuga, NY"}
+{"name":"Village of Fair Haven","state":"New York","stateId":"NY","county":null,"population":760,"osmId":176050,"osmType":"relation","displayName":"Village of Fair Haven, NY"}
+{"name":"Village of Meridian","state":"New York","stateId":"NY","county":null,"population":287,"osmId":176051,"osmType":"relation","displayName":"Village of Meridian, NY"}
+{"name":"Village of Moravia","state":"New York","stateId":"NY","county":null,"population":1224,"osmId":176052,"osmType":"relation","displayName":"Village of Moravia, NY"}
+{"name":"Village of Port Byron","state":"New York","stateId":"NY","county":null,"population":1101,"osmId":176053,"osmType":"relation","displayName":"Village of Port Byron, NY"}
+{"name":"Village of Union Springs","state":"New York","stateId":"NY","county":null,"population":1075,"osmId":176054,"osmType":"relation","displayName":"Village of Union Springs, NY"}
+{"name":"Village of Weedsport","state":"New York","stateId":"NY","county":null,"population":1788,"osmId":176055,"osmType":"relation","displayName":"Village of Weedsport, NY"}
+{"name":"Village of Bloomfield","state":"New York","stateId":"NY","county":null,"population":1277,"osmId":176056,"osmType":"relation","displayName":"Village of Bloomfield, NY"}
+{"name":"City of Canandaigua","state":"New York","stateId":"NY","county":null,"population":10576,"osmId":176057,"osmType":"relation","displayName":"City of Canandaigua, NY"}
+{"name":"Village of Clifton Springs","state":"New York","stateId":"NY","county":null,"population":2209,"osmId":176058,"osmType":"relation","displayName":"Village of Clifton Springs, NY"}
+{"name":"City of Geneva","state":"New York","stateId":"NY","county":null,"population":12812,"osmId":176059,"osmType":"relation","displayName":"City of Geneva, NY"}
+{"name":"Village of Naples","state":"New York","stateId":"NY","county":null,"population":931,"osmId":176060,"osmType":"relation","displayName":"Village of Naples, NY"}
+{"name":"Village of Phelps","state":"New York","stateId":"NY","county":null,"population":1851,"osmId":176061,"osmType":"relation","displayName":"Village of Phelps, NY"}
+{"name":"Village of Victor","state":"New York","stateId":"NY","county":null,"population":2744,"osmId":176062,"osmType":"relation","displayName":"Village of Victor, NY"}
+{"name":"Village of Churchville","state":"New York","stateId":"NY","county":null,"population":2091,"osmId":176063,"osmType":"relation","displayName":"Village of Churchville, NY"}
+{"name":"Village of Fairport","state":"New York","stateId":"NY","county":null,"population":5501,"osmId":176065,"osmType":"relation","displayName":"Village of Fairport, NY"}
+{"name":"Village of Hilton","state":"New York","stateId":"NY","county":null,"population":6027,"osmId":176066,"osmType":"relation","displayName":"Village of Hilton, NY"}
+{"name":"Village of Honeoye Falls","state":"New York","stateId":"NY","county":null,"population":2706,"osmId":176067,"osmType":"relation","displayName":"Village of Honeoye Falls, NY"}
+{"name":"Village of Pittsford","state":"New York","stateId":"NY","county":null,"population":1419,"osmId":176068,"osmType":"relation","displayName":"Village of Pittsford, NY"}
+{"name":"City of Rochester","state":"New York","stateId":"NY","county":null,"population":211328,"osmId":176069,"osmType":"relation","displayName":"City of Rochester, NY"}
+{"name":"Village of Scottsville","state":"New York","stateId":"NY","county":null,"population":2009,"osmId":176070,"osmType":"relation","displayName":"Village of Scottsville, NY"}
+{"name":"Village of Spencerport","state":"New York","stateId":"NY","county":null,"population":3685,"osmId":176071,"osmType":"relation","displayName":"Village of Spencerport, NY"}
+{"name":"Village of Chester","state":"New York","stateId":"NY","county":null,"population":3993,"osmId":176073,"osmType":"relation","displayName":"Village of Chester, NY"}
+{"name":"Village of Florida","state":"New York","stateId":"NY","county":null,"population":2888,"osmId":176074,"osmType":"relation","displayName":"Village of Florida, NY"}
+{"name":"Village of Goshen","state":"New York","stateId":"NY","county":null,"population":5777,"osmId":176075,"osmType":"relation","displayName":"Village of Goshen, NY"}
+{"name":"Village of Greenwood Lake","state":"New York","stateId":"NY","county":null,"population":2994,"osmId":176076,"osmType":"relation","displayName":"Village of Greenwood Lake, NY"}
+{"name":"Village of Maybrook","state":"New York","stateId":"NY","county":null,"population":3150,"osmId":176077,"osmType":"relation","displayName":"Village of Maybrook, NY"}
+{"name":"Village of Montgomery","state":"New York","stateId":"NY","county":null,"population":3834,"osmId":176078,"osmType":"relation","displayName":"Village of Montgomery, NY"}
+{"name":"Village of Otisville","state":"New York","stateId":"NY","county":null,"population":969,"osmId":176079,"osmType":"relation","displayName":"Village of Otisville, NY"}
+{"name":"City of Port Jervis","state":"New York","stateId":"NY","county":null,"population":8775,"osmId":176081,"osmType":"relation","displayName":"City of Port Jervis, NY"}
+{"name":"Village of Tuxedo Park","state":"New York","stateId":"NY","county":null,"population":645,"osmId":176082,"osmType":"relation","displayName":"Village of Tuxedo Park, NY"}
+{"name":"Village of Unionville","state":"New York","stateId":"NY","county":null,"population":592,"osmId":176083,"osmType":"relation","displayName":"Village of Unionville, NY"}
+{"name":"Village of Walden","state":"New York","stateId":"NY","county":null,"population":6818,"osmId":176084,"osmType":"relation","displayName":"Village of Walden, NY"}
+{"name":"Village of Warwick","state":"New York","stateId":"NY","county":null,"population":6652,"osmId":176086,"osmType":"relation","displayName":"Village of Warwick, NY"}
+{"name":"Village of Interlaken","state":"New York","stateId":"NY","county":null,"population":595,"osmId":176087,"osmType":"relation","displayName":"Village of Interlaken, NY"}
+{"name":"Village of Lodi","state":"New York","stateId":"NY","county":null,"population":254,"osmId":176088,"osmType":"relation","displayName":"Village of Lodi, NY"}
+{"name":"Village of Ovid","state":"New York","stateId":"NY","county":null,"population":534,"osmId":176089,"osmType":"relation","displayName":"Village of Ovid, NY"}
+{"name":"Village of Waterloo","state":"New York","stateId":"NY","county":null,"population":4810,"osmId":176091,"osmType":"relation","displayName":"Village of Waterloo, NY"}
+{"name":"Village of Clyde","state":"New York","stateId":"NY","county":null,"population":2171,"osmId":176092,"osmType":"relation","displayName":"Village of Clyde, NY"}
+{"name":"Village of Newark","state":"New York","stateId":"NY","county":null,"population":9017,"osmId":176096,"osmType":"relation","displayName":"Village of Newark, NY"}
+{"name":"Village of Palmyra","state":"New York","stateId":"NY","county":null,"population":3305,"osmId":176097,"osmType":"relation","displayName":"Village of Palmyra, NY"}
+{"name":"Village of Red Creek","state":"New York","stateId":"NY","county":null,"population":495,"osmId":176098,"osmType":"relation","displayName":"Village of Red Creek, NY"}
+{"name":"Village of Sodus","state":"New York","stateId":"NY","county":null,"population":1667,"osmId":176100,"osmType":"relation","displayName":"Village of Sodus, NY"}
+{"name":"Village of Sodus Point","state":"New York","stateId":"NY","county":null,"population":822,"osmId":176101,"osmType":"relation","displayName":"Village of Sodus Point, NY"}
+{"name":"Village of Wolcott","state":"New York","stateId":"NY","county":null,"population":1556,"osmId":176102,"osmType":"relation","displayName":"Village of Wolcott, NY"}
+{"name":"Village of Avon","state":"New York","stateId":"NY","county":null,"population":3399,"osmId":176103,"osmType":"relation","displayName":"Village of Avon, NY"}
+{"name":"Village of Caledonia","state":"New York","stateId":"NY","county":null,"population":2080,"osmId":176104,"osmType":"relation","displayName":"Village of Caledonia, NY"}
+{"name":"Village of Dansville","state":"New York","stateId":"NY","county":null,"population":4433,"osmId":176106,"osmType":"relation","displayName":"Village of Dansville, NY"}
+{"name":"Village of Geneseo","state":"New York","stateId":"NY","county":null,"population":7574,"osmId":176107,"osmType":"relation","displayName":"Village of Geneseo, NY"}
+{"name":"Village of Leicester","state":"New York","stateId":"NY","county":null,"population":440,"osmId":176108,"osmType":"relation","displayName":"Village of Leicester, NY"}
+{"name":"Village of Lima","state":"New York","stateId":"NY","county":null,"population":2094,"osmId":176109,"osmType":"relation","displayName":"Village of Lima, NY"}
+{"name":"Village of Livonia","state":"New York","stateId":"NY","county":null,"population":1472,"osmId":176110,"osmType":"relation","displayName":"Village of Livonia, NY"}
+{"name":"Village of Mount Morris","state":"New York","stateId":"NY","county":null,"population":2898,"osmId":176111,"osmType":"relation","displayName":"Village of Mount Morris, NY"}
+{"name":"Village of Nunda","state":"New York","stateId":"NY","county":null,"population":1169,"osmId":176112,"osmType":"relation","displayName":"Village of Nunda, NY"}
+{"name":"Village of Walton","state":"New York","stateId":"NY","county":null,"population":2885,"osmId":176113,"osmType":"relation","displayName":"Village of Walton, NY"}
+{"name":"Village of Stamford","state":"New York","stateId":"NY","county":null,"population":1040,"osmId":176114,"osmType":"relation","displayName":"Village of Stamford, NY"}
+{"name":"Village of Sidney","state":"New York","stateId":"NY","county":null,"population":3697,"osmId":176116,"osmType":"relation","displayName":"Village of Sidney, NY"}
+{"name":"Village of Margaretville","state":"New York","stateId":"NY","county":null,"population":514,"osmId":176117,"osmType":"relation","displayName":"Village of Margaretville, NY"}
+{"name":"Village of Hobart","state":"New York","stateId":"NY","county":null,"population":351,"osmId":176119,"osmType":"relation","displayName":"Village of Hobart, NY"}
+{"name":"Village of Hancock","state":"New York","stateId":"NY","county":null,"population":908,"osmId":176120,"osmType":"relation","displayName":"Village of Hancock, NY"}
+{"name":"Village of Franklin","state":"New York","stateId":"NY","county":null,"population":258,"osmId":176121,"osmType":"relation","displayName":"Village of Franklin, NY"}
+{"name":"Village of Fleischmanns","state":"New York","stateId":"NY","county":null,"population":210,"osmId":176122,"osmType":"relation","displayName":"Village of Fleischmanns, NY"}
+{"name":"Village of Deposit","state":"New York","stateId":"NY","county":null,"population":1387,"osmId":176125,"osmType":"relation","displayName":"Village of Deposit, NY"}
+{"name":"Village of Delhi","state":"New York","stateId":"NY","county":null,"population":2721,"osmId":176126,"osmType":"relation","displayName":"Village of Delhi, NY"}
+{"name":"Village of Barker","state":"New York","stateId":"NY","county":null,"population":575,"osmId":176127,"osmType":"relation","displayName":"Village of Barker, NY"}
+{"name":"Village of Lewiston","state":"New York","stateId":"NY","county":null,"population":2531,"osmId":176128,"osmType":"relation","displayName":"Village of Lewiston, NY"}
+{"name":"Village of Middleport","state":"New York","stateId":"NY","county":null,"population":1729,"osmId":176130,"osmType":"relation","displayName":"Village of Middleport, NY"}
+{"name":"City of Niagara Falls","state":"New York","stateId":"NY","county":null,"population":48671,"osmId":176131,"osmType":"relation","displayName":"City of Niagara Falls, NY"}
+{"name":"Village of Wilson","state":"New York","stateId":"NY","county":null,"population":1247,"osmId":176132,"osmType":"relation","displayName":"Village of Wilson, NY"}
+{"name":"Village of Youngstown","state":"New York","stateId":"NY","county":null,"population":1859,"osmId":176135,"osmType":"relation","displayName":"Village of Youngstown, NY"}
+{"name":"Village of Boonville","state":"New York","stateId":"NY","county":null,"population":2020,"osmId":176137,"osmType":"relation","displayName":"Village of Boonville, NY"}
+{"name":"Village of Camden","state":"New York","stateId":"NY","county":null,"population":2196,"osmId":176143,"osmType":"relation","displayName":"Village of Camden, NY"}
+{"name":"Village of Clayville","state":"New York","stateId":"NY","county":null,"population":339,"osmId":176144,"osmType":"relation","displayName":"Village of Clayville, NY"}
+{"name":"Village of Clinton","state":"New York","stateId":"NY","county":null,"population":1683,"osmId":176145,"osmType":"relation","displayName":"Village of Clinton, NY"}
+{"name":"Village of Holland Patent","state":"New York","stateId":"NY","county":null,"population":416,"osmId":176146,"osmType":"relation","displayName":"Village of Holland Patent, NY"}
+{"name":"Village of Oriskany","state":"New York","stateId":"NY","county":null,"population":1315,"osmId":176147,"osmType":"relation","displayName":"Village of Oriskany, NY"}
+{"name":"Village of Oriskany Falls","state":"New York","stateId":"NY","county":null,"population":658,"osmId":176148,"osmType":"relation","displayName":"Village of Oriskany Falls, NY"}
+{"name":"Village of Remsen","state":"New York","stateId":"NY","county":null,"population":431,"osmId":176150,"osmType":"relation","displayName":"Village of Remsen, NY"}
+{"name":"Village of Sylvan Beach","state":"New York","stateId":"NY","county":null,"population":890,"osmId":176152,"osmType":"relation","displayName":"Village of Sylvan Beach, NY"}
+{"name":"Village of Vernon","state":"New York","stateId":"NY","county":null,"population":1177,"osmId":176153,"osmType":"relation","displayName":"Village of Vernon, NY"}
+{"name":"Village of Waterville","state":"New York","stateId":"NY","county":null,"population":1473,"osmId":176154,"osmType":"relation","displayName":"Village of Waterville, NY"}
+{"name":"Village of Albion","state":"New York","stateId":"NY","county":null,"population":5637,"osmId":176155,"osmType":"relation","displayName":"Village of Albion, NY"}
+{"name":"Village of Holley","state":"New York","stateId":"NY","county":null,"population":1754,"osmId":176156,"osmType":"relation","displayName":"Village of Holley, NY"}
+{"name":"Village of Lyndonville","state":"New York","stateId":"NY","county":null,"population":771,"osmId":176157,"osmType":"relation","displayName":"Village of Lyndonville, NY"}
+{"name":"Village of Medina","state":"New York","stateId":"NY","county":null,"population":6047,"osmId":176158,"osmType":"relation","displayName":"Village of Medina, NY"}
+{"name":"Burdett","state":"New York","stateId":"NY","county":null,"population":331,"osmId":176159,"osmType":"relation","displayName":"Burdett, NY"}
+{"name":"Montour Falls","state":"New York","stateId":"NY","county":null,"population":1635,"osmId":176160,"osmType":"relation","displayName":"Montour Falls, NY"}
+{"name":"Odessa","state":"New York","stateId":"NY","county":null,"population":517,"osmId":176161,"osmType":"relation","displayName":"Odessa, NY"}
+{"name":"Watkins Glen","state":"New York","stateId":"NY","county":null,"population":1863,"osmId":176162,"osmType":"relation","displayName":"Watkins Glen, NY"}
+{"name":"Village of Addison","state":"New York","stateId":"NY","county":null,"population":1561,"osmId":176163,"osmType":"relation","displayName":"Village of Addison, NY"}
+{"name":"Village of Arkport","state":"New York","stateId":"NY","county":null,"population":745,"osmId":176164,"osmType":"relation","displayName":"Village of Arkport, NY"}
+{"name":"Village of Avoca","state":"New York","stateId":"NY","county":null,"population":809,"osmId":176166,"osmType":"relation","displayName":"Village of Avoca, NY"}
+{"name":"Village of Bath","state":"New York","stateId":"NY","county":null,"population":5571,"osmId":176167,"osmType":"relation","displayName":"Village of Bath, NY"}
+{"name":"Village of Canisteo","state":"New York","stateId":"NY","county":null,"population":2176,"osmId":176168,"osmType":"relation","displayName":"Village of Canisteo, NY"}
+{"name":"Village of Cohocton","state":"New York","stateId":"NY","county":null,"population":703,"osmId":176169,"osmType":"relation","displayName":"Village of Cohocton, NY"}
+{"name":"Village of Hammondsport","state":"New York","stateId":"NY","county":null,"population":583,"osmId":176170,"osmType":"relation","displayName":"Village of Hammondsport, NY"}
+{"name":"Village of Savona","state":"New York","stateId":"NY","county":null,"population":672,"osmId":176171,"osmType":"relation","displayName":"Village of Savona, NY"}
+{"name":"Village of Wayland","state":"New York","stateId":"NY","county":null,"population":1680,"osmId":176172,"osmType":"relation","displayName":"Village of Wayland, NY"}
+{"name":"Village of Asharoken","state":"New York","stateId":"NY","county":null,"population":592,"osmId":176173,"osmType":"relation","displayName":"Village of Asharoken, NY"}
+{"name":"Village of West Hampton Dunes","state":"New York","stateId":"NY","county":null,"population":126,"osmId":176174,"osmType":"relation","displayName":"Village of West Hampton Dunes, NY"}
+{"name":"Village of Champlain","state":"New York","stateId":"NY","county":null,"population":1170,"osmId":176177,"osmType":"relation","displayName":"Village of Champlain, NY"}
+{"name":"Village of Dannemora","state":"New York","stateId":"NY","county":null,"population":3287,"osmId":176178,"osmType":"relation","displayName":"Village of Dannemora, NY"}
+{"name":"Village of Rouses Point","state":"New York","stateId":"NY","county":null,"population":2195,"osmId":176180,"osmType":"relation","displayName":"Village of Rouses Point, NY"}
+{"name":"Village of Earlville","state":"New York","stateId":"NY","county":null,"population":774,"osmId":176181,"osmType":"relation","displayName":"Village of Earlville, NY"}
+{"name":"Village of Afton","state":"New York","stateId":"NY","county":null,"population":794,"osmId":176182,"osmType":"relation","displayName":"Village of Afton, NY"}
+{"name":"Village of Bainbridge","state":"New York","stateId":"NY","county":null,"population":1251,"osmId":176183,"osmType":"relation","displayName":"Village of Bainbridge, NY"}
+{"name":"Village of Greene","state":"New York","stateId":"NY","county":null,"population":1463,"osmId":176184,"osmType":"relation","displayName":"Village of Greene, NY"}
+{"name":"Village of New Berlin","state":"New York","stateId":"NY","county":null,"population":901,"osmId":176185,"osmType":"relation","displayName":"Village of New Berlin, NY"}
+{"name":"Village of Oxford","state":"New York","stateId":"NY","county":null,"population":1330,"osmId":176187,"osmType":"relation","displayName":"Village of Oxford, NY"}
+{"name":"Village of Sherburne","state":"New York","stateId":"NY","county":null,"population":1360,"osmId":176188,"osmType":"relation","displayName":"Village of Sherburne, NY"}
+{"name":"Village of Smyrna","state":"New York","stateId":"NY","county":null,"population":197,"osmId":176189,"osmType":"relation","displayName":"Village of Smyrna, NY"}
+{"name":"Village of Altamont","state":"New York","stateId":"NY","county":null,"population":1675,"osmId":176190,"osmType":"relation","displayName":"Village of Altamont, NY"}
+{"name":"Village of Colonie","state":"New York","stateId":"NY","county":null,"population":7781,"osmId":176191,"osmType":"relation","displayName":"Village of Colonie, NY"}
+{"name":"Village of Voorheesville","state":"New York","stateId":"NY","county":null,"population":2841,"osmId":176193,"osmType":"relation","displayName":"Village of Voorheesville, NY"}
+{"name":"Village of Attica","state":"New York","stateId":"NY","county":null,"population":2450,"osmId":176194,"osmType":"relation","displayName":"Village of Attica, NY"}
+{"name":"Village of Castile","state":"New York","stateId":"NY","county":null,"population":970,"osmId":176195,"osmType":"relation","displayName":"Village of Castile, NY"}
+{"name":"Village of Gainesville","state":"New York","stateId":"NY","county":null,"population":211,"osmId":176196,"osmType":"relation","displayName":"Village of Gainesville, NY"}
+{"name":"Village of Perry","state":"New York","stateId":"NY","county":null,"population":3536,"osmId":176197,"osmType":"relation","displayName":"Village of Perry, NY"}
+{"name":"Village of Silver Springs","state":"New York","stateId":"NY","county":null,"population":689,"osmId":176199,"osmType":"relation","displayName":"Village of Silver Springs, NY"}
+{"name":"Village of Warsaw","state":"New York","stateId":"NY","county":null,"population":3646,"osmId":176200,"osmType":"relation","displayName":"Village of Warsaw, NY"}
+{"name":"Village of Wyoming","state":"New York","stateId":"NY","county":null,"population":377,"osmId":176201,"osmType":"relation","displayName":"Village of Wyoming, NY"}
+{"name":"Village of Alexander","state":"New York","stateId":"NY","county":null,"population":518,"osmId":176202,"osmType":"relation","displayName":"Village of Alexander, NY"}
+{"name":"City of Batavia","state":"New York","stateId":"NY","county":null,"population":15600,"osmId":176203,"osmType":"relation","displayName":"City of Batavia, NY"}
+{"name":"Village of Bergen","state":"New York","stateId":"NY","county":null,"population":1208,"osmId":176204,"osmType":"relation","displayName":"Village of Bergen, NY"}
+{"name":"Village of Corfu","state":"New York","stateId":"NY","county":null,"population":689,"osmId":176205,"osmType":"relation","displayName":"Village of Corfu, NY"}
+{"name":"Village of Elba","state":"New York","stateId":"NY","county":null,"population":558,"osmId":176206,"osmType":"relation","displayName":"Village of Elba, NY"}
+{"name":"Village of LeRoy","state":"New York","stateId":"NY","county":null,"population":4300,"osmId":176207,"osmType":"relation","displayName":"Village of LeRoy, NY"}
+{"name":"Village of Oakfield","state":"New York","stateId":"NY","county":null,"population":1812,"osmId":176208,"osmType":"relation","displayName":"Village of Oakfield, NY"}
+{"name":"Village of Saranac Lake","state":"New York","stateId":"NY","county":null,"population":4887,"osmId":176209,"osmType":"relation","displayName":"Village of Saranac Lake, NY"}
+{"name":"Village of Brushton","state":"New York","stateId":"NY","county":null,"population":443,"osmId":176210,"osmType":"relation","displayName":"Village of Brushton, NY"}
+{"name":"Village of Burke","state":"New York","stateId":"NY","county":null,"population":160,"osmId":176211,"osmType":"relation","displayName":"Village of Burke, NY"}
+{"name":"Village of Chateaugay","state":"New York","stateId":"NY","county":null,"population":735,"osmId":176212,"osmType":"relation","displayName":"Village of Chateaugay, NY"}
+{"name":"Village of Malone","state":"New York","stateId":"NY","county":null,"population":5483,"osmId":176213,"osmType":"relation","displayName":"Village of Malone, NY"}
+{"name":"Village of Tupper Lake","state":"New York","stateId":"NY","county":null,"population":3282,"osmId":176214,"osmType":"relation","displayName":"Village of Tupper Lake, NY"}
+{"name":"Village of Dolgeville","state":"New York","stateId":"NY","county":null,"population":2042,"osmId":176215,"osmType":"relation","displayName":"Village of Dolgeville, NY"}
+{"name":"Village of Broadalbin","state":"New York","stateId":"NY","county":null,"population":1384,"osmId":176216,"osmType":"relation","displayName":"Village of Broadalbin, NY"}
+{"name":"Village of Mayfield","state":"New York","stateId":"NY","county":null,"population":780,"osmId":176218,"osmType":"relation","displayName":"Village of Mayfield, NY"}
+{"name":"Village of Northville","state":"New York","stateId":"NY","county":null,"population":993,"osmId":176219,"osmType":"relation","displayName":"Village of Northville, NY"}
+{"name":"Village of Kaser","state":"New York","stateId":"NY","county":null,"population":5491,"osmId":176220,"osmType":"relation","displayName":"Village of Kaser, NY"}
+{"name":"Village of Sloatsburg","state":"New York","stateId":"NY","county":null,"population":3036,"osmId":176221,"osmType":"relation","displayName":"Village of Sloatsburg, NY"}
+{"name":"Village of Spring Valley","state":"New York","stateId":"NY","county":null,"population":33066,"osmId":176222,"osmType":"relation","displayName":"Village of Spring Valley, NY"}
+{"name":"Mooers","state":"New York","stateId":"NY","county":null,"population":451,"osmId":176375,"osmType":"relation","displayName":"Mooers, NY"}
+{"name":"City of Amsterdam","state":"New York","stateId":"NY","county":null,"population":18219,"osmId":3143401,"osmType":"relation","displayName":"City of Amsterdam, NY"}
+{"name":"City of Gloversville","state":"New York","stateId":"NY","county":null,"population":15131,"osmId":3143402,"osmType":"relation","displayName":"City of Gloversville, NY"}
+{"name":"City of Johnstown","state":"New York","stateId":"NY","county":null,"population":8204,"osmId":3143403,"osmType":"relation","displayName":"City of Johnstown, NY"}
+{"name":"City of Mechanicville","state":"New York","stateId":"NY","county":null,"population":5163,"osmId":3143404,"osmType":"relation","displayName":"City of Mechanicville, NY"}
+{"name":"City of Saratoga Springs","state":"New York","stateId":"NY","county":null,"population":28491,"osmId":3143405,"osmType":"relation","displayName":"City of Saratoga Springs, NY"}
+{"name":"City of Little Falls","state":"New York","stateId":"NY","county":null,"population":4605,"osmId":3157133,"osmType":"relation","displayName":"City of Little Falls, NY"}
+{"name":"City of Oneonta","state":"New York","stateId":"NY","county":null,"population":13079,"osmId":3158867,"osmType":"relation","displayName":"City of Oneonta, NY"}
+{"name":"City of Norwich","state":"New York","stateId":"NY","county":null,"population":7051,"osmId":3166331,"osmType":"relation","displayName":"City of Norwich, NY"}
+{"name":"City of Oneida","state":"New York","stateId":"NY","county":null,"population":10329,"osmId":3169207,"osmType":"relation","displayName":"City of Oneida, NY"}
+{"name":"City of Rome","state":"New York","stateId":"NY","county":null,"population":32127,"osmId":3669594,"osmType":"relation","displayName":"City of Rome, NY"}
+{"name":"City of Sherrill","state":"New York","stateId":"NY","county":null,"population":3077,"osmId":3669595,"osmType":"relation","displayName":"City of Sherrill, NY"}
+{"name":"Manhattan","state":"New York","stateId":"NY","county":null,"population":1694251,"osmId":8398124,"osmType":"relation","displayName":"Manhattan, NY"}
+{"name":"Village of Lansing","state":"New York","stateId":"NY","county":null,"population":3648,"osmId":9155267,"osmType":"relation","displayName":"Village of Lansing, NY"}
+{"name":"Brooklyn","state":"New York","stateId":"NY","county":null,"population":2736074,"osmId":9691750,"osmType":"relation","displayName":"Brooklyn, NY"}
+{"name":"Queens","state":"New York","stateId":"NY","county":null,"population":2405464,"osmId":9691819,"osmType":"relation","displayName":"Queens, NY"}
+{"name":"The Bronx","state":"New York","stateId":"NY","county":null,"population":1472654,"osmId":9691916,"osmType":"relation","displayName":"The Bronx, NY"}
+{"name":"Staten Island","state":"New York","stateId":"NY","county":null,"population":495747,"osmId":9691948,"osmType":"relation","displayName":"Staten Island, NY"}
+{"name":"Owego","state":"New York","stateId":"NY","county":null,"population":3654,"osmId":11228416,"osmType":"relation","displayName":"Owego, NY"}
+{"name":"Village of Farmingdale","state":"New York","stateId":"NY","county":null,"population":8466,"osmId":13472468,"osmType":"relation","displayName":"Village of Farmingdale, NY"}
+{"name":"Village of Franklinville","state":"New York","stateId":"NY","county":null,"population":1652,"osmId":13612182,"osmType":"relation","displayName":"Village of Franklinville, NY"}
+{"name":"Village of Webster","state":"New York","stateId":"NY","county":null,"population":5651,"osmId":13753811,"osmType":"relation","displayName":"Village of Webster, NY"}
+{"name":"Brooktondale","state":"New York","stateId":"NY","county":null,"population":261,"osmId":13780892,"osmType":"relation","displayName":"Brooktondale, NY"}
+{"name":"North Bay","state":"New York","stateId":"NY","county":null,"population":374,"osmId":13852707,"osmType":"relation","displayName":"North Bay, NY"}
+{"name":"Stittville","state":"New York","stateId":"NY","county":null,"population":294,"osmId":13894218,"osmType":"relation","displayName":"Stittville, NY"}
+{"name":"Wells Bridge","state":"New York","stateId":"NY","county":null,"population":279,"osmId":13912922,"osmType":"relation","displayName":"Wells Bridge, NY"}
+{"name":"Lake Huntington","state":"New York","stateId":"NY","county":null,"population":283,"osmId":13922109,"osmType":"relation","displayName":"Lake Huntington, NY"}
+{"name":"Village of Ballston Spa","state":"New York","stateId":"NY","county":null,"population":5111,"osmId":13970170,"osmType":"relation","displayName":"Village of Ballston Spa, NY"}
+{"name":"Village of Green Island","state":"New York","stateId":"NY","county":null,"population":2934,"osmId":14008753,"osmType":"relation","displayName":"Village of Green Island, NY"}
+{"name":"Portlandville","state":"New York","stateId":"NY","county":null,"population":177,"osmId":14024115,"osmType":"relation","displayName":"Portlandville, NY"}
+{"name":"Sleepy Hollow Lake","state":"New York","stateId":"NY","county":null,"population":1153,"osmId":14053021,"osmType":"relation","displayName":"Sleepy Hollow Lake, NY"}
+{"name":"South Cairo","state":"New York","stateId":"NY","county":null,"population":590,"osmId":14057689,"osmType":"relation","displayName":"South Cairo, NY"}
+{"name":"Round Top","state":"New York","stateId":"NY","county":null,"population":920,"osmId":14057700,"osmType":"relation","displayName":"Round Top, NY"}
+{"name":"New Hamburg","state":"New York","stateId":"NY","county":null,"population":842,"osmId":14077933,"osmType":"relation","displayName":"New Hamburg, NY"}
+{"name":"Ruby","state":"New York","stateId":"NY","county":null,"population":918,"osmId":14091572,"osmType":"relation","displayName":"Ruby, NY"}
+{"name":"Swan Lake","state":"New York","stateId":"NY","county":null,"population":372,"osmId":14096803,"osmType":"relation","displayName":"Swan Lake, NY"}
+{"name":"Mongaup Valley","state":"New York","stateId":"NY","county":null,"population":236,"osmId":14097031,"osmType":"relation","displayName":"Mongaup Valley, NY"}
+{"name":"Kauneonga Lake","state":"New York","stateId":"NY","county":null,"population":305,"osmId":14097032,"osmType":"relation","displayName":"Kauneonga Lake, NY"}
+{"name":"Village of Massapequa Park","state":"New York","stateId":"NY","county":null,"population":17109,"osmId":14292462,"osmType":"relation","displayName":"Village of Massapequa Park, NY"}
+{"name":"Oak Beach","state":"New York","stateId":"NY","county":null,"population":268,"osmId":14298217,"osmType":"relation","displayName":"Oak Beach, NY"}
+{"name":"Cadyville","state":"New York","stateId":"NY","county":null,"population":479,"osmId":14368535,"osmType":"relation","displayName":"Cadyville, NY"}
+{"name":"Hankins","state":"New York","stateId":"NY","county":null,"population":129,"osmId":14379929,"osmType":"relation","displayName":"Hankins, NY"}
+{"name":"Henderson","state":"New York","stateId":"NY","county":null,"population":233,"osmId":14380209,"osmType":"relation","displayName":"Henderson, NY"}
+{"name":"Mount Vision","state":"New York","stateId":"NY","county":null,"population":171,"osmId":14390279,"osmType":"relation","displayName":"Mount Vision, NY"}
+{"name":"North Granville","state":"New York","stateId":"NY","county":null,"population":524,"osmId":14390766,"osmType":"relation","displayName":"North Granville, NY"}

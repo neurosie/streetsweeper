@@ -269,6 +269,55 @@ const BENCHMARKS: Benchmark[] = [
   //   description: "Prefix 'san a' returns San Antonio first",
   //   assertions: [{ type: "isFirst", displayName: "San Antonio, TX" }],
   // },
+
+  // --- OSM municipality-type name prefixes ---
+  // New York records are named "City of Troy" / "Village of Fairport" and
+  // Wisconsin uses "Town of X". Make sure these don't hurt the match scores.
+  {
+    query: "troy, ny",
+    description: "'troy, ny' returns Troy NY first despite 'City of' prefix",
+    assertions: [{ type: "isFirst", displayName: "City of Troy, NY" }],
+  },
+  {
+    query: "troy",
+    description: "Bare 'troy' surfaces Troy NY, which outranks smaller Troys",
+    assertions: [
+      { type: "inTopN", displayName: "City of Troy, NY", n: 5 },
+      { type: "rankHigherThan", higher: "City of Troy, NY", lower: "Troy, OH" },
+    ],
+  },
+  {
+    query: "albany",
+    description: "Bare 'albany' returns the NY state capital first",
+    assertions: [{ type: "isFirst", displayName: "City of Albany, NY" }],
+  },
+  {
+    query: "rochester ny",
+    description: "'rochester ny' returns Rochester NY first",
+    assertions: [{ type: "isFirst", displayName: "City of Rochester, NY" }],
+  },
+  {
+    query: "syracuse",
+    description: "Bare 'syracuse' returns Syracuse NY first",
+    assertions: [{ type: "isFirst", displayName: "City of Syracuse, NY" }],
+  },
+  {
+    query: "buffalo",
+    description: "Buffalo NY has no prefix in OSM and still ranks first",
+    assertions: [{ type: "isFirst", displayName: "Buffalo, NY" }],
+  },
+  {
+    query: "fairport",
+    description: "'fairport' matches a 'Village of' prefixed record",
+    assertions: [
+      { type: "inTopN", displayName: "Village of Fairport, NY", n: 5 },
+    ],
+  },
+  {
+    query: "madison wi",
+    description: "Wisconsin 'Town of' prefixes don't displace the real city",
+    assertions: [{ type: "isFirst", displayName: "Madison, WI" }],
+  },
 ];
 
 // --- Test Runner ---

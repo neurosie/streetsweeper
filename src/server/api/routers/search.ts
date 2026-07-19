@@ -20,9 +20,7 @@ export function matchStateQuery(stateQuery: string): string | null {
   if (normalized.length === 0) return null;
 
   // Exact abbreviation match (case-insensitive)
-  const abbrevMatch = US_STATES.find(
-    (s) => s.id.toLowerCase() === normalized,
-  );
+  const abbrevMatch = US_STATES.find((s) => s.id.toLowerCase() === normalized);
   if (abbrevMatch) return abbrevMatch.id;
 
   // Full or prefix state name match
@@ -85,12 +83,30 @@ export type PlaceResult = {
 };
 
 /** Fields needed for search index - loaded from cities.jsonl */
-export type CitySearchData = CityData;
+export type CitySearchData = CityData & {
+  /** `name` with any OSM municipality-type prefix removed (see stripTypePrefix) */
+  searchName: string;
+};
+
+/**
+ * Many OSM records carry the municipality type as a name prefix - New York
+ * uses "City of Troy" / "Village of Fairport", Wisconsin uses "Town of
+ * Franklin". Users search for the bare name, so we index a stripped alias
+ * alongside the real one.
+ *
+ * This is deliberately a search-time alias rather than a rename: within a
+ * state, "Town of Franklin" and "City of Franklin" are distinct municipalities,
+ * so the prefix has to survive in `name` and `displayName`.
+ */
+export function stripTypePrefix(name: string): string {
+  return name.replace(/^(?:City|Town|Village|Borough|Township) of\s+/i, "");
+}
 
 /** Fuse.js configuration for city search */
 const FUSE_OPTIONS = {
-  keys: ["name"],
-  threshold: 0.4, // Allow moderate fuzziness
+  keys: ["name", "searchName"],
+  // Tolerates typos but little more.
+  threshold: 0.25,
   includeScore: true,
   shouldSort: true,
 };
@@ -110,9 +126,9 @@ function getCitySearchIndex(): Fuse<CitySearchData> {
   if (!citySearchIndex) {
     console.log("Loading cities into memory...");
 
-    citiesData = loadCities().sort(
-      (a, b) => (b.population ?? 0) - (a.population ?? 0),
-    );
+    citiesData = loadCities()
+      .map((city) => ({ ...city, searchName: stripTypePrefix(city.name) }))
+      .sort((a, b) => (b.population ?? 0) - (a.population ?? 0));
 
     citySearchIndex = new Fuse(citiesData, FUSE_OPTIONS);
 
@@ -183,7 +199,9 @@ export const searchRouter = publicProcedure
       const prefixMatches = citiesData
         .filter(
           (city) =>
-            city.population && city.name.toLowerCase().startsWith(normalized),
+            city.population &&
+            (city.name.toLowerCase().startsWith(normalized) ||
+              city.searchName.toLowerCase().startsWith(normalized)),
         )
         .map((city) => ({
           city,
