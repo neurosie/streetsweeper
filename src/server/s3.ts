@@ -22,8 +22,7 @@ class MyS3Client {
     } catch (e) {
       if (
         e instanceof S3ServiceException &&
-        (e.$metadata.httpStatusCode === 403 ||
-          e.$metadata.httpStatusCode === 404)
+        e.$metadata.httpStatusCode === 404
       ) {
         return null;
       }
@@ -54,10 +53,8 @@ class MyS3Client {
     } catch (e) {
       if (
         e instanceof S3ServiceException &&
-        (e.$metadata.httpStatusCode === 403 ||
-          e.$metadata.httpStatusCode === 404)
+        e.$metadata.httpStatusCode === 404
       ) {
-        console.log(e.$metadata.httpStatusCode);
         return false;
       }
       throw e;
