@@ -174,7 +174,7 @@ export default function Play() {
   // Rendering
   if (status === "apiLoading" || status === "dataLoading") {
     return (
-      <div className="flex h-screen w-full flex-col gap-6">
+      <div className="flex h-[var(--app-height)] w-full flex-col gap-6">
         {Header}
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <div className="relative my-16 flex h-32 w-32 items-baseline justify-center sm:my-24 sm:h-48 sm:w-48">
@@ -193,7 +193,7 @@ export default function Play() {
     );
   } else if (status === "error") {
     return (
-      <div className="flex h-screen flex-col items-center gap-6">
+      <div className="flex h-[var(--app-height)] flex-col items-center gap-6">
         {Header}
         <div className="m-[6px] w-[80%] rounded-xl bg-sign-600 p-4 text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
           <p>Something went wrong :(</p>
@@ -221,7 +221,7 @@ export default function Play() {
       )
       .filter((road): road is Road => road !== null);
     return (
-      <div className="flex h-[100dvh] flex-col sm:max-h-screen sm:min-h-screen">
+      <div className="flex h-[var(--app-height)] flex-col sm:max-h-[var(--app-height)] sm:min-h-[var(--app-height)]">
         {/* Header */}
         {Header}
 
@@ -322,7 +322,7 @@ export default function Play() {
 
           {/* Bottom drawer - streets list */}
           <div
-            className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[60vh] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
+            className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[calc(var(--app-height)*0.6)] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
               viewMode === "reviewing"
                 ? "motion-safe:translate-y-0"
                 : "motion-safe:translate-y-full"

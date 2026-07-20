@@ -4,6 +4,7 @@ import Head from "next/head";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import { api, queryClient } from "~/utils/api";
+import useViewportHeight from "~/utils/useViewportHeight";
 
 import "~/styles/globals.css";
 
@@ -21,9 +22,11 @@ const sail = Sail({
 });
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  useViewportHeight();
+
   return (
     <div
-      className={`${overpass.variable} ${sail.variable} min-h-[100dvh] bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
+      className={`${overpass.variable} ${sail.variable} min-h-[var(--app-height)] bg-gradient-to-b from-zinc-900 to-neutral-800 font-sans text-white`}
     >
       <Head>
         <meta
