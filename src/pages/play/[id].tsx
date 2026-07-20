@@ -368,6 +368,11 @@ export default function Play() {
           </div>
 
           {/* Bottom drawer - streets list */}
+          {/* TODO: both the open and closed transforms are behind motion-safe:,
+              so with prefers-reduced-motion set neither applies and the drawer
+              stays permanently open over the map. The closed state needs to
+              apply unconditionally, with only the transition behind
+              motion-safe:. Predates the keyboard work. */}
           <div
             className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[calc(var(--app-height)*0.6)] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
               viewMode === "reviewing"

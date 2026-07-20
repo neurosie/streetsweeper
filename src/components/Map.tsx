@@ -35,6 +35,7 @@ export default function Map({
       transformScale(bboxPolygon(place.place.bbox), 1.1),
     ) as BBox2d;
     initialBounds.current = bounds;
+    hasInteracted.current = false;
 
     const map = new mapboxgl.Map({
       container: mapContainer.current!,
@@ -56,7 +57,11 @@ export default function Map({
     );
 
     map.on("load", () => {
-      updateMaxBounds(map, bounds);
+      // Skipped for the hidden breakpoint's map, which has no real size yet;
+      // the resize observer sets the limit once it's actually shown.
+      if ((mapContainer.current?.clientHeight ?? 0) > 0) {
+        updateMaxBounds(map, bounds);
+      }
 
       // Get the first layer with text, so other layers can be placed below it
       let firstSymbolId;
@@ -192,8 +197,10 @@ export default function Map({
   }, [place]);
 
   // Note a deliberate pan or zoom, so that resizing the viewport afterwards
-  // doesn't throw away the framing the user chose. Programmatic camera moves
-  // carry no originalEvent, so fitBounds doesn't count as interaction.
+  // doesn't throw away the framing the user chose. Every gesture path fires
+  // movestart carrying the originalEvent that caused it, while programmatic
+  // moves (fitBounds, jumpTo, resize) pass no event data at all. Listening to
+  // dragstart/zoomstart instead would miss box zoom and keyboard panning.
   useEffect(() => {
     if (!map) return;
 
@@ -203,11 +210,9 @@ export default function Map({
       }
     };
 
-    map.on("dragstart", markInteracted);
-    map.on("zoomstart", markInteracted);
+    map.on("movestart", markInteracted);
     return () => {
-      map.off("dragstart", markInteracted);
-      map.off("zoomstart", markInteracted);
+      map.off("movestart", markInteracted);
     };
   }, [map]);
 
@@ -218,20 +223,55 @@ export default function Map({
     const container = mapContainer.current;
     if (!map || !container) return;
 
-    // The observer fires once on observe(); the map is already sized correctly
-    // at that point, so don't animate on mount.
-    let firstCallback = true;
-    const observer = new ResizeObserver(() => {
-      // Keeps whatever is centered centered, at the current zoom.
-      map.resize();
-      // The pan limit depends on the viewport size, so it has to follow it.
-      if (initialBounds.current) {
-        updateMaxBounds(map, initialBounds.current);
-      }
-      if (firstCallback) {
-        firstCallback = false;
+    let lastWidth = container.clientWidth;
+    let lastHeight = container.clientHeight;
+    let refitQueued = false;
+
+    // Recomputing the limit resets mapbox's input handlers and clears inertia,
+    // so defer it while a gesture or animation is running. Without this, a drag
+    // that dismisses the keyboard is cancelled by the resize it triggers.
+    const applyMaxBounds = () => {
+      const bounds = initialBounds.current;
+      if (!bounds) return;
+
+      if (map.isMoving() || map.isZooming()) {
+        if (!refitQueued) {
+          refitQueued = true;
+          map.once("moveend", () => {
+            refitQueued = false;
+            applyMaxBounds();
+          });
+        }
         return;
       }
+
+      updateMaxBounds(map, bounds);
+    };
+
+    const observer = new ResizeObserver(() => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      // Both breakpoint layouts stay mounted and CSS hides one, so this fires
+      // for a container with no size. mapbox substitutes a fabricated 400x300
+      // viewport in that case, and a limit measured against it would describe a
+      // viewport that never existed. Wait until the container is really shown;
+      // the size will differ from the last seen one, so this still runs then.
+      if (width === 0 || height === 0) return;
+      // Nothing to do when the size is unchanged, which also covers the
+      // callback ResizeObserver delivers on observe(): the map is already
+      // sized correctly there, and skipping keeps it from animating on mount.
+      if (width === lastWidth && height === lastHeight) return;
+      lastWidth = width;
+      lastHeight = height;
+
+      // Release the limit before resizing. resize() re-constrains the camera,
+      // and a limit measured against the old size would clamp zoom and centre
+      // to fit a viewport that no longer exists.
+      map.setMaxBounds(undefined);
+      // Keeps whatever is centered centered, at the current zoom.
+      map.resize();
+      applyMaxBounds();
+
       // Until the user has framed the map themselves, keep it fitted to the
       // place so the whole area stays visible as the viewport changes.
       if (!hasInteracted.current && initialBounds.current) {

@@ -16,13 +16,23 @@ export default function useViewportHeight() {
     if (!viewport) return;
 
     const update = () => {
+      // While the page is pinch-zoomed, visualViewport.height measures the
+      // magnified window rather than the layout, and adopting it would collapse
+      // the app to a fraction of its height. Keep the last good value instead.
+      if (Math.abs(viewport.scale - 1) > 0.01) return;
+
       document.documentElement.style.setProperty(
         "--app-height",
         `${viewport.height}px`,
       );
-      // Safari may scroll the layout viewport to reveal the focused input. The
-      // layout is never taller than the viewport, so this only undoes that.
-      window.scrollTo(0, 0);
+
+      // Safari scrolls the layout viewport to reveal the focused input. Undo
+      // that only where there's nothing legitimately scrollable — this hook is
+      // app-wide, and pages taller than the viewport (the city search) must
+      // keep the scroll position the user or the browser chose.
+      if (document.documentElement.scrollHeight <= viewport.height + 1) {
+        window.scrollTo(0, 0);
+      }
     };
 
     update();
