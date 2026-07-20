@@ -20,7 +20,9 @@ export default function Map({
   newMatches: string[];
 }) {
   const [map, setMap] = useState<mapboxgl.Map>();
-  const mapContainer = useRef(null);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const initialBounds = useRef<BBox2d>();
+  const hasInteracted = useRef(false);
 
   mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
@@ -29,9 +31,10 @@ export default function Map({
       return;
     }
 
-    const initialBounds = bbox(
+    const bounds = bbox(
       transformScale(bboxPolygon(place.place.bbox), 1.1),
     ) as BBox2d;
+    initialBounds.current = bounds;
 
     const map = new mapboxgl.Map({
       container: mapContainer.current!,
@@ -40,15 +43,20 @@ export default function Map({
         'Street data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxPitch: 0,
       dragRotate: false,
-      bounds: initialBounds,
+      bounds,
     });
 
     map.touchZoomRotate.disableRotation();
     map.keyboard.disableRotation();
-    map.addControl(new RecenterControl(initialBounds), "bottom-right");
+    map.addControl(
+      new RecenterControl(bounds, () => {
+        hasInteracted.current = false;
+      }),
+      "bottom-right",
+    );
 
     map.on("load", () => {
-      map.setMaxBounds(map.getBounds());
+      updateMaxBounds(map, bounds);
 
       // Get the first layer with text, so other layers can be placed below it
       let firstSymbolId;
@@ -183,6 +191,58 @@ export default function Map({
     }
   }, [place]);
 
+  // Note a deliberate pan or zoom, so that resizing the viewport afterwards
+  // doesn't throw away the framing the user chose. Programmatic camera moves
+  // carry no originalEvent, so fitBounds doesn't count as interaction.
+  useEffect(() => {
+    if (!map) return;
+
+    const markInteracted = (event: { originalEvent?: unknown }) => {
+      if (event.originalEvent) {
+        hasInteracted.current = true;
+      }
+    };
+
+    map.on("dragstart", markInteracted);
+    map.on("zoomstart", markInteracted);
+    return () => {
+      map.off("dragstart", markInteracted);
+      map.off("zoomstart", markInteracted);
+    };
+  }, [map]);
+
+  // Keep the canvas in sync with its container. mapbox-gl 2.x doesn't observe
+  // its container, so when the mobile keyboard opens or closes the canvas keeps
+  // its old dimensions and the map no longer fills the space.
+  useEffect(() => {
+    const container = mapContainer.current;
+    if (!map || !container) return;
+
+    // The observer fires once on observe(); the map is already sized correctly
+    // at that point, so don't animate on mount.
+    let firstCallback = true;
+    const observer = new ResizeObserver(() => {
+      // Keeps whatever is centered centered, at the current zoom.
+      map.resize();
+      // The pan limit depends on the viewport size, so it has to follow it.
+      if (initialBounds.current) {
+        updateMaxBounds(map, initialBounds.current);
+      }
+      if (firstCallback) {
+        firstCallback = false;
+        return;
+      }
+      // Until the user has framed the map themselves, keep it fitted to the
+      // place so the whole area stays visible as the viewport changes.
+      if (!hasInteracted.current && initialBounds.current) {
+        map.fitBounds(initialBounds.current, { duration: 300 });
+      }
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [map]);
+
   // Turned guessed roads blue
   useEffect(() => {
     if (!map) return;
@@ -230,6 +290,32 @@ export default function Map({
   return <div id="my-map" ref={mapContainer} className={className} />;
 }
 
+/**
+ * Limit panning to roughly what's visible when the place is fitted to the
+ * viewport.
+ *
+ * This has to be recomputed whenever the container resizes. The limit is
+ * derived from what fits on screen, so one computed for a full-height viewport
+ * is too tight once the keyboard shrinks the map: fitting the same place in a
+ * shorter viewport needs a wider view, which the old limit forbids, leaving the
+ * user unable to zoom out far enough to see the whole boundary.
+ *
+ * The camera is saved and restored around the measurement, so this only reads
+ * the fitted extent rather than moving the map. Both calls are synchronous and
+ * mapbox renders on an animation frame, so nothing is drawn in between.
+ */
+function updateMaxBounds(map: mapboxgl.Map, placeBounds: BBox2d) {
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+
+  map.setMaxBounds(undefined);
+  map.fitBounds(placeBounds, { duration: 0 });
+  const limit = map.getBounds();
+
+  map.jumpTo({ center, zoom });
+  map.setMaxBounds(limit);
+}
+
 const labelOpacityExpression: mapboxgl.Expression = [
   "case",
   ["boolean", ["feature-state", "guessed"], false],
@@ -247,10 +333,12 @@ const usePrevious = <T,>(value: T): T | undefined => {
 
 class RecenterControl implements IControl {
   private initialBounds: BBox2d;
+  private onRecenter: () => void;
   private container: HTMLElement | undefined;
 
-  constructor(initialBounds: BBox2d) {
+  constructor(initialBounds: BBox2d, onRecenter: () => void) {
     this.initialBounds = initialBounds;
+    this.onRecenter = onRecenter;
   }
 
   onAdd(map: mapboxgl.Map): HTMLElement {
@@ -263,6 +351,7 @@ class RecenterControl implements IControl {
     button.innerHTML = crosshair;
     button.onclick = () => {
       map.fitBounds(this.initialBounds);
+      this.onRecenter();
     };
     this.container.appendChild(button);
     return this.container;
