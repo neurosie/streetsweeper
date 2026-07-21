@@ -1,4 +1,13 @@
 @layer base {
+  :root {
+    /* Full-height layout hangs off this instead of a raw viewport unit.
+       Browsers that honor interactive-widget=resizes-content shrink the layout
+       viewport on their own, so 100dvh is already correct for them. Safari
+       ignores that hint, so useViewportHeight overwrites this with a measured
+       pixel height while the keyboard is up. */
+    --app-height: 100dvh;
+  }
+
   body {
     @apply bg-neutral-800;
   }

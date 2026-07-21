@@ -3,7 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import assert from "assert";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type FormEvent, useState, useEffect, useCallback } from "react";
+import {
+  type FormEvent,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { carIcon } from "~/components/carIcon";
 import Map from "~/components/Map";
 import { type PlaceResponse, type Road } from "~/server/geo/geojson";
@@ -79,6 +85,19 @@ export default function Play() {
   const [viewMode, setViewMode] = useState<"guessing" | "reviewing">(
     "guessing",
   );
+  const guessInput = useRef<HTMLInputElement>(null);
+
+  /**
+   * Returning to guessing should put the keyboard back. The focus call has to
+   * happen inside the tap handler — mobile browsers ignore a programmatic
+   * focus() that isn't part of a user gesture, so deferring it to an effect
+   * would move the caret without raising the keyboard. Null once the game is
+   * finished, when the input is replaced by the results panel.
+   */
+  const closeDrawer = useCallback(() => {
+    setViewMode("guessing");
+    guessInput.current?.focus();
+  }, []);
 
   // Save management
   const setSave = useCallback(
@@ -140,6 +159,9 @@ export default function Play() {
     const guessBox = (event.target as HTMLElement).querySelector("input")!;
     const guess = guessBox.value.toLowerCase().trim();
     guessBox.value = "";
+    // Submitting shouldn't cost the user their keyboard. Focus is normally
+    // still here, but restore it if anything took it.
+    guessBox.focus();
     if (guess.trim().length === 0) {
       return;
     }
@@ -174,7 +196,7 @@ export default function Play() {
   // Rendering
   if (status === "apiLoading" || status === "dataLoading") {
     return (
-      <div className="flex h-screen w-full flex-col gap-6">
+      <div className="flex h-[var(--app-height)] w-full flex-col gap-6">
         {Header}
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <div className="relative my-16 flex h-32 w-32 items-baseline justify-center sm:my-24 sm:h-48 sm:w-48">
@@ -193,7 +215,7 @@ export default function Play() {
     );
   } else if (status === "error") {
     return (
-      <div className="flex h-screen flex-col items-center gap-6">
+      <div className="flex h-[var(--app-height)] flex-col items-center gap-6">
         {Header}
         <div className="m-[6px] w-[80%] rounded-xl bg-sign-600 p-4 text-white ring-2 ring-sign-600 ring-offset-4 ring-offset-white drop-shadow-[-2px_2px_theme(colors.sign.700)] sm:w-[600px]">
           <p>Something went wrong :(</p>
@@ -221,7 +243,7 @@ export default function Play() {
       )
       .filter((road): road is Road => road !== null);
     return (
-      <div className="flex h-screen flex-col sm:max-h-screen sm:min-h-screen">
+      <div className="flex h-[var(--app-height)] flex-col sm:max-h-[var(--app-height)] sm:min-h-[var(--app-height)]">
         {/* Header */}
         {Header}
 
@@ -239,7 +261,9 @@ export default function Play() {
             {/* Streets counter button */}
             <button
               onClick={() =>
-                setViewMode(viewMode === "guessing" ? "reviewing" : "guessing")
+                viewMode === "guessing"
+                  ? setViewMode("reviewing")
+                  : closeDrawer()
               }
               className="absolute right-2 top-2 m-[2px] flex flex-col items-center rounded-md bg-sign-600 px-2 py-1.5 text-white ring-1 ring-sign-600 ring-offset-2 ring-offset-white drop-shadow-[0_3px_theme(colors.sign.700)] active:translate-y-[2px] active:drop-shadow-none motion-safe:transition-transform"
             >
@@ -274,14 +298,37 @@ export default function Play() {
               </div>
             ) : (
               <div className="mx-2 rounded-lg bg-infosign-500 px-2 py-2 ring-2 ring-infosign-500 ring-offset-2 ring-offset-white drop-shadow-[-2px_3px_theme(colors.blue.900)]">
-                <form onSubmit={onGuess} className="flex gap-2">
+                <form
+                  onSubmit={onGuess}
+                  className="flex gap-2"
+                  autoComplete="off"
+                >
+                  {/* A lone text field holding street names reads as an address
+                      field to Chrome, which then offers to autofill it and eats
+                      vertical space above the keyboard. The neutral name plus
+                      the opt-outs below discourage that. */}
                   <input
+                    ref={guessInput}
                     className="min-w-0 flex-1 rounded-md border-2 border-gray-400 px-2 py-1.5 text-sm text-black placeholder:text-gray-500"
                     placeholder="e.g. 'main st' or '1st'"
                     size={15}
+                    name="guess"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    enterKeyHint="go"
+                    data-1p-ignore
+                    data-lpignore="true"
+                    data-form-type="other"
                   ></input>
                   <button
                     type="submit"
+                    // Tapping the button would otherwise move focus off the
+                    // input, dropping the keyboard and resizing the map on
+                    // every guess. Suppressing the default focus shift leaves
+                    // the input focused and the keyboard up.
+                    onMouseDown={(event) => event.preventDefault()}
                     className="relative bottom-[2px] rounded-md bg-sign-400 px-3 py-1.5 text-sm font-semibold text-gray-900 drop-shadow-[0px_4px_theme(colors.sign.500)] active:bottom-0 active:drop-shadow-none"
                   >
                     Guess
@@ -321,8 +368,13 @@ export default function Play() {
           </div>
 
           {/* Bottom drawer - streets list */}
+          {/* TODO: both the open and closed transforms are behind motion-safe:,
+              so with prefers-reduced-motion set neither applies and the drawer
+              stays permanently open over the map. The closed state needs to
+              apply unconditionally, with only the transition behind
+              motion-safe:. Predates the keyboard work. */}
           <div
-            className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[60vh] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
+            className={`fixed inset-x-0 bottom-0 z-10 flex max-h-[calc(var(--app-height)*0.6)] flex-col rounded-t-lg bg-white shadow-[0_-4px_16px_rgba(0,0,0,0.3)] motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out ${
               viewMode === "reviewing"
                 ? "motion-safe:translate-y-0"
                 : "motion-safe:translate-y-full"
@@ -331,7 +383,7 @@ export default function Play() {
             {/* Back button header */}
             <div className="flex shrink-0 items-center border-b border-gray-200 px-3 py-2">
               <button
-                onClick={() => setViewMode("guessing")}
+                onClick={closeDrawer}
                 className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-gray-900 active:text-gray-600"
               >
                 <span>←</span>
