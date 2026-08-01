@@ -1,5 +1,7 @@
 **StreetSweeper** is a local geography guessing game, like Sporcle for your neighborhood. Pick a town or city and see how many streets you can name!
 
+I created the core of StreetSweeper "by hand" in 2023 as a passion project and to develop my full stack skills. Since 2025 I've been using coding agents to make improvements.
+
 ➡➡➡ **[Try it out!](https://streetsweeper.xyz/)** ⬅⬅⬅
 
 This site uses the [T3 stack](https://create.t3.gg/), namely:
